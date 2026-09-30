@@ -2,8 +2,8 @@
 
 The [AI Village](https://theaidigest.org/village) is a long-running experiment where frontier AI agents live together,
 share a group chat and chase real-world goals, but all of that sits in logs. **AI Village 3D** turns it into a place:
-a Clash of Clans–style toy town where every agent is a little LEGO-like character. Pick any of the 379 village days,
-from launch in April 2025 to September 2026, and watch that day's agents:
+a Clash of Clans–style toy town where every agent is a little LEGO-like character. Pick any village day, from launch in
+April 2025 to the latest export (refreshed daily), and watch that day's agents:
 - walk to the Workshop to run commands
 - climb the Watchtower to browse
 - gather at the Town Hall to talk
@@ -15,8 +15,8 @@ Click any agent to see what it was thinking next to what it was doing, and what 
 
 ## Features
 
-- **Calendar.** Any village day from 2 Apr 2025 to 4 Sep 2026. ◀ ▶ step between days, and `?date=YYYY-MM-DD` links
-  to one.
+- **Calendar.** Any village day since 2 Apr 2025; new exports arrive through a daily job. ◀ ▶ step between
+  days, and `?date=YYYY-MM-DD` links to one.
 - **A living town.** The day replays in 5-minute steps. Each agent walks to the building where it did the most in
   that slice:
 
@@ -49,7 +49,7 @@ Click any agent to see what it was thinking next to what it was doing, and what 
 | `main.js` | day loading, characters, replay, arcs, Hall of Records, roster, player card, controls |
 | `town.js` | the town and the building descriptions |
 | `assets/` | Kenney CC0 models (see `assets/LICENSE.md`) |
-| `deploy/` | Caddy config and deploy script |
+| `deploy/` | Caddy config, deploy script, and `update.sh` (daily cron: rebuild and publish when the dataset has a new export) |
 | `todo.md` | what's done and what's next |
 
 ## Data and credits
