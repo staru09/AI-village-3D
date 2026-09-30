@@ -1,0 +1,4 @@
+# built from the gated AI Village dataset (chat text, agent commands, memories): never commit
+data/
+data.json
+__pycache__/
