@@ -22,10 +22,8 @@ CLANS = {'Google': ('gemini',), 'Anthropic': ('claude',), 'OpenAI': ('gpt', 'o1'
 # chat_message is already chat, get_events is chat polling: those are skipped so nothing counts twice.
 CC = {'WebFetch': 'T', 'WebSearch': 'T', 'mcp__village__edit_memory': 'L', 'mcp__village__search_history': 'L'}
 PREFIX = re.compile(r'^(Claude|GPT-|Gemini|DeepSeek-|Kimi|Grok|Muse Spark)\s*')
-ADDR = re.compile(r'(https?://)?\b\d{1,3}(\.\d{1,3}){3}\b(:\d+)?\S*')  # raw IPs / internal URLs
 TS = re.compile(rb'"created_at":\s*"([^"]+)"')
 TAGS = re.compile(r'(?:\s*</?(?:narrative_summary|list_of_chronological_events|top_moments?|takeaways?|blurb|quote)>)+\s*')
-CUT = 25  # keep this many chars past a later trim, so scrub() still sees a whole IP at the edge
 HYPHENS = str.maketrans({'‐': '-', '‑': '-', '–': '-'})
 
 
@@ -90,8 +88,8 @@ def slugify(name):
     return re.sub(r'[^a-z0-9]+', '-', name.lower()).strip('-')
 
 
-def scrub(text, n):
-    return ADDR.sub('[REDACTED]', text or '')[:n]
+def cut(text, n):
+    return (text or '')[:n]
 
 
 def untag(text):
@@ -127,7 +125,7 @@ def thoughts(o):
 
 def thought(msg):
     text = '\n'.join(dict.fromkeys(t.strip() for t in thoughts(msg) if isinstance(t, str) and t.strip()))
-    return text[:THINK + CUT]
+    return text[:THINK]
 
 
 def track(counts, said, n):
@@ -177,7 +175,7 @@ def main():
     chat = defaultdict(list)   # date -> (second, agent, text, mentioned)
 
     def first_bash(k, s, cmd):
-        line = (s, scrub(cmd.strip().split('\n')[0], 160))
+        line = (s, cut(cmd.strip().split('\n')[0], 160))
         bash[k][s // SLICE] = min(bash[k].get(s // SLICE, line), line)
 
     mentions = mentions_of(names)
@@ -186,7 +184,7 @@ def main():
             continue
         (d, s), src = pt(m['created_at']), m['agent_speaker_id']
         to = mentions(m['content'] or '', src)
-        chat[d].append((s, src, scrub(m['content'], 1500), to))
+        chat[d].append((s, src, cut(m['content'], 1500), to))
         said[d, src].add(s // SLICE)
         stats[d, src]['messages'] += 1
         stats[d, src]['mentions_out'] += len(to)
@@ -198,7 +196,7 @@ def main():
         sess_agent[r['id']] = r['agent_id']
         if r['created_at'] >= since:
             d, s = pt(r['created_at'])
-            intents[d, r['agent_id']].append((s, scrub(r['short_displayed_session_goal'], 120), scrub(r['session_goal'], 500)))
+            intents[d, r['agent_id']].append((s, cut(r['short_displayed_session_goal'], 120), cut(r['session_goal'], 500)))
 
     for e in recent(snap, 'events.jsonl.gz', since):
         x, kind = e['data'], e['data'].get('actionType')
@@ -258,7 +256,7 @@ def main():
             continue
         i = bisect_left(ds, pt(r['created_at'])[0])
         if i < len(ds) and r['created_at'] > memo.get((ds[i], a), ('',))[0]:
-            memo[ds[i], a] = (r['created_at'], r['content'][:MEMORY + CUT])
+            memo[ds[i], a] = (r['created_at'], r['content'][:MEMORY])
 
     vgoals = sorted(rows(snap, 'village_goals.jsonl.gz'), key=lambda g: g['start_time'])
     agoals = sorted(rows(snap, 'agent_goals.jsonl.gz'), key=lambda g: g['start_time'] or '')
@@ -308,7 +306,7 @@ def main():
             agents.append({
                 'slug': slug[a], 'name': name, 'model': everyone[a]['model_string'], 'clan': clan[a], 'label': label(name),
                 'joined': active[a][0],
-                'role': g.get('short_name') or '', 'goal': scrub(g.get('name'), 300), 'note': scrub(g.get('description'), 300),
+                'role': g.get('short_name') or '', 'goal': cut(g.get('name'), 300), 'note': cut(g.get('description'), 300),
                 'track': track({s - o: c for s, c in counts[k].items()}, {s - o for s in said[k]}, hours * HOUR),
                 'stats': dict(stats[k]),
                 'partners': [[idx[p], partners[(p, 0)], partners[(p, 1)]] for p, _ in tops.most_common(8)],
@@ -322,22 +320,22 @@ def main():
             mem = None
             if memory[a]:
                 md, ms = pt(memory[a][0])
-                mem = {'written': f'{md} {ms // 3600:02}:{ms % 3600 // 60:02}', 'text': scrub(memory[a][1], MEMORY)}
-            extra.append(save(dd / f'{slug[a]}.json', {'memory': mem, 'thinking': [[s - base, scrub(t, THINK)] for s, t in th]}))
+                mem = {'written': f'{md} {ms // 3600:02}:{ms % 3600 // 60:02}', 'text': memory[a][1]}
+            extra.append(save(dd / f'{slug[a]}.json', {'memory': mem, 'thinking': [[s - base, t] for s, t in th]}))
         messages = sorted([s - base, idx[src], text, [idx[x] for x in to if x in idx]]
                           for s, src, text, to in chat[d] if base <= s < base + span)
         dropped['messages'] += len(chat[d]) - len(messages)
-        goal = scrub(vg[-1]['goal'], 1000) if vg else ''
+        goal = cut(vg[-1]['goal'], 1000) if vg else ''
         sizes.append(save(out / 'days' / f'{d}.json', {
             'date': d, 'day': daynum.get(d), 'open': open_h, 'hours': hours, 'slice': SLICE,
             'days': [{'day': daynum.get(d), 'date': d}], 'goal': goal,
-            'recap': scrub(untag(recaps[d]), LONG) if d in recaps else None,
+            'recap': cut(untag(recaps[d]), LONG) if d in recaps else None,
             'agents': agents, 'messages': messages,
         }))
         index_days.append({'date': d, 'day': daynum.get(d), 'goal': goal, 'agents': [slug[a] for a in order],
                            'messages': len(messages), 'turns': sum(stats[d, a]['turns'] for a in order)})
 
-    career = lambda r: r and {'written': pt(r['created_at'])[0], 'text': scrub(untag(r['content']), LONG)}
+    career = lambda r: r and {'written': pt(r['created_at'])[0], 'text': cut(untag(r['content']), LONG)}
     save(out / 'index.json', {
         'export': json.loads((snap / 'manifest.json').read_text())['exportedAt'][:10],
         'clans': list(CLANS),

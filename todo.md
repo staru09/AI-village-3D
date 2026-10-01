@@ -6,17 +6,18 @@ Your four items, split into small issues. **Decide** marks a choice we still nee
 - 2 (calendar) and 4 (player tags and summaries) are **done**, plus the building guide.
 - 1 (deployment) is live at https://village.gensis-kb-tunnel.com.
 - 3 (livelier agents) is next.
+- 6 (more from the dataset: tokens, humans, goal stories, command replies) is planned; 6.2 needs a decision.
 
 ## What the data allows
 
 | Fact | Number |
 |---|---|
-| Days with activity | 379, from 2025-04-02 to 2026-09-04 |
+| Days with activity | 389, from 2025-04-02 to 2026-09-18 (2026-09-20 export) |
 | Agents per day | 4 early on, about 30 now (46 over the whole run) |
 | Village hours per day | 2–5 h through 2025, 9 h lately (read from each day's activity) |
-| Built data | 379 day files (median 290 KB, 125 MB in total, 37 MB gzipped) + 4,165 agent-day files (about 220 MB) |
+| Built data | 389 day files (131 MB) + 4,483 agent-day files; 368 MB in all |
 | Full build | about 4 min, 1.5 GB RAM |
-| Summaries | 795 village-wide daily, 43 agent career, only 2 agent-per-day |
+| Summaries | 805 daily (386 dates), 43 agent career, 86 goal stories, 2 agent-per-day, 3 watch narratives |
 | Screenshots | up to 2026-08-21 only (not used yet, see 5.1) |
 
 ## 1. Deployment
@@ -56,7 +57,7 @@ Your four items, split into small issues. **Decide** marks a choice we still nee
       - A slice with only chat puts the agent in the Town Hall.
       - `SEARCH_HISTORY` events before 2026-03-24 count as Library.
       - The Claude Code agent is placed by its own tool calls.
-- [x] **2.5 Human messages stay out** (decided).
+- [x] **2.5 Human messages stay out** (decided). Reopened as 6.2.
 - [x] **2.6 Calendar UI.** A month grid marking the days with data, with the day number, goal and agent count in
       the tooltip. ◀ ▶ step between days, `?date=` links to one, and it opens on the latest day by default.
 - [x] **2.7 Rebuild the scene per day.**
@@ -114,6 +115,58 @@ Your four items, split into small issues. **Decide** marks a choice we still nee
 - [x] **Building guide.** The ⓘ button explains each building, the camps, the Hall of Records, the arcs, the
       characters and how positions are decided.
 - [ ] **5.1 Agent screenshots** from the dataset's per-day image archives (available up to 2026-08-21). Parked for now.
+
+## 6. More from the dataset
+
+Data we download but don't show yet. Checked against the 2026-09-20 export and the dataset's SCHEMA.md.
+
+- [ ] **6.1 Tokens per agent per day.**
+      - The agent totals (`agents.input_tokens_used`, `output_tokens_used`) are lifetime counters as of the export,
+        and SCHEMA.md says they aren't reliably maintained. They can't be split by day.
+      - Per-day numbers do exist: most `events` carry `inputTokens` and `outputTokens`. Sum them per agent per PT day
+        (one more counter in the events pass `extract.py` already makes).
+      - The sums are close to the lifetime counters for recent agents (GPT-5.5: 99%) and far off for some early
+        ones (Grok 4: 10%). So label them "tokens on village actions", not total spend.
+      - Claude Code agents: check whether `claude_code_messages` carries usage numbers.
+      - Show: tokens today and so far on the Today tab, and a Tokens measure in the Hall of Records.
+- [x] **Not worth showing: money, emoji, status message.** SCHEMA.md calls `money` an unused in-village balance and
+      `emoji` unused (all 46 agents are 🤖); `status_message` is null for every agent.
+- [ ] **6.2 Decide: human messages in the Village chat.** Reverses 2.5.
+      - 10,000 messages: heavy at launch (about 6,650 in Apr–Jun 2025), then roughly 100–750 a month.
+      - Names come from the `USER_TALK` events (the users table isn't exported). **Decide:** show viewers' chosen
+        names, or a plain "viewer" label? The site is public.
+      - Show: in the feed with their own style (no clan colour, 👤). No 3D character; mentions of an agent could
+        still draw an arc from the Town Hall.
+- [ ] **6.3 Moments with humans, as lines in the Village chat.** From `events`:
+
+      | Event | Count | Since | Line |
+      |---|---|---|---|
+      | `REQUEST_HUMAN_HELPER` (+ cancel, stop) | 265 | Aug 2025 | 🙋 asked a human helper, with its task |
+      | `REQUEST_GOOGLE_SIGN_IN` | 619 | Oct 2025 | 🔑 asked for a Google sign-in |
+      | `OUTREACH_APPROVAL_REQUEST` / `_RESPONSE` | 352 / 343 | Apr 2026 (most in Jul) | 📣 asked to contact *medium* → ✅ / ❌ with the reason |
+
+      - Also flash the icon above the agent's head at that moment (ties into 3.3).
+      - Counts on the Today tab: help requests, sign-ins, outreach approved/declined.
+      - Check how much reasoning sits in the raw `output` field; keep only the request text, not the model output.
+- [ ] **6.4 Goal stories in the Day recap.** 83 `goal` summaries plus 3 `goal-checkpoint` summaries: one long
+      narrative per village goal (4–24k characters), written by Claude Sonnet.
+      - Map each to its village goal. 33 targets are day ranges (`216-217`), which map through the day numbers. The rest
+        are slugs with stopwords dropped (`choose-charity-raise-much-money-you-can`); match them on words.
+        70 distinct targets, so some goals have several versions: take the latest.
+      - Show under the daily recap as "The story of this goal", locked when written after the selected day (like
+        Career). Checkpoints carry a `summary_date`, so they unlock on that date.
+      - Store once in `index.json` or a `data/goals/` file, not in every day file.
+- [ ] **6.5 Day stories on the player card.** 3 `watch_narrative` rows (day 329, GPT-5.1 and Claude Opus 4.6) and
+      2 `agent_daily` rows (Claude Sonnet 4.6, days 325 and 328).
+      - Put them in that agent-day file and show them on the Today tab when present.
+      - The watch narratives are 56–107k characters: show the opening paragraphs, with "Read more".
+      - Too few to matter on their own; they are the format 4.7 would generate for every agent-day.
+- [ ] **6.6 Command replies in the Doing column.** `computer_use_turns.output` and the Claude Code `tool_result`
+      messages (matched to their command by id).
+      - Cap at 400 characters, folded under each command, stored in the agent-day files: about +35 MB in all, about
+        8 KB more per opened card. Day files stay the same.
+      - No extra redaction needed: the dataset already replaces credentials with `[REDACTED]` (checked on a sample).
+      - Browser actions have no text reply (their result was a screenshot; see 5.1).
 
 ## Notes: why static files and not an API
 

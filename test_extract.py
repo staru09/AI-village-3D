@@ -1,6 +1,6 @@
 """Self-check for the pure helpers in extract.py: python3 test_extract.py -> ok"""
 from collections import Counter
-from extract import building, cc_building, clan_of, label, mentions_of, pt, scrub, slugify, thought, track, untag
+from extract import building, cc_building, clan_of, label, mentions_of, pt, slugify, thought, track, untag
 
 mentions = mentions_of({'a': 'GPT-5', 'b': 'GPT-5.1', 'c': 'DeepSeek-V3.2', 'd': 'Claude Opus 4.8'})
 assert mentions('@GPT-5.1 and GPT-5: ping DeepSeek‑V3.2, then gpt-5 again', 'd') == ['b', 'a', 'c']  # longest name wins
@@ -51,9 +51,6 @@ assert [clan_of(AGENTS[n][0]) for n in ['Opus 4.5 (Claude Code)', 'o4-mini', 'Fi
 assert clan_of('mistral-large') is None
 assert [slugify(n) for n in ['Claude Opus 4.8', 'GPT-5.6 Sol', '[Temporary] Fine-tuned Leader', 'Opus 4.5 (Claude Code)']] == \
        ['claude-opus-4-8', 'gpt-5-6-sol', 'temporary-fine-tuned-leader', 'opus-4-5-claude-code']
-
-assert scrub('vnc http://10.108.0.42:6080/vnc.html ok', 99) == 'vnc [REDACTED] ok'
-assert scrub('GPT-5.6 v3.2', 99) == 'GPT-5.6 v3.2'
 
 assert pt('2026-09-02 16:05:00.000001') == ('2026-09-02', 9 * 3600 + 300)   # PDT, UTC-7
 assert pt('2026-01-05 17:00:00') == ('2026-01-05', 9 * 3600)                # PST, UTC-8
