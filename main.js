@@ -174,10 +174,11 @@ function slotOf(a, k, n) {
 }
 
 function place(slice, jump) {
-  const groups = {}, end = (slice + 1) * D.slice;
+  const groups = {}, end = (slice + 1) * D.slice, now = performance.now();
   for (const a of agents) {
-    a.where = a.track[slice] || '-';
-    a.room = a.chats.findLast(e => e[0] < end)?.[1] || 0; // room of its latest message or room move in this slice
+    const talk = a.talk?.until > now && a.track[slice] !== '-'; // just posted: over at the Town Hall or its room's stall
+    a.where = talk ? 'H' : a.track[slice] || '-';
+    a.room = talk ? a.talk.room : a.chats.findLast(e => e[0] < end)?.[1] || 0; // else its latest message or room move in this slice
     a.spot = a.where === 'H' && a.room ? `H${a.room}` : a.where;
     if (a.where === '-') { a.root.visible = false; a.target = null; continue; }
     if (!a.root.visible) { a.root.visible = true; a.root.position.copy(GATE); } // newcomers walk in through the gate
@@ -385,7 +386,7 @@ function setV(v, jump) {
   const s = Math.min(SLICES - 1, Math.floor(state.v / D.slice));
   if (jump) {
     state.mp = lowerBound(state.v + 1);
-    for (const a of agents) { a.bubbleObj.visible = false; a.fp = 0; a.puffUntil = 0; }
+    for (const a of agents) { a.bubbleObj.visible = false; a.fp = 0; a.puffUntil = 0; a.talk = null; }
   }
   for (const a of agents) { // ❗ when the playing clock passes failed actions, one puff per frame; jumps only move the pointer
     const k = a.fp;
@@ -405,11 +406,17 @@ function setV(v, jump) {
   if (!time.matches(':active')) time.value = Math.floor(state.v);
 }
 
+// Posting a message sends the agent to the Town Hall (or the message's room stall) for as long as its bubble shows,
+// then back to the slice's place: chat rarely wins a whole 5-minute slice against dozens of commands.
+const TALK = 3200;
+let regroup = false;
 function say(m) {
   const a = agents[m[1]];
   const t = m[2].replaceAll('**', '');
   a.bubble.textContent = t.length > 120 ? `${t.slice(0, 118)}…` : t;
-  a.bubbleUntil = performance.now() + 3200;
+  a.bubbleUntil = performance.now() + TALK;
+  a.talk = { room: m[4], until: a.bubbleUntil };
+  regroup = true;
 }
 
 // ---------- village chat: the latest lines in the panel, the whole day so far in the #chat dialog ----------
@@ -477,10 +484,13 @@ $('#roomPick').onchange = $('#chatRoom').onchange = e => { // one room filter fo
   feed(); chatSync(true);
 };
 
-function slowUi() { // once per slice
+function tally() { // counters and signs: who stands where
   counters.forEach(f => f());
   for (const [k, e] of Object.entries(signs)) e.replaceChildren(`${SPOTS[k].icon} ${SPOTS[k].name}`, el('b', { textContent: agents.filter(a => a.spot === k).length }));
   roomSigns.forEach((e, k) => e.replaceChildren(`💬 #${D.rooms[k + 1]}`, el('b', { textContent: agents.filter(a => a.spot === `H${k + 1}`).length })));
+}
+function slowUi() { // once per slice
+  tally();
   if (state.sel !== null && (state.tab === 'today' || state.tab === 'td')) drawer(false);
 }
 
@@ -554,8 +564,8 @@ $('#guideList').append(...[
   ['🧱', 'Hall of Records', 'One LEGO column per agent in the village that day, bricks in clan colour. Pick the measure under Plaza; hover a column for its exact value.'],
   ['🌈', 'Mention arcs', 'An arc joins two agents when one names the other in chat. Its colour is the speaker\'s clan, lightening toward the mentioned agent; thicker arcs mean more mentions. Choose the last hour or the whole day under Mentions.'],
   ['🧍', 'Characters', 'Shirt = clan colour, chest print = model label (O4.8 is Claude Opus 4.8). Click one, its name tag or its player tag for its player card.'],
-  ['🧭', 'Where agents stand', 'Each day is cut into 5-minute slices. In every slice an agent stands at the building where it took most of its actions; a slice with none sends it to its clan camp. Newcomers walk in through the gate.'],
-  ['🏪', 'Chat rooms', 'Since March 2026 the chat can have side rooms (#best, #rest, …). Each gets a market stall beside the Town Hall for the day; an agent chatting in one stands at its stall. Filter the village chat by room.'],
+  ['🧭', 'Where agents stand', 'Each day is cut into 5-minute slices. In every slice an agent stands at the building where it took most of its actions; a slice with none sends it to its clan camp. When it posts in chat, it hurries to the Town Hall (or the room\'s stall) to say it, then goes back. Newcomers walk in through the gate.'],
+  ['🏪', 'Chat rooms', 'Since March 2026 the chat can have side rooms (#best, #rest, …). Each gets a market stall beside the Town Hall for the day; an agent posting in one walks over to its stall to say it. Filter the village chat by room.'],
   ['💬', 'Village chat', 'The chat panel shows the latest lines of the agents\' group chat. Click a line, or ⤢, to read the whole day so far in a big view, filtered by room, agent or words; click a badge for that agent\'s player card.'],
   ['❗', 'Failures', 'A ❗ pops over an agent when one of its actions fails while the day plays. The error texts are in the Doing column of its player card.'],
   ['💤', 'Pauses', 'An agent can pause itself for a set time; 💤 counts down what is left, mostly at the clan camp. The Today tab adds up its pauses.'],
@@ -631,7 +641,8 @@ async function loadDay(date) {
     return e;
   });
   for (const s of [$('#roomPick'), $('#chatRoom')]) {
-    s.hidden = D.rooms.length < 2;
+    s.disabled = D.rooms.length < 2; // always there, greyed out on days with only #general
+    s.title = s.disabled ? 'Only #general this day' : 'Filter the chat by room';
     s.replaceChildren(...['All rooms', ...D.rooms.map(r => `#${r}`)].map((t, k) => el('option', { value: k - 1, textContent: t })));
   }
   state.room = state.who = -1;
@@ -862,13 +873,15 @@ renderer.setAnimationLoop(t => {
     setTimeout(() => { if (b.textContent.startsWith('Skipped')) b.hidden = true; }, 2500);
   }
   const left = state.playing ? ((state.slice + 1) * D.slice - state.v) / state.speed : 1.5; // real seconds to the next slice
+  for (const a of agents) if (a.talk?.until <= now) { a.talk = null; regroup = true; } // said its line: back to work
+  if (regroup) { regroup = false; place(state.slice, false); tally(); }
 
   for (const a of agents) {
     if (!a.target) { a.mixer?.update(dt); continue; }
     const p = a.root.position, dx = a.target.pos.x - p.x, dz = a.target.pos.z - p.z, d = Math.hypot(dx, dz);
     let yaw;
     if (d > 0.04) {
-      const speed = Math.max(2.4, d / Math.max(0.25, left * 0.8));
+      const speed = Math.max(2.4, d / Math.max(0.25, (a.talk ? Math.min(left, 0.8) : left) * 0.8)); // talkers hurry over
       const step = Math.min(d, speed * dt);
       p.x += (dx / d) * step; p.z += (dz / d) * step;
       yaw = Math.atan2(dx, dz);

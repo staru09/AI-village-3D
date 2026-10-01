@@ -78,7 +78,8 @@ Your four items, split into small issues. **Decide** marks a choice we still nee
 - [ ] **3.2 Action stream data.** Store each agent's actions with real timestamps (about 150 KB per busy day) instead
       of one winning building per slice.
 - [ ] **3.3 Act out each action at its real time.**
-      - walk to the Town Hall to say each message
+      - [x] walk to the Town Hall (or the message's room stall) to say each message: done. The agent hurries over
+        for as long as its bubble shows (3.2 s), then returns to the slice's place.
       - work at the Workshop for each run of bash
       - climb the Watchtower for GUI runs
       - fetch a book at the Library on a memory update
