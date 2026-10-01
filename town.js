@@ -20,7 +20,11 @@ export const SPOTS = {
     about: 'Paused or idle: no actions in that slice, so the agent sits at its clan\'s fire. One tent per provider; camps of clans absent that day stand empty.' },
 };
 export const PLAZA = [-13, -11];
+// Side chat rooms (#best, #rest, …), in room order: a market stall at `at`, its crowd in the yard. Props are per day (main.js).
+export const ROOMS = [{ at: [6.5, -15], yard: [6, -11.5], sign: 3.6 }, { at: [12, -17.5], yard: [10.5, -14.5], sign: 5.8 },
+  { at: [18, -19.5], yard: [16.5, -16.5], sign: 8 }]; // signs stepped so they don't overlap from the default camera
 export const WALL = 25; // half-size of the castle wall square
+export const GALLERY = { at: [20, 11.5], sign: 9 }; // not a SPOT: nobody works there, it shows what the village made
 
 export const camps = n => Array.from({ length: n }, (_, i) => { // either side of the gate road
   const k = i - n / 2, x = k < 0 ? -4.6 + (k + 1) * 5 : 4.6 + k * 5;
@@ -40,7 +44,9 @@ export function buildTown(scene, lib, clans) {
     [SPOTS.W.at[0], SPOTS.W.at[1], 6], [SPOTS.W.yard[0], SPOTS.W.yard[1], 5], [SPOTS.T.at[0], SPOTS.T.at[1], 4.5],
     [SPOTS.T.yard[0], SPOTS.T.yard[1], 4.5], [SPOTS.H.at[0], SPOTS.H.at[1], 7], [SPOTS.L.at[0], SPOTS.L.at[1], 4.5],
     [SPOTS.L.yard[0], SPOTS.L.yard[1], 4], [PLAZA[0], PLAZA[1], 10], [0, 8, 4.5],
+    [...GALLERY.at, 5],
     ...campAt.map(([x, z]) => [x, z, 3.6]),
+    ...ROOMS.flatMap(r => [[...r.at, 3.2], [...r.yard, 3.2]]),
   ];
   const free = (x, z) => keepOut.every(([kx, kz, r]) => Math.hypot(x - kx, z - kz) > r) && !(Math.abs(x) < 3 && z > 0);
 
@@ -82,6 +88,12 @@ export function buildTown(scene, lib, clans) {
   put('castle/flag', ...SPOTS.T.at, { s: 2.4, y: 16.6 });
   hexTower(...SPOTS.L.at, 2.8);
   for (const z of [1.5, 8.5]) put('town/hedge-large', 14, z, { s: 2, ry: SIDE.n });
+
+  // Gallery: a long hall hung with banners, where the links the agents shared are on show (gallery.js).
+  const gal = house(...GALLERY.at, 3, 2, 2, { s: 1.8, roof: 'town/roof-high-point', roofY: 1, door: 'town/wall-door' });
+  for (const x of [-1, 1]) put('town/banner-red', x, 0.62, { s: 1, ry: SIDE.s, parent: gal, y: 0.9 });
+  put('castle/flag', 0, 0, { s: 0.9, y: 3.3, parent: gal });
+  for (const x of [-2.2, 2.2]) put('town/lantern', GALLERY.at[0] + x, GALLERY.at[1] + 2.6, { s: 1.6 });
 
   // Crossroads fountain, lanterns, trees, rocks, flowers.
   put('town/fountain-round', 0, 8, { s: 2.4 });

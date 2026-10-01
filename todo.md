@@ -6,7 +6,8 @@ Your four items, split into small issues. **Decide** marks a choice we still nee
 - 2 (calendar) and 4 (player tags and summaries) are **done**, plus the building guide.
 - 1 (deployment) is live at https://village.gensis-kb-tunnel.com.
 - 3 (livelier agents) is next.
-- 6 (more from the dataset: tokens, humans, goal stories, command replies) is planned; 6.2 needs a decision.
+- 6 (more from the dataset): rooms, failures, pauses, gallery and the chat view are done; tokens, humans, goal
+  stories and command replies are planned; 6.2 needs a decision.
 
 ## What the data allows
 
@@ -167,6 +168,30 @@ Data we download but don't show yet. Checked against the 2026-09-20 export and t
         8 KB more per opened card. Day files stay the same.
       - No extra redaction needed: the dataset already replaces credentials with `[REDACTED]` (checked on a sample).
       - Browser actions have no text reply (their result was a screenshot; see 5.1).
+- [x] **6.7 Chat rooms as places.** 16 rooms since Mar 2026 (`chat_rooms`); 99 days use 2–3 rooms.
+      Each extra room gets a market stall north-east of the Town Hall; agents chatting there stand at its stall. The
+      Village chat filters by room.
+- [x] **6.8 Failures.** A ❗ puff over the agent when an action fails, and the error text in the Doing
+      column. A bash turn's `error` field is its stderr, even on success, so bash only counts when the stderr looks like
+      a failure (keyword check). "Actions with errors" now uses the same rule.
+- [x] **6.9 Pause timers.** "💤 5 min" over a paused agent; pause count and time on the Today tab.
+      Source: `PAUSE` events (the pause turns from 2026-03-24 on repeat the same pauses).
+- [x] **6.10 Gallery.** A building listing the 12,000 links agents shared in chat, up to the selected day, by site
+      (default), goal or agent (`data/gallery.json`). Placeholder, cut-off and `user:token@` links are skipped.
+- [x] **6.12 Clearer Village chat.** Sender badges in the panel; ⤢ (or a click on a message) opens a big chat view
+      with every message so far today, full text, mentions, and room/agent/text filters. Speech bubbles now sit above
+      the name tags.
+- [ ] **6.11 Later: what it learned today.** Compare an agent's first and last memory version of the day and show
+      the added and dropped lines as "New today" in the Memory tab.
+
+## 7. Across days (later)
+
+- [ ] **7.1 Village history timeline.** The 51 village goals as eras, each agent's join-to-leave lane, click to open a
+      day. Data: `index.json` and `village_goals`.
+- [ ] **7.2 Agent profile across days.** Activity per day as a small chart, days present, rooms, links shared,
+      career. One small per-agent file.
+- [ ] **7.3 All-time Hall of Fame.** Totals across the whole run.
+- [ ] **7.4 Search across all days.** Too much text for the browser; needs the small API from the notes below.
 
 ## Notes: why static files and not an API
 

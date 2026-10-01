@@ -1,9 +1,10 @@
-import argparse, gzip, json, os, re, sys
+import argparse, gzip, ipaddress, json, os, re, sys
 from bisect import bisect_left
 from collections import Counter, defaultdict
 from datetime import datetime, timezone
 from pathlib import Path
 from statistics import median
+from urllib.parse import urlsplit
 from zoneinfo import ZoneInfo
 
 HERE = Path(__file__).resolve().parent
@@ -25,6 +26,11 @@ PREFIX = re.compile(r'^(Claude|GPT-|Gemini|DeepSeek-|Kimi|Grok|Muse Spark)\s*')
 TS = re.compile(rb'"created_at":\s*"([^"]+)"')
 TAGS = re.compile(r'(?:\s*</?(?:narrative_summary|list_of_chronological_events|top_moments?|takeaways?|blurb|quote)>)+\s*')
 HYPHENS = str.maketrans({'‐': '-', '‑': '-', '–': '-'})
+URL = re.compile(r'https?://[^\s<>"\'`]+')
+# a bash turn's 'error' is its stderr, also on success (git push, curl progress): only failure-looking stderr counts.
+# ponytail: keyword guess, the turns keep no exit code; GUI action errors always count.
+FAIL = re.compile(r"error|fatal|fail|traceback|not found|denied|timed out|returncode|no such|cannot|can't|invalid|refused|"
+                  r"unable|rejected|usage:|not started", re.I)
 
 
 def snapshot():
@@ -145,6 +151,26 @@ def recent(snap, name, since):
                 yield json.loads(line)
 
 
+def link(u):
+    """URL as matched in chat -> the link (no trailing punctuation, markdown or unbalanced ) ], no trailing /);
+    None for local/private addresses, redacted links and templates."""
+    u = u.split('](')[0]  # [url](url)
+    while True:
+        u = u.rstrip('.,;:!?*_/')
+        if u.endswith(')') and u.count('(') < u.count(')') or u.endswith(']') and u.count('[') < u.count(']'):
+            u = u[:-1]
+        else:
+            break
+    try:
+        p = urlsplit(u)
+        host = p.hostname or ''
+        private = '.' not in host or ipaddress.ip_address(host).is_private  # localhost, 127.x, 0.0.0.0, 10.x, 192.168.x
+    except ValueError:  # a host name, not an IP
+        private = False
+    junk = any(c in u for c in '[{}$…”') or p.username or host.endswith('example.com')  # [REDACTED], {gameId}, ${TOKEN},
+    return None if private or junk else u                                               # cut-off text, user:token@ remotes
+
+
 def save(path, obj):
     path.write_text(json.dumps(obj, separators=(',', ':'), ensure_ascii=False), encoding='utf-8')
     return path.stat().st_size
@@ -172,19 +198,27 @@ def main():
     bash = defaultdict(dict)   # -> slice -> (second, first bash line), earliest wins
     think = defaultdict(dict)  # -> reasoning excerpt -> second
     intents = defaultdict(list)
-    chat = defaultdict(list)   # date -> (second, agent, text, mentioned)
+    chat = defaultdict(list)   # date -> (second, agent, text, mentioned, room)
+    enter = defaultdict(list)  # -> (second, room) moves between chat rooms
+    fails = defaultdict(list)  # -> (second, error text) failed actions
+    pauses = defaultdict(list)  # -> (second, seconds paused)
+    links = {}                 # url -> (created_at, date, agent) of its first share
 
     def first_bash(k, s, cmd):
         line = (s, cut(cmd.strip().split('\n')[0], 160))
         bash[k][s // SLICE] = min(bash[k].get(s // SLICE, line), line)
 
     mentions = mentions_of(names)
+    room = {r['id']: r['name'] for r in rows(snap, 'chat_rooms.jsonl.gz')}
     for m in rows(snap, 'chat_messages.jsonl.gz'):  # humans (USER_TALK) stay out
         if m['speaker_type'] != 'agent' or m['created_at'] < since:
             continue
         (d, s), src = pt(m['created_at']), m['agent_speaker_id']
         to = mentions(m['content'] or '', src)
-        chat[d].append((s, src, cut(m['content'], 1500), to))
+        chat[d].append((s, src, cut(m['content'], 1500), to, room[m['room_id']]))
+        share = (m['created_at'], d, src)
+        for u in filter(None, map(link, URL.findall(m['content'] or ''))):
+            links[u] = min(links.get(u, share), share)
         said[d, src].add(s // SLICE)
         stats[d, src]['messages'] += 1
         stats[d, src]['mentions_out'] += len(to)
@@ -204,6 +238,12 @@ def main():
             d, s = pt(e['created_at'])
             counts[d, x['agentId']][s // SLICE]['L'] += 1
             stats[d, x['agentId']]['memory' if kind == 'CONSOLIDATE' else 'searches'] += 1
+        elif kind == 'ENTER_ROOM':
+            d, s = pt(e['created_at'])
+            enter[d, x['agentId']].append((s, room[x['roomId']]))
+        elif kind == 'PAUSE':  # since PERMA, pause turns repeat these same pauses: events alone cover both eras
+            d, s = pt(e['created_at'])
+            pauses[d, x['agentId']].append((s, int(x['seconds'])))
 
     for t in recent(snap, 'computer_use_turns.jsonl.gz', since):
         agent, a = sess_agent.get(t['session_id']), t['agent_action']
@@ -219,19 +259,29 @@ def main():
         st = stats[k]
         st['turns'] += 1
         st[b] += 1
-        st['errors'] += bool(t['error'])
+        if t['error'] and (b != 'W' or FAIL.search(t['error'])):
+            st['errors'] += 1
+            fails[k].append((s, cut(t['error'].strip(), 300)))
         st['searches'] += a.get('action') == 'search_history'
         if b == 'W' and a['command']:
             first_bash(k, s, a['command'])
 
     for r in recent(snap, 'claude_code_messages.jsonl.gz', since):  # the Claude Code agent's own tool calls
-        if r['message_type'] != 'assistant':
+        if r['message_type'] not in ('assistant', 'user'):
             continue
         d, s = pt(r['created_at'])
         k = (d, r['agent_id'])
+        items = (r['content'].get('message') or {}).get('content') or []
+        if r['message_type'] == 'user':  # tool results: failed calls come back with is_error
+            for u in items if isinstance(items, list) else []:
+                if u.get('is_error'):
+                    stats[k]['errors'] += 1
+                    c = u.get('content') or ''
+                    fails[k].append((s, cut(c if isinstance(c, str) else ' '.join(i.get('text', '') for i in c), 300)))
+            continue
         if th := thought(r['content']):
             think[k].setdefault(th, s)
-        for u in (r['content'].get('message') or {}).get('content') or []:
+        for u in items:
             if u.get('type') == 'tool_use' and (b := cc_building(u['name'])):
                 counts[k][s // SLICE][b] += 1
                 stats[k]['turns'] += 1
@@ -288,11 +338,14 @@ def main():
         if not vg or (vg[-1]['end_time'] or '~') <= at_open:
             gaps.append(d)
         (dd := out / 'days' / d).mkdir(exist_ok=True)
+        used = {r for s, *_, r in chat[d] if base <= s < base + span} | \
+               {r for a in order for s, r in enter[d, a] if base <= s < base + span}
+        rooms = ['general', *sorted(used - {'general'})]
         agents = []
         for a in order:
             k, name = (d, a), names[a]
             partners = Counter()
-            for _, src, _, to in chat[d]:
+            for _, src, _, to, _ in chat[d]:
                 for x in to:
                     if src == a and x in idx: partners[(x, 0)] += 1
                     if x == a and src in idx: partners[(src, 1)] += 1
@@ -303,6 +356,7 @@ def main():
             ins = sorted((s - base, short, goal) for s, short, goal in intents[k])
             dropped['intents'] += sum(not 0 <= v < span for v, *_ in ins)
             sofar[a].update(days=1, turns=stats[k]['turns'], messages=stats[k]['messages'])
+            errors = sorted([s - base, t] for s, t in fails[k] if base <= s < base + span)
             agents.append({
                 'slug': slug[a], 'name': name, 'model': everyone[a]['model_string'], 'clan': clan[a], 'label': label(name),
                 'joined': active[a][0],
@@ -313,6 +367,9 @@ def main():
                 'intents': [i for i in ins if 0 <= i[0] < span],
                 'bash': {s - o: line for s, (_, line) in sorted(bash[k].items())},
                 'sofar': dict(sofar[a]),
+                'enter': sorted([s - base, rooms.index(r)] for s, r in enter[k] if base <= s < base + span),
+                'fails': [v for v, _ in errors],
+                'pauses': sorted([s - base, n] for s, n in pauses[k] if base <= s < base + span),
             })
             memory[a] = memo.get(k) or memory.get(a)
             th = sorted((s, t) for t, s in think[k].items() if base <= s < base + span)
@@ -321,16 +378,17 @@ def main():
             if memory[a]:
                 md, ms = pt(memory[a][0])
                 mem = {'written': f'{md} {ms // 3600:02}:{ms % 3600 // 60:02}', 'text': memory[a][1]}
-            extra.append(save(dd / f'{slug[a]}.json', {'memory': mem, 'thinking': [[s - base, t] for s, t in th]}))
-        messages = sorted([s - base, idx[src], text, [idx[x] for x in to if x in idx]]
-                          for s, src, text, to in chat[d] if base <= s < base + span)
+            extra.append(save(dd / f'{slug[a]}.json', {'memory': mem, 'thinking': [[s - base, t] for s, t in th],
+                                                      'errors': errors}))
+        messages = sorted([s - base, idx[src], text, [idx[x] for x in to if x in idx], rooms.index(r)]
+                          for s, src, text, to, r in chat[d] if base <= s < base + span)
         dropped['messages'] += len(chat[d]) - len(messages)
         goal = cut(vg[-1]['goal'], 1000) if vg else ''
         sizes.append(save(out / 'days' / f'{d}.json', {
             'date': d, 'day': daynum.get(d), 'open': open_h, 'hours': hours, 'slice': SLICE,
             'days': [{'day': daynum.get(d), 'date': d}], 'goal': goal,
             'recap': cut(untag(recaps[d]), LONG) if d in recaps else None,
-            'agents': agents, 'messages': messages,
+            'rooms': rooms, 'agents': agents, 'messages': messages,
         }))
         index_days.append({'date': d, 'day': daynum.get(d), 'goal': goal, 'agents': [slug[a] for a in order],
                            'messages': len(messages), 'turns': sum(stats[d, a]['turns'] for a in order)})
@@ -344,10 +402,12 @@ def main():
                    for a, ds in sorted(active.items(), key=lambda x: x[1][0])},
         'days': index_days,
     })
+    gallery = [[u, d, slug[a]] for u, (_, d, a) in sorted(links.items(), key=lambda x: x[1]) if d >= since]
+    save(out / 'gallery.json', gallery)
     kb = lambda xs: f'{min(xs) / 1e3:.0f}/{median(xs) / 1e3:.0f}/{max(xs) / 1e3:.0f} KB (min/median/max), {sum(xs) / 1e6:.0f} MB'
     print(f'{out.name}/: {len(days)} days {days[0]}..{days[-1]}, {len(active)} agents; day files {kb(sizes)}; '
-          f'agent-day files ({len(extra)}) {kb(extra)}; dropped outside the day window: {dict(dropped)}; '
-          f'days outside any village goal: {gaps}')
+          f'agent-day files ({len(extra)}) {kb(extra)}; {len(gallery)} gallery links; '
+          f'dropped outside the day window: {dict(dropped)}; days outside any village goal: {gaps}')
 
 
 if __name__ == '__main__':

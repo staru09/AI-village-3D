@@ -9,7 +9,8 @@ import { CSS2DRenderer, CSS2DObject } from 'three/addons/renderers/CSS2DRenderer
 import { LineSegments2 } from 'three/addons/lines/LineSegments2.js';
 import { LineSegmentsGeometry } from 'three/addons/lines/LineSegmentsGeometry.js';
 import { LineMaterial } from 'three/addons/lines/LineMaterial.js';
-import { buildTown, camps, SPOTS, PLAZA, WALL } from './town.js';
+import { buildTown, camps, SPOTS, PLAZA, WALL, ROOMS } from './town.js';
+import { gallery } from './gallery.js';
 
 // Validated categorical palette (dataviz reference, slot order); colour follows the clan, never its rank.
 const CLAN_COLOR = { Google: '#2a78d6', Anthropic: '#eb6834', OpenAI: '#1baf7a', Zhipu: '#eda100',
@@ -24,6 +25,7 @@ const el = (tag, props = {}, ...kids) => { const e = Object.assign(document.crea
 const pct = (a, b) => (b ? Math.round(100 * (a || 0) / b) : 0);
 const count = (s, ch) => s.split(ch).length - 1;
 const fmt = n => n.toLocaleString('en-US');
+const dur = s => (s < 60 ? `${Math.ceil(s)} s` : s < 3600 ? `${Math.round(s / 60)} min` : `${+(s / 3600).toFixed(1)} h`);
 const pad = n => String(n).padStart(2, '0');
 const YMD = { day: 'numeric', month: 'short', year: 'numeric' };
 const longDate = (d, o = { weekday: 'short', day: 'numeric', month: 'short' }) => new Date(`${d.slice(0, 10)}T12:00:00Z`).toLocaleDateString('en-US', { ...o, timeZone: 'UTC' });
@@ -58,7 +60,7 @@ const DAYS = IX.days, DAY = Object.fromEntries(DAYS.map((d, k) => [d.date, { ...
 const SLUGS = Object.keys(IX.agents);
 const clans = IX.clans.map(name => ({ name, color: CLAN_COLOR[name] || '#8a7a66' }));
 // The loaded day; everything below that reads these is rebuilt by loadDay().
-let D, M = [], agents = [], END = 1, SLICES = 1, dayPairs = new Map(), dayGroup = null, gaps = [];
+let D, M = [], agents = [], END = 1, SLICES = 1, dayPairs = new Map(), dayGroup = null, gaps = [], roomSigns = [];
 
 // ---------- scene ----------
 const canvas = $('#stage');
@@ -139,12 +141,17 @@ function spawn(a) {
   a.tag = tag;
   a.tagObj = new CSS2DObject(tag);
   a.tagObj.position.y = 1.2;
-  a.bubble = el('div', { className: 'bubble' });
+  a.bubble = el('div'); // inside the label, so it can pop without fighting CSS2D's transform
   a.bubble.onclick = () => select(a.i);
-  a.bubbleObj = new CSS2DObject(a.bubble);
+  a.bubbleObj = new CSS2DObject(el('div', { className: 'bubble' }, a.bubble));
   a.bubbleObj.position.y = 1.2;
   a.bubbleObj.visible = false;
-  a.root.add(a.tagObj, a.bubbleObj);
+  a.puffObj = new CSS2DObject(el('div', { className: 'puff' }, el('b', { textContent: '❗' }))); // a failed action
+  a.zzz = el('div', { className: 'zzz' }); // pause timer
+  a.zzzObj = new CSS2DObject(a.zzz);
+  a.puffObj.position.y = a.zzzObj.position.y = 1.2;
+  a.puffObj.visible = a.zzzObj.visible = false;
+  a.root.add(a.tagObj, a.bubbleObj, a.puffObj, a.zzzObj);
   a.yaw = 0;
 }
 
@@ -156,23 +163,25 @@ function play(a, name) {
   a.anim = name;
 }
 
-// Agents at the same place stand in a sunflower spiral in the building's yard, or sit in a ring at their clan's fire.
+// Agents at the same place stand in a sunflower spiral in the building's yard (or their chat room's), or sit in a ring at their clan's fire.
 function slotOf(a, k, n) {
   if (a.where === 'C') {
     const f = campFire[a.clan], th = -2.2 + (4.4 * (k + 0.5)) / n, r = 1.35 + n * 0.06;
     return { pos: new THREE.Vector3(f.x + Math.sin(th) * r, 0, f.z + Math.cos(th) * r), look: f };
   }
-  const s = SPOTS[a.where], r = 0.95 * Math.sqrt(k + 0.5), th = k * 2.39996;
+  const s = (a.where === 'H' && ROOMS[a.room - 1]) || SPOTS[a.where], r = 0.95 * Math.sqrt(k + 0.5), th = k * 2.39996;
   return { pos: new THREE.Vector3(s.yard[0] + Math.cos(th) * r, 0, s.yard[1] + Math.sin(th) * r), look: new THREE.Vector3(s.at[0], 0, s.at[1]) };
 }
 
 function place(slice, jump) {
-  const groups = {};
+  const groups = {}, end = (slice + 1) * D.slice;
   for (const a of agents) {
     a.where = a.track[slice] || '-';
+    a.room = a.chats.findLast(e => e[0] < end)?.[1] || 0; // room of its latest message or room move in this slice
+    a.spot = a.where === 'H' && a.room ? `H${a.room}` : a.where;
     if (a.where === '-') { a.root.visible = false; a.target = null; continue; }
     if (!a.root.visible) { a.root.visible = true; a.root.position.copy(GATE); } // newcomers walk in through the gate
-    (groups[a.where === 'C' ? `C${a.clan}` : a.where] ||= []).push(a);
+    (groups[a.where === 'C' ? `C${a.clan}` : a.spot] ||= []).push(a);
   }
   for (const list of Object.values(groups)) list.forEach((a, k) => { a.target = slotOf(a, k, list.length); });
   if (jump) for (const a of agents) if (a.target) a.root.position.copy(a.target.pos);
@@ -376,7 +385,12 @@ function setV(v, jump) {
   const s = Math.min(SLICES - 1, Math.floor(state.v / D.slice));
   if (jump) {
     state.mp = lowerBound(state.v + 1);
-    for (const a of agents) a.bubbleObj.visible = false;
+    for (const a of agents) { a.bubbleObj.visible = false; a.fp = 0; a.puffUntil = 0; }
+  }
+  for (const a of agents) { // ❗ when the playing clock passes failed actions, one puff per frame; jumps only move the pointer
+    const k = a.fp;
+    while (a.fp < a.fails.length && a.fails[a.fp] <= state.v) a.fp++;
+    if (a.fp > k && !jump) a.puffUntil = performance.now() + 1200;
   }
   if (s !== state.slice || jump) {
     state.slice = s;
@@ -386,7 +400,7 @@ function setV(v, jump) {
   }
   let fresh = false;
   while (state.mp < M.length && M[state.mp][0] <= state.v) { say(M[state.mp]); state.mp++; fresh = true; }
-  if (fresh || jump) feed();
+  if (fresh || jump) { feed(); chatSync(); }
   $('#clock').textContent = `${longDate(state.date)} · ${hm(state.v)} PT`;
   if (!time.matches(':active')) time.value = Math.floor(state.v);
 }
@@ -398,20 +412,75 @@ function say(m) {
   a.bubbleUntil = performance.now() + 3200;
 }
 
-function feed() {
-  const items = M.slice(Math.max(0, state.mp - 6), state.mp).map(m => {
-    const a = agents[m[1]];
-    const li = el('li', {}, el('time', { textContent: hm(m[0]) }), el('b', { textContent: `${a.name}: ` }), ...bold(m[2].slice(0, 260)));
-    li.style.borderColor = a.color;
-    li.onclick = () => select(a.i);
-    return li;
-  });
-  $('#feedList').replaceChildren(...(items.length ? items : [el('li', { className: 'empty', textContent: 'No chat yet today.' })]));
+// ---------- village chat: the latest lines in the panel, the whole day so far in the #chat dialog ----------
+const chat = $('#chat'), chatList = $('#chatList'), chatQ = $('#chatQ'), chatWho = $('#chatWho');
+let chatM, chatN = 0; // the day the dialog shows and how many of its messages it has gone through
+const inRoom = m => state.room < 0 || m[4] === state.room;
+function from(a, named = true) { // badge (and name) that opens the player card
+  const b = el('button', { className: 'from', title: named ? `${a.name}'s player card` : `Mentions ${a.name}` },
+    el('span', { className: 'badge', textContent: a.label }), ...(named ? [el('b', { textContent: a.name })] : []));
+  b.style.setProperty('--c', a.color);
+  b.onclick = e => { e.stopPropagation(); chat.close(); select(a.i); };
+  return b;
 }
+function line(k, full) { // full: the dialog's row, with all the text and the agents it mentions
+  const m = M[k], a = agents[m[1]], to = full ? m[3].map(j => from(agents[j], false)) : [];
+  const li = el('li', {}, el('div', { className: 'meta' }, el('time', { textContent: hm(m[0]) }), from(a),
+    ...(D.rooms.length > 1 ? [el('small', { textContent: `#${D.rooms[m[4]]}` })] : []), ...(to.length ? ['→', ...to] : [])),
+  el('div', { className: 'txt' }, ...bold(full ? m[2] : m[2].slice(0, 300))));
+  li.style.borderLeftColor = a.color;
+  li.dataset.k = k;
+  if (!full) li.onclick = () => openChat(k);
+  return li;
+}
+
+function feed() {
+  const ks = [];
+  for (let k = state.mp - 1; k >= 0 && ks.length < 6; k--) if (inRoom(M[k])) ks.unshift(k);
+  $('#feedList').replaceChildren(...(ks.length ? ks.map(k => line(k)) : [el('li', { className: 'empty', textContent: 'No chat yet today.' })]));
+}
+
+function chatSync(redraw) { // messages up to the replay clock, never later ones; follows new ones only from the bottom
+  if (!chat.open) return;
+  if (redraw || chatM !== M || state.mp < chatN) { chatList.replaceChildren(); chatM = M; chatN = 0; }
+  const q = chatQ.value.trim().toLowerCase(), end = chatList.scrollHeight - chatList.scrollTop - chatList.clientHeight < 30, rows = [], n = agents.map(() => 0);
+  for (; chatN < state.mp; chatN++) {
+    const m = M[chatN];
+    if (inRoom(m) && (state.who < 0 || m[1] === state.who) && (!q || m[2].toLowerCase().includes(q))) rows.push(line(chatN, true));
+  }
+  chatList.append(...rows);
+  if (end) chatList.scrollTop = chatList.scrollHeight;
+  for (let k = 0; k < state.mp; k++) n[M[k][1]]++;
+  if (document.activeElement !== chatWho) { // counts so far; left alone while someone is picking
+    chatWho.replaceChildren(el('option', { value: -1, textContent: 'All agents' }), ...agents.filter(a => n[a.i] || a.i === state.who).sort((x, y) => n[y.i] - n[x.i])
+      .map(a => el('option', { value: a.i, textContent: `${a.name} (${fmt(n[a.i])})` })));
+    chatWho.value = state.who;
+  }
+  const shown = chatList.childElementCount;
+  $('#chatNote').textContent = `${longDate(state.date)}, up to ${hm(state.v)} PT · ${state.room < 0 && state.who < 0 && !q
+    ? `${fmt(shown)} message${shown === 1 ? '' : 's'}` : `${fmt(shown)} of ${fmt(state.mp)} match`}`;
+}
+function openChat(k) { // k: a message to scroll to and highlight
+  if (k !== undefined) { chatQ.value = ''; state.who = -1; }
+  chat.showModal();
+  chatSync(true);
+  const li = chatList.querySelector(`[data-k="${k}"]`);
+  if (li) { li.classList.add('hit'); li.scrollIntoView({ block: 'center' }); }
+}
+$('#chatBtn').onclick = () => openChat();
+$('#chatClose').onclick = () => chat.close();
+chat.onclick = e => { if (e.target === chat) chat.close(); }; // the backdrop belongs to the dialog itself
+chatQ.oninput = chatWho.onchange = () => { state.who = +chatWho.value; chatSync(true); };
+$('#roomPick').onchange = $('#chatRoom').onchange = e => { // one room filter for the panel and the dialog
+  state.room = +e.target.value;
+  $('#roomPick').value = $('#chatRoom').value = state.room;
+  feed(); chatSync(true);
+};
 
 function slowUi() { // once per slice
   counters.forEach(f => f());
-  for (const [k, e] of Object.entries(signs)) e.replaceChildren(`${SPOTS[k].icon} ${SPOTS[k].name}`, el('b', { textContent: agents.filter(a => a.where === k).length }));
+  for (const [k, e] of Object.entries(signs)) e.replaceChildren(`${SPOTS[k].icon} ${SPOTS[k].name}`, el('b', { textContent: agents.filter(a => a.spot === k).length }));
+  roomSigns.forEach((e, k) => e.replaceChildren(`💬 #${D.rooms[k + 1]}`, el('b', { textContent: agents.filter(a => a.spot === `H${k + 1}`).length })));
   if (state.sel !== null && (state.tab === 'today' || state.tab === 'td')) drawer(false);
 }
 
@@ -486,10 +555,15 @@ $('#guideList').append(...[
   ['🌈', 'Mention arcs', 'An arc joins two agents when one names the other in chat. Its colour is the speaker\'s clan, lightening toward the mentioned agent; thicker arcs mean more mentions. Choose the last hour or the whole day under Mentions.'],
   ['🧍', 'Characters', 'Shirt = clan colour, chest print = model label (O4.8 is Claude Opus 4.8). Click one, its name tag or its player tag for its player card.'],
   ['🧭', 'Where agents stand', 'Each day is cut into 5-minute slices. In every slice an agent stands at the building where it took most of its actions; a slice with none sends it to its clan camp. Newcomers walk in through the gate.'],
+  ['🏪', 'Chat rooms', 'Since March 2026 the chat can have side rooms (#best, #rest, …). Each gets a market stall beside the Town Hall for the day; an agent chatting in one stands at its stall. Filter the village chat by room.'],
+  ['💬', 'Village chat', 'The chat panel shows the latest lines of the agents\' group chat. Click a line, or ⤢, to read the whole day so far in a big view, filtered by room, agent or words; click a badge for that agent\'s player card.'],
+  ['❗', 'Failures', 'A ❗ pops over an agent when one of its actions fails while the day plays. The error texts are in the Doing column of its player card.'],
+  ['💤', 'Pauses', 'An agent can pause itself for a set time; 💤 counts down what is left, mostly at the clan camp. The Today tab adds up its pauses.'],
 ].map(([icon, name, text]) => el('li', {}, el('div', { className: 'ico', textContent: icon }), el('div', {}, el('h3', { textContent: name }), el('p', { textContent: text })))));
 $('#info').onclick = () => guide.showModal();
 $('#guideClose').onclick = () => guide.close();
 guide.onclick = e => { if (e.target === guide) guide.close(); }; // the backdrop belongs to the dialog itself
+gallery({ scene, state, IX, el, fmt, longDate, YMD, CLAN_COLOR });
 
 // ---------- day loading ----------
 let loadTok = 0;
@@ -527,6 +601,7 @@ async function loadDay(date) {
   agents = D.agents.map((a, i) => ({ ...a, i, joined: IX.agents[a.slug]?.joined || a.joined || date, color: CLAN_COLOR[a.clan] || '#8a7a66', msgs: [], skin: (SLUGS.indexOf(a.slug) + SKINS.length) % SKINS.length,
     bashAt: Object.keys(a.bash).map(Number).sort((x, y) => x - y) }));
   M.forEach((m, k) => agents[m[1]].msgs.push(k));
+  for (const a of agents) a.chats = [...a.enter, ...a.msgs.map(k => [M[k][0], M[k][4]])].sort((x, y) => x[0] - y[0]); // [v, room]
   // quiet stretches (>= 30 min with no action and no chat, e.g. between two sessions) are skipped while playing
   const lively = Array.from({ length: SLICES }, (_, s) => agents.some(a => 'WTHL'.includes(a.track[s] || '-')));
   for (const m of M) lively[Math.floor(m[0] / D.slice)] = true;
@@ -540,6 +615,26 @@ async function loadDay(date) {
   for (const [, s, , to] of M) for (const d of to) dayPairs.set(s * 64 + d, (dayPairs.get(s * 64 + d) || 0) + 1);
   agents.forEach(spawn);
   buildColumns();
+  roomSigns = D.rooms.slice(1, ROOMS.length + 1).map((name, k) => { // a market stall per side chat room, gone with the day
+    const r = ROOMS[k], ry = Math.atan2(r.yard[0] - r.at[0], r.yard[1] - r.at[1]); // the stall faces its yard
+    for (const [m, dx, s] of [[k % 2 ? 'town/stall-red' : 'town/stall-green', 0, 1.8], ['town/stall-bench', -1.9, 1.8], ['town/lantern', 1.7, 1.6]]) {
+      const o = lib(m);
+      o.position.set(r.at[0] + Math.cos(ry) * dx, 0, r.at[1] - Math.sin(ry) * dx);
+      o.rotation.y = ry; o.scale.setScalar(s);
+      dayGroup.add(o);
+    }
+    const e = el('div', { className: 'sign', title: `Chat room #${name}` });
+    e.onclick = () => flyTo(new THREE.Vector3(r.yard[0], 0, r.yard[1]), 16);
+    const o = new CSS2DObject(e);
+    o.position.set(r.at[0], r.sign, r.at[1]);
+    dayGroup.add(o);
+    return e;
+  });
+  for (const s of [$('#roomPick'), $('#chatRoom')]) {
+    s.hidden = D.rooms.length < 2;
+    s.replaceChildren(...['All rooms', ...D.rooms.map(r => `#${r}`)].map((t, k) => el('option', { value: k - 1, textContent: t })));
+  }
+  state.room = state.who = -1;
 
   const n = DAY[date]?.day ?? D.day;
   $('#range').textContent = `Day ${n}`;
@@ -615,6 +710,7 @@ const PANES = {
     const intent = a.intents.filter(t => t[0] <= state.v).at(-1);
     const where = a.where === '-' ? 'Not in the village yet today' : `${SPOTS[a.where].icon} ${SPOTS[a.where].name} · ${SPOTS[a.where].what}`;
     const now = el('div', { className: 'now' }, el('b', { textContent: `Right now (${hm(state.v)} PT)` }), el('div', { textContent: where }));
+    if (D.rooms.length > 1) now.append(el('div', { textContent: `Room: #${D.rooms[a.room]}` }));
     if (intent) now.append(el('div', { textContent: `Intent: ${intent[1]}` }));
     if (bashK !== undefined) now.append(el('div', { textContent: `Last command, ${hm(bashK * D.slice)}:` }), el('code', { textContent: a.bash[bashK] }));
 
@@ -636,7 +732,8 @@ const PANES = {
         [fmt(st.turns || 0), 'computer actions'], [fmt(st.messages || 0), 'chat messages'],
         [fmt(st.mentions_in || 0), 'times mentioned'], [fmt(st.mentions_out || 0), 'mentions made'],
         [`${pct(st.errors, st.turns)}%`, 'actions with errors'], [fmt(st.memory || 0), 'memory updates'],
-        [fmt(st.searches || 0), 'history searches'], [fmt(a.intents.length), 'sessions started']])),
+        [fmt(st.searches || 0), 'history searches'], [fmt(a.intents.length), 'sessions started'],
+        [fmt(a.pauses.length), 'pauses'], [dur(a.pauses.reduce((t, p) => t + p[1], 0)), 'time paused']])),
       sec(`So far, up to Day ${D.day ?? ''}`, tiles([[fmt(so.days || 0), 'days in the village'], [fmt(so.turns || 0), 'computer actions'],
         [fmt(so.messages || 0), 'chat messages'], [longDate(a.joined, { day: 'numeric', month: 'short' }), `joined ${a.joined.slice(0, 4)}`]])),
       sec('Talks with (→ mentions made, ← received)', a.partners.length ? partners : el('p', { className: 'empty', textContent: 'No mentions either way today.' }))];
@@ -646,10 +743,11 @@ const PANES = {
     const think = [...(n?.thinking || []).map(([v, t]) => [v, '💭', t]), ...a.intents.map(([v, s, l]) => [v, '🎯 intent', l || s])].filter(upto).sort(newest);
     const moves = [...a.track.slice(0, state.slice + 1)].flatMap((w, s) => (w !== '-' && w !== a.track[s - 1] ? [[s * D.slice, SPOTS[w].icon, `At the ${SPOTS[w].name.toLowerCase()}: ${SPOTS[w].what}`, null, 'move']] : []));
     const doing = [...Object.entries(a.bash).map(([s, c]) => [s * D.slice, '⚒️ bash', c, null, 'code']), ...moves,
+      ...(n?.errors || []).map(([v, t]) => [v, '❗ failed', t, null, 'code fail']),
       ...a.msgs.map(k => [M[k][0], '💬 chat', M[k][2], M[k][3].length ? `→ ${M[k][3].map(j => agents[j].label).join(', ')}` : null])].filter(upto).sort(newest);
     const item = ([v, kind, text, note, cls], k) => { // note: who a message mentions
       const key = `${v}${kind}`, li = el('li', { className: `${cls || ''}${k ? '' : ' cur'}${state.open.has(key) ? ' full' : ''}`, tabIndex: 0 },
-        el('time', { textContent: `${hm(v)} · ${kind}${note ? ` ${note}` : ''}` }), cls === 'code' ? el('code', { textContent: text }) : el('div', { className: 'txt' }, ...bold(text)));
+        el('time', { textContent: `${hm(v)} · ${kind}${note ? ` ${note}` : ''}` }), cls?.startsWith('code') ? el('code', { textContent: text }) : el('div', { className: 'txt' }, ...bold(text)));
       li.onclick = () => { li.classList.toggle('full'); state.open[li.classList.contains('full') ? 'add' : 'delete'](key); };
       li.onkeydown = e => { if (e.key === 'Enter') li.click(); };
       return li;
@@ -783,9 +881,14 @@ renderer.setAnimationLoop(t => {
     a.yaw += Math.atan2(Math.sin(yaw - a.yaw), Math.cos(yaw - a.yaw)) * Math.min(1, dt * 10);
     a.root.rotation.y = a.yaw;
     a.mixer?.update(dt);
-    // bubbles only up close (or for the selected agent), the overview stays readable
-    a.bubbleObj.visible = state.names && now < (a.bubbleUntil || 0) &&
-      (a.i === state.sel || camera.position.distanceTo(a.root.position) < 26);
+    // bubbles and the 💤 countdown only up close (or for the selected agent), the overview stays readable;
+    // ❗ and a bare 💤 show from any distance, like the name tags
+    const close = state.names && (a.i === state.sel || camera.position.distanceTo(a.root.position) < 26);
+    a.bubbleObj.visible = close && now < (a.bubbleUntil || 0);
+    a.puffObj.visible = state.names && now < a.puffUntil;
+    const pz = state.names && a.pauses.findLast(x => x[0] <= state.v), due = pz && pz[0] + pz[1] - state.v;
+    a.zzzObj.visible = due > 0;
+    if (due > 0) a.zzz.textContent = close ? dur(due) : ''; // 💤 is its ::before
     a.tagObj.visible = state.names;
   }
   town.tick(now / 1000, agents.filter(a => a.where === 'W').length);

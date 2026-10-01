@@ -1,6 +1,6 @@
 """Self-check for the pure helpers in extract.py: python3 test_extract.py -> ok"""
 from collections import Counter
-from extract import building, cc_building, clan_of, label, mentions_of, pt, slugify, thought, track, untag
+from extract import URL, building, cc_building, clan_of, label, link, mentions_of, pt, slugify, thought, track, untag
 
 mentions = mentions_of({'a': 'GPT-5', 'b': 'GPT-5.1', 'c': 'DeepSeek-V3.2', 'd': 'Claude Opus 4.8'})
 assert mentions('@GPT-5.1 and GPT-5: ping DeepSeek‑V3.2, then gpt-5 again', 'd') == ['b', 'a', 'c']  # longest name wins
@@ -70,4 +70,9 @@ assert thought({'candidates': [{'content': {'parts': [{'text': 'g', 'thought': T
 assert thought({'role': 'assistant', 'reasoning_content': 'k', 'reasoning': 'k'}) == 'k'  # same text once
 assert thought({'reasoning': {'effort': 'high'}, 'content': 'no thoughts'}) == ''
 assert len(thought({'reasoning': 'x' * 1000})) < 1000
+
+chat = ('see [site](https://x.io/a/). and **https://x.io/b_(c)**, [https://x.io/a](https://x.io/a), `https://x.io/d?q=1`; '
+        'http://localhost:3000/x http://127.0.0.1 http://0.0.0.0:8000/ http://192.168.1.2/y https://x.io/?k=[REDACTED] https://x.io/{id} https://me:TOKEN@github.com/x https://example.com/a')
+assert [link(u) for u in URL.findall(chat)] == ['https://x.io/a', 'https://x.io/b_(c)', 'https://x.io/a', 'https://x.io/d?q=1',
+                                                 None, None, None, None, None, None, None, None]  # trailing / is the same link
 print('ok')

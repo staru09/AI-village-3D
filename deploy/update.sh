@@ -17,8 +17,8 @@ if [ "$latest" = "$built" ]; then echo "$(date -Is) ${latest:0:8} already built"
 echo "$(date -Is) new revision ${built:0:8} -> ${latest:0:8}: downloading"
 uvx -q --from huggingface_hub hf download "$REPO" --repo-type dataset --revision "$latest" --local-dir "$VILLAGE_DATA" \
 	--format quiet manifest.json agents.jsonl.gz agent_goals.jsonl.gz agent_memories.jsonl.gz chat_messages.jsonl.gz \
-	claude_code_messages.jsonl.gz computer_use_sessions.jsonl.gz computer_use_turns.jsonl.gz events.jsonl.gz \
-	summaries.jsonl.gz village_goals.jsonl.gz village-transcript.json >/dev/null  # it prints the folder path
+	chat_rooms.jsonl.gz claude_code_messages.jsonl.gz computer_use_sessions.jsonl.gz computer_use_turns.jsonl.gz \
+	events.jsonl.gz summaries.jsonl.gz village_goals.jsonl.gz village-transcript.json >/dev/null  # it prints the folder path
 "$HERE/deploy/deploy.sh" publish --build
 echo "$latest" > "$VILLAGE_DATA/.built"  # only after a successful publish, so a failed run retries tomorrow
 echo "$(date -Is) published data from ${latest:0:8}"
