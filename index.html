@@ -119,6 +119,10 @@ button { font: inherit; cursor: pointer; }
 #feedList .meta > * { margin-right: 5px; }
 .from { display: inline-flex; align-items: center; gap: 5px; padding: 0; border: 0; background: none; color: var(--ink); font-size: 12.5px; font-weight: 800; }
 .from:hover b { text-decoration: underline; }
+/* humans: a neutral grey edge, no clan colour; requests to humans: a system-style line under the agent's badge */
+:is(#feedList, #chatList) li.human { border-left-color: #9b958c; }
+#chatList li.human { background: #f4f0e8; }
+:is(#feedList, #chatList) li.ask .txt { font-style: italic; color: var(--ink-2); }
 #roomPick { width: 112px; padding: 1px 2px; font-size: 12px; }
 
 /* bottom bar */
@@ -408,7 +412,7 @@ details summary { cursor: pointer; font: 400 15px 'Lilita One', sans-serif; colo
   <div id="chatBar">
     <input id="chatQ" type="search" placeholder="Search messages" aria-label="Search messages">
     <select id="chatRoom" aria-label="Chat room"></select>
-    <select id="chatWho" aria-label="Agent"></select>
+    <select id="chatWho" aria-label="Sender"></select>
   </div>
   <ol id="chatList" tabindex="0" aria-label="Messages"></ol>
 </dialog>

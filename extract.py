@@ -62,6 +62,28 @@ def mentions_of(agents):
     return mentions
 
 
+def ask(x):
+    """events.data -> (icon, short chat line) for a request to humans or its answer; None for other events.
+    An outreach answer's `rationale` repeats the agent's request; the reviewer's reason is `adminComment`."""
+    k, goal, to = x.get('actionType'), x.get('shortDisplayedSessionGoal'), f"{x.get('recipient')} via {x.get('medium')}"
+    if k == 'REQUEST_HUMAN_HELPER':
+        icon, text = '🙋', f"asked a human helper: {goal if goal not in (None, '', 'None') else x.get('sessionGoal')}"
+    elif k == 'CANCEL_REQUEST_FOR_HUMAN_HELPER':
+        icon, text = '🙋', 'called off its request for a human helper'
+    elif k == 'STOP_HUMAN_USE_SESSION':
+        icon, text = '🙋', f"ended its session with a human helper: {x.get('endComment') or x.get('summary')}"
+    elif k == 'REQUEST_GOOGLE_SIGN_IN':
+        icon, text = '🔑', 'asked for a Google sign-in'
+    elif k == 'OUTREACH_APPROVAL_REQUEST':
+        icon, text = '📣', f'asked to contact {to}'
+    elif k == 'OUTREACH_APPROVAL_RESPONSE':
+        icon, text = ('✅', f'outreach approved: {to}') if x.get('approval') else ('❌', f'outreach declined: {to}')
+        text += f" — “{x['adminComment'].strip()}”" if x.get('adminComment') else ''
+    else:
+        return None
+    return icon, cut(text, 300)
+
+
 def building(action):
     """computer_use_turns.agent_action -> building letter: Workshop (bash), Tower (GUI/browser),
     Hall (chat and requests to humans), Library (history search), Camp (pause). None = no action."""
@@ -199,6 +221,8 @@ def main():
     think = defaultdict(dict)  # -> reasoning excerpt -> second
     intents = defaultdict(list)
     chat = defaultdict(list)   # date -> (second, agent, text, mentioned, room)
+    humans = defaultdict(list)  # date -> (second, name as posted, text, mentioned, room)
+    asks = defaultdict(list)   # date -> (second, agent, icon, line, room) requests to humans and their answers
     enter = defaultdict(list)  # -> (second, room) moves between chat rooms
     fails = defaultdict(list)  # -> (second, error text) failed actions
     pauses = defaultdict(list)  # -> (second, seconds paused)
@@ -210,7 +234,7 @@ def main():
 
     mentions = mentions_of(names)
     room = {r['id']: r['name'] for r in rows(snap, 'chat_rooms.jsonl.gz')}
-    for m in rows(snap, 'chat_messages.jsonl.gz'):  # humans (USER_TALK) stay out
+    for m in rows(snap, 'chat_messages.jsonl.gz'):  # agents; humans come from USER_TALK events, which carry their names
         if m['speaker_type'] != 'agent' or m['created_at'] < since:
             continue
         (d, s), src = pt(m['created_at']), m['agent_speaker_id']
@@ -244,6 +268,12 @@ def main():
         elif kind == 'PAUSE':  # since PERMA, pause turns repeat these same pauses: events alone cover both eras
             d, s = pt(e['created_at'])
             pauses[d, x['agentId']].append((s, int(x['seconds'])))
+        elif kind == 'USER_TALK':  # the AI Digest team, viewers while the chat was public (2025), 'automated' notices
+            d, s = pt(e['created_at'])
+            humans[d].append((s, x['speakerName'], cut(x['content'], 1500), mentions(x['content'] or '', None), room[x['roomId']]))
+        elif a := ask(x):
+            d, s = pt(e['created_at'])
+            asks[d].append((s, x['agentId'], *a, room.get(x.get('roomId'), 'general')))  # no roomId before rooms existed
 
     for t in recent(snap, 'computer_use_turns.jsonl.gz', since):
         agent, a = sess_agent.get(t['session_id']), t['agent_action']
@@ -338,7 +368,7 @@ def main():
         if not vg or (vg[-1]['end_time'] or '~') <= at_open:
             gaps.append(d)
         (dd := out / 'days' / d).mkdir(exist_ok=True)
-        used = {r for s, *_, r in chat[d] if base <= s < base + span} | \
+        used = {r for s, *_, r in (*chat[d], *asks[d]) if base <= s < base + span} | {r for s, *_, r in humans[d] if s < base + span} | \
                {r for a in order for s, r in enter[d, a] if base <= s < base + span}
         rooms = ['general', *sorted(used - {'general'})]
         agents = []
@@ -382,13 +412,19 @@ def main():
                                                       'errors': errors}))
         messages = sorted([s - base, idx[src], text, [idx[x] for x in to if x in idx], rooms.index(r)]
                           for s, src, text, to, r in chat[d] if base <= s < base + span)
+        # humans from PT midnight on: goal announcements and 'resuming the village' come just before the window opens (v < 0)
+        human = sorted([s - base, who, text, [idx[x] for x in to if x in idx], rooms.index(r)]
+                       for s, who, text, to, r in humans[d] if s < base + span)
+        asked = sorted([s - base, idx[a], icon, text, rooms.index(r)] for s, a, icon, text, r in asks[d] if a in idx and base <= s < base + span)
         dropped['messages'] += len(chat[d]) - len(messages)
+        dropped['human'] += len(humans[d]) - len(human)
+        dropped['asks'] += len(asks[d]) - len(asked)
         goal = cut(vg[-1]['goal'], 1000) if vg else ''
         sizes.append(save(out / 'days' / f'{d}.json', {
             'date': d, 'day': daynum.get(d), 'open': open_h, 'hours': hours, 'slice': SLICE,
             'days': [{'day': daynum.get(d), 'date': d}], 'goal': goal,
             'recap': cut(untag(recaps[d]), LONG) if d in recaps else None,
-            'rooms': rooms, 'agents': agents, 'messages': messages,
+            'rooms': rooms, 'agents': agents, 'messages': messages, 'human': human, 'asks': asked,
         }))
         index_days.append({'date': d, 'day': daynum.get(d), 'goal': goal, 'agents': [slug[a] for a in order],
                            'messages': len(messages), 'turns': sum(stats[d, a]['turns'] for a in order)})

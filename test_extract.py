@@ -1,11 +1,18 @@
 """Self-check for the pure helpers in extract.py: python3 test_extract.py -> ok"""
 from collections import Counter
-from extract import URL, building, cc_building, clan_of, label, link, mentions_of, pt, slugify, thought, track, untag
+from extract import URL, ask, building, cc_building, clan_of, label, link, mentions_of, pt, slugify, thought, track, untag
 
 mentions = mentions_of({'a': 'GPT-5', 'b': 'GPT-5.1', 'c': 'DeepSeek-V3.2', 'd': 'Claude Opus 4.8'})
 assert mentions('@GPT-5.1 and GPT-5: ping DeepSeek‑V3.2, then gpt-5 again', 'd') == ['b', 'a', 'c']  # longest name wins
 assert mentions('Claude Opus 4.8 here', 'd') == []                                   # self-mentions dropped
 assert mentions('see https://x.io/GPT-5 and v2.GPT-5 and GPT-5x', 'd') == []         # not inside URLs or tokens
+
+assert ask({'actionType': 'REQUEST_HUMAN_HELPER', 'shortDisplayedSessionGoal': 'None', 'sessionGoal': 'Print a page'}) == \
+       ('🙋', 'asked a human helper: Print a page')                                 # 'None' short goals fall back
+assert ask({'actionType': 'OUTREACH_APPROVAL_RESPONSE', 'approval': False, 'recipient': 'Amy', 'medium': 'email',
+            'rationale': 'the agent\'s own', 'adminComment': 'Say you are an AI '}) == \
+       ('❌', 'outreach declined: Amy via email — “Say you are an AI”')               # the reviewer's note, not the rationale
+assert ask({'actionType': 'AGENT_TALK'}) is None
 
 assert building({'command': 'ls'}) == 'W'
 assert building({'action': 'left_click', 'coordinate': [1, 2]}) == 'T'

@@ -59,8 +59,10 @@ await document.fonts.load('28px "Lilita One"');
 const DAYS = IX.days, DAY = Object.fromEntries(DAYS.map((d, k) => [d.date, { ...d, k }]));
 const SLUGS = Object.keys(IX.agents);
 const clans = IX.clans.map(name => ({ name, color: CLAN_COLOR[name] || '#8a7a66' }));
-// The loaded day; everything below that reads these is rebuilt by loadDay().
-let D, M = [], agents = [], END = 1, SLICES = 1, dayPairs = new Map(), dayGroup = null, gaps = [], roomSigns = [];
+// The loaded day; everything below that reads these is rebuilt by loadDay(). M: agent messages [v, agent, text, mentioned, room];
+// C: what the chat shows, M plus human messages and requests to humans, [v, agent or HUMAN, text, mentioned, room, name or icon].
+const HUMAN = -2; // a human line's sender, and the #chat filter's "Humans" option (-1 is everyone)
+let D, M = [], C = [], agents = [], END = 1, SLICES = 1, dayPairs = new Map(), dayGroup = null, gaps = [], roomSigns = [];
 
 // ---------- scene ----------
 const canvas = $('#stage');
@@ -146,7 +148,8 @@ function spawn(a) {
   a.bubbleObj = new CSS2DObject(el('div', { className: 'bubble' }, a.bubble));
   a.bubbleObj.position.y = 1.2;
   a.bubbleObj.visible = false;
-  a.puffObj = new CSS2DObject(el('div', { className: 'puff' }, el('b', { textContent: '❗' }))); // a failed action
+  a.puff = el('b'); // ❗ a failed action, or the icon of a request to humans
+  a.puffObj = new CSS2DObject(el('div', { className: 'puff' }, a.puff));
   a.zzz = el('div', { className: 'zzz' }); // pause timer
   a.zzzObj = new CSS2DObject(a.zzz);
   a.puffObj.position.y = a.zzzObj.position.y = 1.2;
@@ -328,18 +331,23 @@ for (const [key, s] of Object.entries(SPOTS)) {
   scene.add(o);
   signs[key] = e;
 }
+// humans have no character in town: their messages pop up over the Town Hall's sign
+const hallSay = el('div', { onclick: () => openChat() }), hallObj = new CSS2DObject(el('div', { className: 'bubble' }, hallSay));
+hallObj.position.set(SPOTS.H.at[0], SPOTS.H.sign, SPOTS.H.at[1]);
+hallObj.visible = false;
+scene.add(hallObj);
 
 // ---------- UI ----------
 const state = { v: 0, slice: -1, playing: true, speed: 300, sel: null, mp: 0, fly: null, names: true, tab: 'today', clan: null, open: new Set() };
 const hm = v => { const m = Math.round(D.open * 60) + Math.floor(v / 60); return `${pad(Math.floor(m / 60) % 24)}:${pad(m % 60)}`; };
-function lowerBound(v) { let lo = 0, hi = M.length; while (lo < hi) { const mid = (lo + hi) >> 1; if (M[mid][0] < v) lo = mid + 1; else hi = mid; } return lo; }
+function lowerBound(v, A = M) { let lo = 0, hi = A.length; while (lo < hi) { const mid = (lo + hi) >> 1; if (A[mid][0] < v) lo = mid + 1; else hi = mid; } return lo; }
 
 const time = $('#time');
 const counters = [
   ['💬', 'msgs today', () => lowerBound(state.v + 1), null],
   ...['W', 'T', 'H', 'L', 'C'].map(k => [SPOTS[k].icon, SPOTS[k].name.toLowerCase(), () => agents.filter(a => a.where === k).length, k]),
 ].map(([icon, label, f, k]) => {
-  const b = el('b'), node = el('div', { className: 'counter', title: k ? `Agents at the ${label} now (${SPOTS[k].what})` : 'Chat messages so far today' },
+  const b = el('b'), node = el('div', { className: 'counter', title: k ? `Agents at the ${label} now (${SPOTS[k].what})` : 'Agent chat messages so far today' },
     el('div', { className: 'ico', textContent: icon }), b, el('span', { textContent: label }));
   if (k && k !== 'C') { node.style.cursor = 'pointer'; node.onclick = () => signs[k].click(); }
   $('#counters').append(node);
@@ -385,13 +393,14 @@ function setV(v, jump) {
   if (state.v >= END - 1) setPlaying(false);
   const s = Math.min(SLICES - 1, Math.floor(state.v / D.slice));
   if (jump) {
-    state.mp = lowerBound(state.v + 1);
+    state.mp = lowerBound(state.v + 1, C);
+    hallUntil = 0;
     for (const a of agents) { a.bubbleObj.visible = false; a.fp = 0; a.puffUntil = 0; a.talk = null; }
   }
   for (const a of agents) { // ❗ when the playing clock passes failed actions, one puff per frame; jumps only move the pointer
     const k = a.fp;
     while (a.fp < a.fails.length && a.fails[a.fp] <= state.v) a.fp++;
-    if (a.fp > k && !jump) a.puffUntil = performance.now() + 1200;
+    if (a.fp > k && !jump) { a.puff.textContent = '❗'; a.puffUntil = performance.now() + 1200; }
   }
   if (s !== state.slice || jump) {
     state.slice = s;
@@ -400,7 +409,7 @@ function setV(v, jump) {
     slowUi();
   }
   let fresh = false;
-  while (state.mp < M.length && M[state.mp][0] <= state.v) { say(M[state.mp]); state.mp++; fresh = true; }
+  while (state.mp < C.length && C[state.mp][0] <= state.v) { say(C[state.mp]); state.mp++; fresh = true; }
   if (fresh || jump) { feed(); chatSync(); }
   $('#clock').textContent = `${longDate(state.date)} · ${hm(state.v)} PT`;
   if (!time.matches(':active')) time.value = Math.floor(state.v);
@@ -408,20 +417,22 @@ function setV(v, jump) {
 
 // Posting a message sends the agent to the Town Hall (or the message's room stall) for as long as its bubble shows,
 // then back to the slice's place: chat rarely wins a whole 5-minute slice against dozens of commands.
+// A request to humans pops its icon instead of a bubble; a human's message shows over the Town Hall.
 const TALK = 3200;
-let regroup = false;
+let regroup = false, hallUntil = 0;
+const sender = name => (name === 'automated' ? '⚙️ Village system' : `👤 ${name}`); // humans as posted, the village's notices as itself
 function say(m) {
-  const a = agents[m[1]];
-  const t = m[2].replaceAll('**', '');
-  a.bubble.textContent = t.length > 120 ? `${t.slice(0, 118)}…` : t;
-  a.bubbleUntil = performance.now() + TALK;
-  a.talk = { room: m[4], until: a.bubbleUntil };
+  const a = agents[m[1]], t = m[2].replaceAll('**', ''), now = performance.now();
+  const short = t.length > 120 ? `${t.slice(0, 118)}…` : t;
+  if (!a) { hallSay.textContent = `${sender(m[5])}: ${short}`; hallUntil = now + TALK; return; }
+  if (m[5]) { a.puff.textContent = m[5]; a.puffUntil = now + 1200; } else { a.bubble.textContent = short; a.bubbleUntil = now + TALK; }
+  a.talk = { room: m[4], until: now + TALK };
   regroup = true;
 }
 
 // ---------- village chat: the latest lines in the panel, the whole day so far in the #chat dialog ----------
 const chat = $('#chat'), chatList = $('#chatList'), chatQ = $('#chatQ'), chatWho = $('#chatWho');
-let chatM, chatN = 0; // the day the dialog shows and how many of its messages it has gone through
+let chatM, chatN = 0; // the day the dialog shows and how many of its lines it has gone through
 const inRoom = m => state.room < 0 || m[4] === state.room;
 function from(a, named = true) { // badge (and name) that opens the player card
   const b = el('button', { className: 'from', title: named ? `${a.name}'s player card` : `Mentions ${a.name}` },
@@ -431,11 +442,12 @@ function from(a, named = true) { // badge (and name) that opens the player card
   return b;
 }
 function line(k, full) { // full: the dialog's row, with all the text and the agents it mentions
-  const m = M[k], a = agents[m[1]], to = full ? m[3].map(j => from(agents[j], false)) : [];
-  const li = el('li', {}, el('div', { className: 'meta' }, el('time', { textContent: hm(m[0]) }), from(a),
+  const m = C[k], a = agents[m[1]], to = full ? m[3].map(j => from(agents[j], false)) : [];
+  const li = el('li', { className: a ? (m[5] ? 'ask' : '') : 'human' }, el('div', { className: 'meta' }, el('time', { textContent: hm(m[0]) }),
+    a ? from(a) : el('b', { className: 'from', textContent: sender(m[5]) }), // a human: no player card
     ...(D.rooms.length > 1 ? [el('small', { textContent: `#${D.rooms[m[4]]}` })] : []), ...(to.length ? ['→', ...to] : [])),
   el('div', { className: 'txt' }, ...bold(full ? m[2] : m[2].slice(0, 300))));
-  li.style.borderLeftColor = a.color;
+  if (a) li.style.borderLeftColor = a.color;
   li.dataset.k = k;
   if (!full) li.onclick = () => openChat(k);
   return li;
@@ -443,28 +455,31 @@ function line(k, full) { // full: the dialog's row, with all the text and the ag
 
 function feed() {
   const ks = [];
-  for (let k = state.mp - 1; k >= 0 && ks.length < 6; k--) if (inRoom(M[k])) ks.unshift(k);
+  for (let k = state.mp - 1; k >= 0 && ks.length < 6; k--) if (inRoom(C[k])) ks.unshift(k);
   $('#feedList').replaceChildren(...(ks.length ? ks.map(k => line(k)) : [el('li', { className: 'empty', textContent: 'No chat yet today.' })]));
 }
 
-function chatSync(redraw) { // messages up to the replay clock, never later ones; follows new ones only from the bottom
+function chatSync(redraw) { // lines up to the replay clock, never later ones; follows new ones only from the bottom
   if (!chat.open) return;
-  if (redraw || chatM !== M || state.mp < chatN) { chatList.replaceChildren(); chatM = M; chatN = 0; }
+  if (redraw || chatM !== C || state.mp < chatN) { chatList.replaceChildren(); chatM = C; chatN = 0; }
   const q = chatQ.value.trim().toLowerCase(), end = chatList.scrollHeight - chatList.scrollTop - chatList.clientHeight < 30, rows = [], n = agents.map(() => 0);
   for (; chatN < state.mp; chatN++) {
-    const m = M[chatN];
-    if (inRoom(m) && (state.who < 0 || m[1] === state.who) && (!q || m[2].toLowerCase().includes(q))) rows.push(line(chatN, true));
+    const m = C[chatN];
+    if (inRoom(m) && (state.who === -1 || m[1] === state.who) && (!q || m[2].toLowerCase().includes(q))) rows.push(line(chatN, true));
   }
   chatList.append(...rows);
   if (end) chatList.scrollTop = chatList.scrollHeight;
-  for (let k = 0; k < state.mp; k++) n[M[k][1]]++;
+  n[HUMAN] = 0;
+  for (let k = 0; k < state.mp; k++) n[C[k][1]]++;
   if (document.activeElement !== chatWho) { // counts so far; left alone while someone is picking
-    chatWho.replaceChildren(el('option', { value: -1, textContent: 'All agents' }), ...agents.filter(a => n[a.i] || a.i === state.who).sort((x, y) => n[y.i] - n[x.i])
-      .map(a => el('option', { value: a.i, textContent: `${a.name} (${fmt(n[a.i])})` })));
+    chatWho.replaceChildren(el('option', { value: -1, textContent: 'Everyone' }),
+      ...(n[HUMAN] || state.who === HUMAN ? [el('option', { value: HUMAN, textContent: `👤 Humans (${fmt(n[HUMAN])})` })] : []),
+      ...agents.filter(a => n[a.i] || a.i === state.who).sort((x, y) => n[y.i] - n[x.i])
+        .map(a => el('option', { value: a.i, textContent: `${a.name} (${fmt(n[a.i])})` })));
     chatWho.value = state.who;
   }
   const shown = chatList.childElementCount;
-  $('#chatNote').textContent = `${longDate(state.date)}, up to ${hm(state.v)} PT · ${state.room < 0 && state.who < 0 && !q
+  $('#chatNote').textContent = `${longDate(state.date)}, up to ${hm(state.v)} PT · ${state.room < 0 && state.who === -1 && !q
     ? `${fmt(shown)} message${shown === 1 ? '' : 's'}` : `${fmt(shown)} of ${fmt(state.mp)} match`}`;
 }
 function openChat(k) { // k: a message to scroll to and highlight
@@ -567,6 +582,8 @@ $('#guideList').append(...[
   ['🧭', 'Where agents stand', 'Each day is cut into 5-minute slices. In every slice an agent stands at the building where it took most of its actions; a slice with none sends it to its clan camp. When it posts in chat, it hurries to the Town Hall (or the room\'s stall) to say it, then goes back. Newcomers walk in through the gate.'],
   ['🏪', 'Chat rooms', 'Since March 2026 the chat can have side rooms (#best, #rest, …). Each gets a market stall beside the Town Hall for the day; an agent posting in one walks over to its stall to say it. Filter the village chat by room.'],
   ['💬', 'Village chat', 'The chat panel shows the latest lines of the agents\' group chat. Click a line, or ⤢, to read the whole day so far in a big view, filtered by room, agent or words; click a badge for that agent\'s player card.'],
+  ['👤', 'Humans in the chat', 'People post in the village chat too: the AI Digest team (goals, sign-ins, approvals, guidance), viewers while the chat was public (Apr–Aug 2025) and ⚙️ Village system notices (pausing and resuming the village, nudges to idle agents). Names are shown as posted; their lines have a grey edge, and while the day plays their words pop up over the Town Hall. Pick Humans in the big view to read only them.'],
+  ['🙋', 'Requests to humans', 'Agents can ask people for help: 🙋 a human helper for a task, 🔑 a Google sign-in, 📣 approval to contact someone outside the village, answered ✅ or ❌ with the reviewer\'s note. Each is a line in the chat under the agent\'s badge; while the day plays, the icon pops over the agent as it hurries to the Town Hall (or its room\'s stall).'],
   ['❗', 'Failures', 'A ❗ pops over an agent when one of its actions fails while the day plays. The error texts are in the Doing column of its player card.'],
   ['💤', 'Pauses', 'An agent can pause itself for a set time; 💤 counts down what is left, mostly at the clan camp. The Today tab adds up its pauses.'],
 ].map(([icon, name, text]) => el('li', {}, el('div', { className: 'ico', textContent: icon }), el('div', {}, el('h3', { textContent: name }), el('p', { textContent: text })))));
@@ -612,6 +629,8 @@ async function loadDay(date) {
     bashAt: Object.keys(a.bash).map(Number).sort((x, y) => x - y) }));
   M.forEach((m, k) => agents[m[1]].msgs.push(k));
   for (const a of agents) a.chats = [...a.enter, ...a.msgs.map(k => [M[k][0], M[k][4]])].sort((x, y) => x[0] - y[0]); // [v, room]
+  C = [...M, ...(D.human || []).map(([v, name, text, to, room]) => [v, HUMAN, text, to, room, name]), // see C at the top
+    ...(D.asks || []).map(([v, i, icon, text, room]) => [v, i, `${icon} ${text}`, [], room, icon])].sort((x, y) => x[0] - y[0]);
   // quiet stretches (>= 30 min with no action and no chat, e.g. between two sessions) are skipped while playing
   const lively = Array.from({ length: SLICES }, (_, s) => agents.some(a => 'WTHL'.includes(a.track[s] || '-')));
   for (const m of M) lively[Math.floor(m[0] / D.slice)] = true;
@@ -904,6 +923,7 @@ renderer.setAnimationLoop(t => {
     if (due > 0) a.zzz.textContent = close ? dur(due) : ''; // 💤 is its ::before
     a.tagObj.visible = state.names;
   }
+  hallObj.visible = state.names && now < hallUntil; // from any distance: humans have no other sign in town
   town.tick(now / 1000, agents.filter(a => a.where === 'W').length);
   drawBeams();
 

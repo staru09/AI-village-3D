@@ -6,8 +6,8 @@ Your four items, split into small issues. **Decide** marks a choice we still nee
 - 2 (calendar) and 4 (player tags and summaries) are **done**, plus the building guide.
 - 1 (deployment) is live at https://village.gensis-kb-tunnel.com.
 - 3 (livelier agents) is next.
-- 6 (more from the dataset): rooms, failures, pauses, gallery and the chat view are done; tokens, humans, goal
-  stories and command replies are planned; 6.2 needs a decision.
+- 6 (more from the dataset): rooms, failures, pauses, gallery, the chat view, human messages and requests to humans
+  are done; tokens, goal stories and command replies are planned.
 
 ## What the data allows
 
@@ -16,7 +16,7 @@ Your four items, split into small issues. **Decide** marks a choice we still nee
 | Days with activity | 389, from 2025-04-02 to 2026-09-18 (2026-09-20 export) |
 | Agents per day | 4 early on, about 30 now (46 over the whole run) |
 | Village hours per day | 2–5 h through 2025, 9 h lately (read from each day's activity) |
-| Built data | 389 day files (131 MB) + 4,483 agent-day files; 368 MB in all |
+| Built data | 389 day files (135 MB) + 4,483 agent-day files (253 MB); about 390 MB in all |
 | Full build | about 4 min, 1.5 GB RAM |
 | Summaries | 805 daily (386 dates), 43 agent career, 86 goal stories, 2 agent-per-day, 3 watch narratives |
 | Screenshots | up to 2026-08-21 only (not used yet, see 5.1) |
@@ -58,7 +58,7 @@ Your four items, split into small issues. **Decide** marks a choice we still nee
       - A slice with only chat puts the agent in the Town Hall.
       - `SEARCH_HISTORY` events before 2026-03-24 count as Library.
       - The Claude Code agent is placed by its own tool calls.
-- [x] **2.5 Human messages stay out** (decided). Reopened as 6.2.
+- [x] **2.5 Human messages stay out** (decided). Reversed by 6.2: they are in the chat now.
 - [x] **2.6 Calendar UI.** A month grid marking the days with data, with the day number, goal and agent count in
       the tooltip. ◀ ▶ step between days, `?date=` links to one, and it opens on the latest day by default.
 - [x] **2.7 Rebuild the scene per day.**
@@ -133,23 +133,30 @@ Data we download but don't show yet. Checked against the 2026-09-20 export and t
       - Show: tokens today and so far on the Today tab, and a Tokens measure in the Hall of Records.
 - [x] **Not worth showing: money, emoji, status message.** SCHEMA.md calls `money` an unused in-village balance and
       `emoji` unused (all 46 agents are 🤖); `status_message` is null for every agent.
-- [ ] **6.2 Decide: human messages in the Village chat.** Reverses 2.5.
-      - 10,000 messages: heavy at launch (about 6,650 in Apr–Jun 2025), then roughly 100–750 a month.
-      - Names come from the `USER_TALK` events (the users table isn't exported). **Decide:** show viewers' chosen
-        names, or a plain "viewer" label? The site is public.
-      - Show: in the feed with their own style (no clan colour, 👤). No 3D character; mentions of an agent could
-        still draw an arc from the Town Hall.
-- [ ] **6.3 Moments with humans, as lines in the Village chat.** From `events`:
+- [x] **6.2 Human messages in the Village chat.** Reverses 2.5.
+      - 10,049 `USER_TALK` messages: heavy at launch (about 6,650 in Apr–Jun 2025), then roughly 100–750 a month.
+        Senders: about 640 viewers (Apr–mid-Aug 2025, while the chat was public), the AI Digest team, and `automated`.
+      - Names are shown as posted (decided): the team's names and viewers' chosen nicknames, from the `USER_TALK`
+        events (the users table isn't exported). `automated` shows as "⚙️ Village system".
+      - In the panel and the big view with their own style: 👤, a grey edge, no player card. The room filter applies;
+        the big view's sender filter has a Humans option. "msgs today" still counts agent messages only.
+      - In town: a speech bubble over the Town Hall for 3 s. No 3D character and no mention arcs from humans
+        (their mentions of agents are stored per message and listed in the big view).
+- [x] **6.3 Moments with humans, as lines in the Village chat.** From `events`:
 
       | Event | Count | Since | Line |
       |---|---|---|---|
-      | `REQUEST_HUMAN_HELPER` (+ cancel, stop) | 265 | Aug 2025 | 🙋 asked a human helper, with its task |
+      | `REQUEST_HUMAN_HELPER` (+ cancel, stop) | 265 (+ 141, 37) | Aug 2025 | 🙋 asked a human helper, with its short task; the stop line has its end comment |
       | `REQUEST_GOOGLE_SIGN_IN` | 619 | Oct 2025 | 🔑 asked for a Google sign-in |
-      | `OUTREACH_APPROVAL_REQUEST` / `_RESPONSE` | 352 / 343 | Apr 2026 (most in Jul) | 📣 asked to contact *medium* → ✅ / ❌ with the reason |
+      | `OUTREACH_APPROVAL_REQUEST` / `_RESPONSE` | 352 / 343 | Apr 2026 (most in Jul) | 📣 asked to contact *recipient* via *medium* → ✅ / ❌ with the reviewer's note |
 
-      - Also flash the icon above the agent's head at that moment (ties into 3.3).
-      - Counts on the Today tab: help requests, sign-ins, outreach approved/declined.
-      - Check how much reasoning sits in the raw `output` field; keep only the request text, not the model output.
+      - The texts come from the events' own fields (`shortDisplayedSessionGoal`, `endComment`, `recipient`, `medium`,
+        `adminComment`), never the raw model `output`; cut to 300 characters.
+      - A response's `rationale` repeats the agent's request; the reviewer's reason is `adminComment` (134 of 343).
+      - In town the icon pops over the agent (like ❗) and it hurries to the Town Hall (or its room's stall), like for
+        a chat message. Lines carry the agent's room from the event (`roomId`; #general before rooms existed).
+      - Not done: counts on the Today tab (help requests, sign-ins, outreach approved/declined), and
+        `RESTARTING_AFTER_GOOGLE_SIGN_IN` (611, one per sign-in) is left out.
 - [ ] **6.4 Goal stories in the Day recap.** 83 `goal` summaries plus 3 `goal-checkpoint` summaries: one long
       narrative per village goal (4–24k characters), written by Claude Sonnet.
       - Map each to its village goal. 33 targets are day ranges (`216-217`), which map through the day numbers. The rest
