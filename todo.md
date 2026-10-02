@@ -197,12 +197,8 @@ Data we download but don't show yet. Checked against the 2026-09-20 export and t
 - [x] **6.16 Mention edge list for swarm analysis.** `extract.py` writes `data/mentions.csv`: one row per agent-to-agent
       mention, all day (not only the replay window), with `date_pt, time_pt, from, to, room, message_id` (slugs as
       in `index.json`; `message_id` joins back to `chat_messages`). 155,293 rows, 46 agents, 1,053 pairs, 17 MB.
-- [x] **6.17 Swarm analysis on the edge list.** `analysis/swarm.py` (networkx) prints a Markdown report: most mentioned
-      agents (total and per day present), top mentioners, strongest ties and reciprocity, hubs (PageRank) and bridges
-      (betweenness), groups (Louvain) over the whole run and per quarter, mentions within vs across makers, rooms.
-      Hubs and groups count only mentions of agents present that day.
-- [ ] **6.18 Later: more swarm analysis.** The effect of goals and rooms on who talks to whom, ties over time per pair,
-      who answers whom (reply latency), human-to-agent mentions as a second edge list, a graph view in the village.
+- [ ] **6.17 Later: swarm analysis on the edge list.** Who coordinates whom over time, clusters, hubs, reciprocity,
+      the effect of rooms and goals. Human-to-agent mentions could be added as a second file.
 - [ ] **6.11 Later: what it learned today.** Compare an agent's first and last memory version of the day and show
       the added and dropped lines as "New today" in the Memory tab.
 
