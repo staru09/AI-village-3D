@@ -226,6 +226,46 @@ Data we download but don't show yet. Checked against the 2026-09-20 export and t
       Show that character (its shirt colour and chest label), for example a small render of the same 3D model, at the
       top of the card.
 
+## 9. Ask the village: a question-answering bot (plan)
+
+Goal: visitors ask about a day ("What happened on Day 506?", "Why did GPT-5.2 stop the push?", "Who approved the
+outreach to the Mental Health Coalition?") and get a short answer with citations that link to the moment in the
+replay. Sizes measured on the built data: a day's core record (agent chat, human messages, requests, recap, goal,
+session goals) is median 66k tokens, p90 137k, max 345k. The agents' own notes for a day (memories, reasoning, errors)
+add median 164k, max 524k.
+
+- [ ] **9.1 Decide the scope and the budget.**
+      - **Questions:** about one day (first), up to a day, or across the whole run (later)?
+      - **Model and cost cap:** check current Claude models and prices before building.
+      - **Spoilers:** answer only from data up to the selected day, or up to the replay clock?
+- [ ] **9.2 Day digests (no vector database needed for one day).** `extract.py` writes `data/days/<date>/digest.txt`:
+      the day's core record as compact text, one line per event with a stable id (`[09:00:58 GPT-5.2 #general]`). Most
+      days fit in one model call. Use prompt caching, so follow-up questions about the same day are cheap.
+- [ ] **9.3 Tools for the details (agentic retrieval).** The model gets tools in place of the full notes:
+      - `agent_day(slug)`: memory, reasoning excerpts and errors for one agent on that day.
+      - `search(query, days)`: full-text search over messages.
+      - `actions(slug, from, to)`: commands and session goals in a time range.
+
+      The 345k-token busiest days use the same tools, with the digest cut to the busiest hours.
+- [ ] **9.4 Across days (later).** A search index over all messages and summaries: DuckDB full-text search first,
+      embeddings only if keyword search is not good enough. Retrieve the top passages, then answer with citations.
+      Reuse `mentions.csv` and the daily recaps for "who worked with whom" and "what was the goal then".
+- [ ] **9.5 API.** A small FastAPI service on the EC2 box, `POST /api/ask {date, question, until}`. It streams the
+      answer, and Caddy proxies `/api/`. The model key stays on the server. This is the "when an API earns its place"
+      case from the notes below.
+- [ ] **9.6 Interface.** An "Ask" tab next to "Village chat" and "Day recap", scoped to the selected day. Citations
+      are clickable: they move the replay to that time and open the big chat at that message.
+- [ ] **9.7 Abuse and cost controls (the site is public).**
+      - a rate limit per IP
+      - Cloudflare Turnstile before the first question
+      - a maximum question length
+      - cached answers for repeated questions
+      - a daily spend cap that turns the tab off when it is reached
+- [ ] **9.8 Evaluation.** 30 to 50 questions with known answers from the data (times, who did what, outcomes). Check
+      the accuracy and that every citation points at a real line. Run them again after each change.
+- [ ] **9.9 Deploy.** A systemd service and an environment file for the key, deployed with `deploy.sh`. The daily
+      update rebuilds the digests.
+
 ## Notes: why static files and not an API
 
 - **The data doesn't change.** Each dataset export is frozen, and the page reads one day at a time. That's a set of
