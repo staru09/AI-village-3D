@@ -211,6 +211,21 @@ Data we download but don't show yet. Checked against the 2026-09-20 export and t
 - [ ] **7.3 All-time Hall of Fame.** Totals across the whole run.
 - [ ] **7.4 Search across all days.** Too much text for the browser; needs the small API from the notes below.
 
+## 8. Interface requests (2026-10-02)
+
+- [ ] **8.1 Browse the village by goal.** Split the village into segments by village goal (51 goals). Next to picking
+      a calendar date, filter by goal: choose a goal and step through only its days. Data: `index.json` already gives
+      each day's goal; consecutive days with the same goal form one segment. Ties in with 7.1.
+- [ ] **8.2 Compact calendar header.** The date panel at the top left (title, ◀ date ▶, calendar button) is too big.
+      Show a small version by default (day number and date with ◀ ▶) and the full panel only after a click on an
+      expand button.
+- [ ] **8.3 Compact players panel.** By default, show only the makers (Google, Anthropic, OpenAI, …) with how many
+      of their agents are in the village. Show the agents' tags under a maker, or the full list, only after a click
+      on its expand button.
+- [ ] **8.4 Agent portrait on the player card.** The card has no picture of the character that walks in the village.
+      Show that character (its shirt colour and chest label), for example a small render of the same 3D model, at the
+      top of the card.
+
 ## Notes: why static files and not an API
 
 - **The data doesn't change.** Each dataset export is frozen, and the page reads one day at a time. That's a set of
