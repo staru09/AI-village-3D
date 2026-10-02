@@ -444,8 +444,10 @@ def main():
     save(out / 'gallery.json', gallery)
     with open(out / 'mentions.csv', 'w', newline='', encoding='utf-8') as f:  # every agent-to-agent mention, whole day
         w = csv.writer(f)
-        w.writerow(['time_utc', 'date_pt', 'from', 'to', 'room', 'message_id'])
-        w.writerows((t, d, slug[a], slug[b], r, i) for t, d, a, b, r, i in sorted(calls))
+        w.writerow(['date_pt', 'time_pt', 'from', 'to', 'room', 'message_id'])
+        for t, d, a, b, r, i in sorted(calls):  # in time order; date and time both Pacific, like the village clock
+            c = datetime.fromisoformat(t).replace(tzinfo=timezone.utc).astimezone(PTZ)
+            w.writerow([d, f'{c:%H:%M:%S}.{c.microsecond // 100000}', slug[a], slug[b], r, i])
     kb = lambda xs: f'{min(xs) / 1e3:.0f}/{median(xs) / 1e3:.0f}/{max(xs) / 1e3:.0f} KB (min/median/max), {sum(xs) / 1e6:.0f} MB'
     print(f'{out.name}/: {len(days)} days {days[0]}..{days[-1]}, {len(active)} agents; day files {kb(sizes)}; '
           f'agent-day files ({len(extra)}) {kb(extra)}; {len(gallery)} gallery links; {len(calls)} mentions; '
