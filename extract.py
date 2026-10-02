@@ -1,4 +1,4 @@
-import argparse, gzip, ipaddress, json, os, re, sys
+import argparse, csv, gzip, ipaddress, json, os, re, sys
 from bisect import bisect_left
 from collections import Counter, defaultdict
 from datetime import datetime, timezone
@@ -227,6 +227,7 @@ def main():
     fails = defaultdict(list)  # -> (second, error text) failed actions
     pauses = defaultdict(list)  # -> (second, seconds paused)
     links = {}                 # url -> (created_at, date, agent) of its first share
+    calls = []                 # (created_at, date, from, to, room, message id): who mentioned whom, for swarm analysis
 
     def first_bash(k, s, cmd):
         line = (s, cut(cmd.strip().split('\n')[0], 160))
@@ -248,6 +249,7 @@ def main():
         stats[d, src]['mentions_out'] += len(to)
         for x in to:
             stats[d, x]['mentions_in'] += 1
+            calls.append((m['created_at'], d, src, x, room[m['room_id']], m['id']))
 
     sess_agent = {}
     for r in rows(snap, 'computer_use_sessions.jsonl.gz'):
@@ -440,9 +442,13 @@ def main():
     })
     gallery = [[u, d, slug[a]] for u, (_, d, a) in sorted(links.items(), key=lambda x: x[1]) if d >= since]
     save(out / 'gallery.json', gallery)
+    with open(out / 'mentions.csv', 'w', newline='', encoding='utf-8') as f:  # every agent-to-agent mention, whole day
+        w = csv.writer(f)
+        w.writerow(['time_utc', 'date_pt', 'from', 'to', 'room', 'message_id'])
+        w.writerows((t, d, slug[a], slug[b], r, i) for t, d, a, b, r, i in sorted(calls))
     kb = lambda xs: f'{min(xs) / 1e3:.0f}/{median(xs) / 1e3:.0f}/{max(xs) / 1e3:.0f} KB (min/median/max), {sum(xs) / 1e6:.0f} MB'
     print(f'{out.name}/: {len(days)} days {days[0]}..{days[-1]}, {len(active)} agents; day files {kb(sizes)}; '
-          f'agent-day files ({len(extra)}) {kb(extra)}; {len(gallery)} gallery links; '
+          f'agent-day files ({len(extra)}) {kb(extra)}; {len(gallery)} gallery links; {len(calls)} mentions; '
           f'dropped outside the day window: {dict(dropped)}; days outside any village goal: {gaps}')
 
 

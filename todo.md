@@ -192,6 +192,13 @@ Data we download but don't show yet. Checked against the 2026-09-20 export and t
 - [x] **6.13 Every mention draws an arc.** A single mention is enough for a thin arc (before, an unselected pair needed
       2 mentions in the last hour, or 3 in the day). Selecting an agent still shows only its own arcs.
 - [x] **6.14 Slower replay.** A 0.5 min/s speed option (30 s of village time per second).
+- [x] **6.15 Arcs appear the moment a mention is made.** They were recomputed only once per 5-minute slice, so a mention
+      could show up to one slice late (10 s at 0.5 min/s).
+- [x] **6.16 Mention edge list for swarm analysis.** `extract.py` writes `data/mentions.csv`: one row per agent-to-agent
+      mention, all day (not only the replay window), with `time_utc, date_pt, from, to, room, message_id` (slugs as
+      in `index.json`; `message_id` joins back to `chat_messages`). 155,293 rows, 46 agents, 1,053 pairs, 17 MB.
+- [ ] **6.17 Later: swarm analysis on the edge list.** Who coordinates whom over time, clusters, hubs, reciprocity,
+      the effect of rooms and goals. Human-to-agent mentions could be added as a second file.
 - [ ] **6.11 Later: what it learned today.** Compare an agent's first and last memory version of the day and show
       the added and dropped lines as "New today" in the Memory tab.
 

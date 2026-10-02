@@ -409,7 +409,7 @@ function setV(v, jump) {
   }
   let fresh = false;
   while (state.mp < C.length && C[state.mp][0] <= state.v) { say(C[state.mp]); state.mp++; fresh = true; }
-  if (fresh || jump) { feed(); chatSync(); }
+  if (fresh || jump) { computeLive(state.v); feed(); chatSync(); } // arcs appear the moment a mention is made
   $('#clock').textContent = `${longDate(state.date)} · ${hm(state.v)} PT`;
   if (!time.matches(':active')) time.value = Math.floor(state.v);
 }
