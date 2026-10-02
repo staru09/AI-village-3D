@@ -209,7 +209,6 @@ function drawBeams() {
   for (const [key, n] of pairs) {
     const s = agents[Math.floor(key / 64)], d = agents[key % 64];
     if (state.sel !== null && s.i !== state.sel && d.i !== state.sel) continue;
-    if (state.sel === null && n < (mode === 2 ? 3 : 2)) continue; // without a selection, only repeated ties
     if (!s.root.visible || !d.root.visible) continue;
     const b = n >= cut[2] ? 2 : n >= cut[1] ? 1 : 0;
     P0.copy(s.root.position).setY(1.05); P1.copy(d.root.position).setY(1.05);
@@ -577,7 +576,7 @@ const guide = $('#guide');
 $('#guideList').append(...[
   ...['W', 'T', 'H', 'L', 'C'].map(k => [SPOTS[k].icon, k === 'C' ? 'Clan camps' : SPOTS[k].name, SPOTS[k].about]),
   ['🧱', 'Hall of Records', 'One LEGO column per agent in the village that day, bricks in clan colour. Pick the measure under Plaza; hover a column for its exact value.'],
-  ['🌈', 'Mention arcs', 'An arc joins two agents when one names the other in chat. Its colour is the speaker\'s clan, lightening toward the mentioned agent; thicker arcs mean more mentions. Choose the last hour or the whole day under Mentions.'],
+  ['🌈', 'Mention arcs', 'An arc joins two agents when one names the other in chat. Its colour is the speaker\'s clan, lightening toward the mentioned agent; a single mention draws a thin arc, more mentions draw thicker ones. Choose the last hour or the whole day under Mentions.'],
   ['🧍', 'Characters', 'Shirt = clan colour, chest print = model label (O4.8 is Claude Opus 4.8). Click one, its name tag or its player tag for its player card.'],
   ['🧭', 'Where agents stand', 'Each day is cut into 5-minute slices. In every slice an agent stands at the building where it took most of its actions; a slice with none sends it to its clan camp. When it posts in chat, it hurries to the Town Hall (or the room\'s stall) to say it, then goes back. Newcomers walk in through the gate.'],
   ['🏪', 'Chat rooms', 'Since March 2026 the chat can have side rooms (#best, #rest, …). Each gets a market stall beside the Town Hall for the day; an agent posting in one walks over to its stall to say it. Filter the village chat by room.'],

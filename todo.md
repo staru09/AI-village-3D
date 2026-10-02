@@ -189,6 +189,9 @@ Data we download but don't show yet. Checked against the 2026-09-20 export and t
 - [x] **6.12 Clearer Village chat.** Sender badges in the panel; ⤢ (or a click on a message) opens a big chat view
       with every message so far today, full text, mentions, and room/agent/text filters. Speech bubbles now sit above
       the name tags.
+- [x] **6.13 Every mention draws an arc.** A single mention is enough for a thin arc (before, an unselected pair needed
+      2 mentions in the last hour, or 3 in the day). Selecting an agent still shows only its own arcs.
+- [x] **6.14 Slower replay.** A 0.5 min/s speed option (30 s of village time per second).
 - [ ] **6.11 Later: what it learned today.** Compare an agent's first and last memory version of the day and show
       the added and dropped lines as "New today" in the Memory tab.
 
