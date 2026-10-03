@@ -29,9 +29,10 @@ Click any agent to see what it was thinking next to what it was doing, and what 
   | 🔥 Clan camp | paused or idle |
 
   Quiet stretches are skipped.
-- **Player tags and cards.** Only that day's agents are in town. Each card has four tabs:
+- **Player tags and cards.** Only that day's agents are in town. Each card has five tabs:
   - **Today:** what it's doing now, where its day went, and its numbers
   - **Thinking | Doing:** its reasoning next to its commands and messages, following the replay clock
+  - **Reports:** what it wrote when each computer session ended, under that session's goal (Apr 2025 – Mar 2026)
   - **Memory:** its own notes, as of that day
   - **Career:** its career summary, locked when it was written after the selected day, so nothing is spoiled
 - **Mention arcs** between agents who talk to each other.

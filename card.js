@@ -1,4 +1,4 @@
-// The player card: one agent's day in tabs (Today, Thinking | Doing, Memory, Career).
+// The player card: one agent's day in tabs (Today, Thinking | Doing, Reports, Memory, Career).
 import { SPOTS } from './town.js';
 import { $, el, pct, count, fmt, dur, YMD, longDate, bold, rich, IX, state, D, M, agents, SLICES, hm } from './core.js';
 import { flyTo } from './scene.js';
@@ -21,7 +21,7 @@ function notesOf(a) { // lazy per-agent-day file: undefined = not asked, null = 
   return a.notes;
 }
 
-const TABS = [['today', 'Today'], ['td', 'Thinking | Doing'], ['mem', 'Memory'], ['career', 'Career']];
+const TABS = [['today', 'Today'], ['td', 'Thinking | Doing'], ['rep', 'Reports'], ['mem', 'Memory'], ['career', 'Career']];
 const sec = (title, body, open = true) => el('details', { open }, el('summary', { textContent: title }), body);
 const loadingLine = () => el('p', { className: 'empty', textContent: 'Loading notes…' });
 
@@ -106,6 +106,20 @@ const PANES = {
     return [el('div', { className: 'td' },
       col('💭 Thinking', think, n === null ? 'Loading reasoning…' : 'Nothing yet at this time of day.'),
       col('⚒️ Doing', doing, 'Nothing yet at this time of day.'))];
+  },
+  rep(a) { // its own report at the end of each computer session (with the goal the session started with), newest first
+    const n = notesOf(a);
+    if (n === null) return [loadingLine()];
+    const reps = (n.reports || []).filter(r => r[0] <= state.v).reverse(); // only those written by the replay clock
+    if (!reps.length) return [el('p', { className: 'empty', textContent: n.reports?.length ? 'No session has ended yet at this time of day.'
+      : state.date >= '2026-03-24' ? 'Agents stopped writing session reports on 24 Mar 2026: since then they stay in one long computer session. The Memory tab has what it knew.'
+      : `${a.name} wrote no session report this day.` })];
+    return [el('p', { className: 'meta', textContent: 'What it wrote when each computer session ended, newest first, under the goal the session started with.' }),
+      ...reps.map(([v, text], k) => {
+        const g = a.intents.findLast(t => t[0] <= v); // [v, short goal, goal]: the latest one set before the report
+        return sec(`${g ? `${hm(g[0])}–` : ''}${hm(v)} · ${g ? g[1] : 'Session report'}`, el('div', { className: 'prose' },
+          ...(g?.[2] && g[2] !== g[1] ? [el('p', { className: 'goal' }, el('b', { textContent: '🎯 Goal: ' }), g[2])] : []), ...rich(text)), !k);
+      })];
   },
   mem(a) {
     const n = notesOf(a), m = n?.memory;

@@ -282,6 +282,9 @@ add median 164k, max 524k.
       2026-09-07).
 - [x] **6.21 Session reports in the data.** 25,937 reports (Apr 2025 – Mar 2026) as `reports: [[v, text]]` in the
       agent-day files (+98 MB, whole).
+- [x] **6.22 Reports tab.** A player-card tab after Thinking | Doing: the agent's session reports up to the replay
+      clock, newest first. Each sits under the session goal set before it (time span, short goal, then the whole goal).
+      Empty states say when no session has ended yet, and that reports stop on 24 Mar 2026.
 - [x] **6.7 Chat rooms as places.** 16 rooms since Mar 2026 (`chat_rooms`); 99 days use 2–3 rooms.
       Each extra room gets a market stall north-east of the Town Hall; agents chatting there stand at its stall. The
       Village chat filters by room.

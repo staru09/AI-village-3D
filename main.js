@@ -118,7 +118,7 @@ function setV(v, jump) {
 
 function slowUi() { // once per slice
   tally();
-  if (state.sel !== null && (state.tab === 'today' || state.tab === 'td')) drawer(false);
+  if (state.sel !== null && ['today', 'td', 'rep'].includes(state.tab)) drawer(false); // the tabs that follow the clock
 }
 
 gallery({ scene, state, IX, el, fmt, longDate, YMD, CLAN_COLOR });
