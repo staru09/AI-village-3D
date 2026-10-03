@@ -2,3 +2,6 @@
 frontend/data
 data.json
 __pycache__/
+# Honcho pilot: the cloned server (with its .env holding the API key) and the snapshots (dataset content)
+honcho/server/
+honcho/out/

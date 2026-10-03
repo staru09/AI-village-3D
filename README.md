@@ -59,6 +59,7 @@ Click any agent to see what it was thinking next to what it was doing, and what 
 | ├ `town.js`, `gallery.js` | the town and the building descriptions; the gallery |
 | ├ `assets/` | Kenney CC0 models (see `assets/LICENSE.md`) |
 | └ `data/` | built by `extract.py`, git-ignored |
+| `honcho/` | experiment, `honcho` branch: an agent's memory built day by day in a local Honcho (see `honcho/README.md`) |
 | `deploy/` | Caddy config, deploy script, and `update.sh` (daily cron: rebuild and publish when the dataset has a new export) |
 | `todo.md` | what's done and what's next |
 

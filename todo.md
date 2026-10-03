@@ -170,6 +170,14 @@ room, and the day recap gives the whole day away at 10:00.
 
 Order: A first (free, about a day of work), then 10.6 on a sample of days, then the rest.
 
+**D. Agent memory with Honcho (experiment, `honcho` branch)**
+- [ ] **10.14 Honcho pilot.** A local Honcho (`honcho/up.sh`: Docker, API on 127.0.0.1:8000) gets one agent's days one
+      at a time (`honcho/pilot.py`): the day's chat as context, the agent's own chat, actions, reasoning and note changes
+      as its messages, only the agent observed. After each day a snapshot (peer card, conclusions, answers to five
+      questions) goes to `honcho/out/`, since Honcho can't answer "as of day N" later. Done: setup, o4-mini (1 day),
+      GLM-5.3 Flash day 1. Next: all 16 GLM-5.3 Flash days, then the blind comparison with its own notes and a plain
+      Claude call (15 questions with known answers). If it wins: a "What Honcho learned" view in the Memory tab.
+
 # Reference
 
 ## What the data allows
