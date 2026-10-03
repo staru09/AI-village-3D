@@ -13,7 +13,7 @@ HOUR = 3600 // SLICE
 STRAY = 2  # an edge hour with a single active agent-slice is a stray (2026-02-24 07:xx); busier edges are real work
 PTZ = ZoneInfo('America/Los_Angeles')
 PERMA = '2026-03-24'  # perma-computer-use: before it, history searches were events, after it, turns
-THINK, THINKS, MEMORY, LONG = 400, 150, None, 20000  # excerpt chars, excerpts per agent-day, memory chars (None: whole), recap chars
+THINK, THINKS, LONG = 400, 150, 20000  # excerpt chars, excerpts per agent-day, recap chars
 HALL = {'send_message_back_to_chat', 'move_to_room', 'request_approval_for_unsolicited_outreach',
         'request_Google_sign_in', 'request_human_helper'}
 CLANS = {'Google': ('gemini',), 'Anthropic': ('claude',), 'OpenAI': ('gpt', 'o1', 'o3', 'o4'),  # colour-palette slot order;
@@ -176,11 +176,11 @@ def thought(msg, n=THINK):
     return '\n'.join(dict.fromkeys(t.strip() for t in thoughts(msg) if isinstance(t, str) and t.strip()))[:n]
 
 
-def said(o):
+def visible(o):
     """Visible text in a model response: Anthropic text blocks, OpenAI output_text, Gemini non-thought parts, chat content."""
     if isinstance(o, list):
         for v in o:
-            yield from said(v)
+            yield from visible(v)
     elif isinstance(o, dict):
         if o.get('type') in ('text', 'output_text') or 'text' in o and 'type' not in o and o.get('thought') is not True:
             yield o.get('text')
@@ -188,12 +188,12 @@ def said(o):
             yield o['content']
         for v in o.values():
             if isinstance(v, (dict, list)):
-                yield from said(v)
+                yield from visible(v)
 
 
 def last_words(o):
     """The response that ended a computer session -> what the agent thought, then said, as it stopped ('' = neither)."""
-    words = '\n'.join(dict.fromkeys(t.strip() for t in said(o) if isinstance(t, str) and t.strip()))
+    words = '\n'.join(dict.fromkeys(t.strip() for t in visible(o) if isinstance(t, str) and t.strip()))
     return '\n\n'.join(filter(None, (thought(o, None), words)))
 
 
@@ -232,6 +232,34 @@ def link(u):
         private = False
     junk = any(c in u for c in '[{}$…”') or p.username or host.endswith('example.com')  # [REDACTED], {gameId}, ${TOKEN},
     return None if private or junk else u                                               # cut-off text, user:token@ remotes
+
+
+def goal_stories(summaries, days):
+    """Goal summaries -> ([[segment, written, 'goal' | 'checkpoint', readable from, text]], targets matching no goal).
+    Each goal summary goes to its goal segment (core.js SEGS: a run of days with the same goal), the latest
+    written wins; a checkpoint (the story so far) unlocks on its summary_date. updated_at is when it was written: a live
+    goal's row is created at its start ('pick-your-own-goal' on 2026-02-16, then rewritten for the next such goal)."""
+    segs = []  # [first date, day numbers, goal]
+    for x in days:
+        if segs and segs[-1][2] == x['goal']:
+            segs[-1][1].append(x['day'])
+        else:
+            segs.append([x['date'], [x['day']], x['goal']])
+    stories, checks, lost = {}, [], []
+    for r in sorted(summaries, key=lambda r: r['updated_at']):
+        if r['type'] in ('goal', 'goal-checkpoint'):
+            written = pt(r['updated_at'])[0]
+            k = segment(r['summary_target'], written, segs)
+            if k is None:
+                lost.append(r['summary_target'])
+            elif r['type'] == 'goal':
+                stories[k] = [k, written, 'goal', written, untag(r['content'])]
+            else:
+                checks.append([k, written, 'checkpoint', r['summary_date'], untag(r['content'])])
+    for c in checks:  # a checkpoint repeating its goal's story: that story is safe to read from the checkpoint's date
+        if (s := stories.get(c[0])) and s[4] == c[4]:
+            s[3], c[4] = min(s[3], c[3]), None
+    return sorted([*stories.values(), *(c for c in checks if c[4])], key=lambda e: e[0]), lost  # per goal: story, checkpoints
 
 
 def save(path, obj):
@@ -306,25 +334,20 @@ def main():
 
     for e in recent(snap, 'events.jsonl.gz', since):
         x, kind = e['data'], e['data'].get('actionType')
+        (d, s), a = pt(e['created_at']), x.get('agentId')
         if kind == 'CONSOLIDATE' or kind == 'SEARCH_HISTORY' and e['created_at'] < PERMA:
-            d, s = pt(e['created_at'])
-            counts[d, x['agentId']][s // SLICE]['L'] += 1
-            stats[d, x['agentId']]['memory' if kind == 'CONSOLIDATE' else 'searches'] += 1
+            counts[d, a][s // SLICE]['L'] += 1
+            stats[d, a]['memory' if kind == 'CONSOLIDATE' else 'searches'] += 1
         elif kind == 'ENTER_ROOM':
-            d, s = pt(e['created_at'])
-            enter[d, x['agentId']].append((s, room[x['roomId']]))
+            enter[d, a].append((s, room[x['roomId']]))
         elif kind == 'PAUSE':  # since PERMA, pause turns repeat these same pauses: events alone cover both eras
-            d, s = pt(e['created_at'])
-            pauses[d, x['agentId']].append((s, int(x['seconds'])))
+            pauses[d, a].append((s, int(x['seconds'])))
         elif kind == 'USER_TALK':  # the AI Digest team, viewers while the chat was public (2025), 'automated' notices
-            d, s = pt(e['created_at'])
             humans[d].append((s, x['speakerName'], cut(x['content'], 1500), mentions(x['content'] or '', None), room[x['roomId']]))
         elif kind == 'STOP_USING_COMPUTER' and (x.get('summary') or '').strip():
-            d, s = pt(e['created_at'])
-            reports[d, x['agentId']].append((s, x['summary'].strip(), last_words(x.get('output'))))
-        elif a := ask(x):
-            d, s = pt(e['created_at'])
-            asks[d].append((s, x['agentId'], *a, room.get(x.get('roomId'), 'general')))  # no roomId before rooms existed
+            reports[d, a].append((s, x['summary'].strip(), last_words(x.get('output'))))
+        elif q := ask(x):
+            asks[d].append((s, a, *q, room.get(x.get('roomId'), 'general')))  # no roomId before rooms existed
 
     for t in recent(snap, 'computer_use_turns.jsonl.gz', since):
         agent, a = sess_agent.get(t['session_id']), t['agent_action']
@@ -374,7 +397,7 @@ def main():
                     first_bash(k, s, u['input']['command'], u['id'])
 
     by_day = defaultdict(list)
-    for d, a in set(counts) | set(said):
+    for d, a in sorted(set(counts) | set(said)):  # sorted: set order changes per run, and the index would with it
         if d >= since:
             by_day[d].append(a)
     days = sorted(by_day)
@@ -390,7 +413,7 @@ def main():
             continue
         i = bisect_left(ds, pt(r['created_at'])[0])
         if i < len(ds) and r['created_at'] > memo.get((ds[i], a), ('',))[0]:
-            memo[ds[i], a] = (r['created_at'], r['content'][:MEMORY])
+            memo[ds[i], a] = (r['created_at'], r['content'])
 
     vgoals = sorted(rows(snap, 'village_goals.jsonl.gz'), key=lambda g: g['start_time'])
     agoals = sorted(rows(snap, 'agent_goals.jsonl.gz'), key=lambda g: g['start_time'] or '')
@@ -417,60 +440,58 @@ def main():
         order = [a for a in order if any(map(inside, (*counts[d, a], *said[d, a])))]  # active only in a trimmed stray: not here
         idx = {a: n for n, a in enumerate(order)}
         o, base, span = open_h * HOUR, open_h * 3600, hours * 3600
+        win = range(base, base + span)  # the day's window, in seconds since PT midnight
         at_open = datetime.fromisoformat(f'{d} {open_h:02}:00').replace(tzinfo=PTZ).astimezone(timezone.utc).isoformat(' ')[:19]
         vg = [g for g in vgoals if g['start_time'] <= at_open]
         if not vg or (vg[-1]['end_time'] or '~') <= at_open:
             gaps.append(d)
         (dd := out / 'days' / d).mkdir(exist_ok=True)
-        used = {r for s, *_, r in (*chat[d], *asks[d]) if base <= s < base + span} | {r for s, *_, r in humans[d] if s < base + span} | \
-               {r for a in order for s, r in enter[d, a] if base <= s < base + span}
+        used = {r for s, *_, r in (*chat[d], *asks[d]) if s in win} | {r for s, *_, r in humans[d] if s < base + span} | \
+               {r for a in order for s, r in enter[d, a] if s in win}
+        pairs = Counter((src, x) for _, src, _, to, _ in chat[d] for x in to if src in idx and x in idx)  # who mentioned whom
         rooms = ['general', *sorted(used - {'general'})]
         agents = []
         for a in order:
             k, name = (d, a), names[a]
-            partners = Counter()
-            for _, src, _, to, _ in chat[d]:
-                for x in to:
-                    if src == a and x in idx: partners[(x, 0)] += 1
-                    if x == a and src in idx: partners[(src, 1)] += 1
-            tops = Counter()
-            for (p, _), n in partners.items():
-                tops[p] += n
+            tops = Counter()  # mentions both ways, partners in order of first mention
+            for (x, y), n in pairs.items():
+                if a in (x, y):
+                    tops[y if x == a else x] += n
             g = next((g for g in reversed(agoals) if g['agent_id'] == a and g['from'] <= d < g['to']), {})
             ins = sorted((s - base, short, goal) for s, short, goal in intents[k])
             dropped['intents'] += sum(not 0 <= v < span for v, *_ in ins)
             sofar[a].update(days=1, turns=stats[k]['turns'], messages=stats[k]['messages'])
-            errors = sorted([s - base, t] for s, t in fails[k] if base <= s < base + span)
+            errors = sorted([s - base, t] for s, t in fails[k] if s in win)
             agents.append({
                 'slug': slug[a], 'name': name, 'model': everyone[a]['model_string'], 'clan': clan[a], 'label': label(name),
                 'joined': active[a][0],
                 'role': g.get('short_name') or '', 'goal': cut(g.get('name'), 300), 'note': cut(g.get('description'), 300),
                 'track': track({s - o: c for s, c in counts[k].items()}, {s - o for s in said[k]}, hours * HOUR),
                 'stats': dict(stats[k]),
-                'partners': [[idx[p], partners[(p, 0)], partners[(p, 1)]] for p, _ in tops.most_common(8)],
+                'partners': [[idx[p], pairs[a, p], pairs[p, a]] for p, _ in tops.most_common(8)],
                 'intents': [i for i in ins if 0 <= i[0] < span],
                 'bash': {s - o: line for s, (_, line, _) in sorted(bash[k].items())},
                 'sofar': dict(sofar[a]),
-                'enter': sorted([s - base, rooms.index(r)] for s, r in enter[k] if base <= s < base + span),
+                'enter': sorted([s - base, rooms.index(r)] for s, r in enter[k] if s in win),
                 'fails': [v for v, _ in errors],
-                'pauses': sorted([s - base, n] for s, n in pauses[k] if base <= s < base + span),
+                'pauses': sorted([s - base, n] for s, n in pauses[k] if s in win),
             })
             memory[a] = memo.get(k) or memory.get(a)
-            th = sorted((s, t) for t, s in think[k].items() if base <= s < base + span)
+            th = sorted((s, t) for t, s in think[k].items() if s in win)
             th = [th[i * len(th) // THINKS] for i in range(THINKS)] if len(th) > THINKS else th  # evenly over the day
             mem = None
             if memory[a]:
                 md, ms = pt(memory[a][0])
                 mem = {'written': f'{md} {ms // 3600:02}:{ms % 3600 // 60:02}', 'text': memory[a][1]}
             extra.append(save(dd / f'{slug[a]}.json', {'memory': mem, 'thinking': [[s - base, t] for s, t in th], 'errors': errors,
-                                                      'reports': sorted([s - base, t, w] for s, t, w in reports[k] if base <= s < base + span),
+                                                      'reports': sorted([s - base, t, w] for s, t, w in reports[k] if s in win),
                                                       'replies': {s - o: said_back[r] for s, (*_, r) in sorted(bash[k].items()) if r in said_back}}))
         messages = sorted([s - base, idx[src], text, [idx[x] for x in to if x in idx], rooms.index(r)]
-                          for s, src, text, to, r in chat[d] if base <= s < base + span)
+                          for s, src, text, to, r in chat[d] if s in win)
         # humans from PT midnight on: goal announcements and 'resuming the village' come just before the window opens (v < 0)
         human = sorted([s - base, who, text, [idx[x] for x in to if x in idx], rooms.index(r)]
                        for s, who, text, to, r in humans[d] if s < base + span)
-        asked = sorted([s - base, idx[a], icon, text, rooms.index(r)] for s, a, icon, text, r in asks[d] if a in idx and base <= s < base + span)
+        asked = sorted([s - base, idx[a], icon, text, rooms.index(r)] for s, a, icon, text, r in asks[d] if a in idx and s in win)
         dropped['messages'] += len(chat[d]) - len(messages)
         dropped['human'] += len(humans[d]) - len(human)
         dropped['asks'] += len(asks[d]) - len(asked)
@@ -493,31 +514,8 @@ def main():
                    for a, ds in sorted(active.items(), key=lambda x: x[1][0])},
         'days': index_days,
     })
-    # goal stories: each goal summary goes to its goal segment (core.js SEGS: a run of days with the same goal), the latest
-    # written wins; a checkpoint (the story so far) unlocks on its summary_date. updated_at is when it was written: a live
-    # goal's row is created at its start ('pick-your-own-goal' on 2026-02-16, then rewritten for the next such goal).
-    segs = []  # [first date, day numbers, goal]
-    for x in index_days:
-        if segs and segs[-1][2] == x['goal']:
-            segs[-1][1].append(x['day'])
-        else:
-            segs.append([x['date'], [x['day']], x['goal']])
-    stories, checks, lost = {}, [], []
-    for r in sorted(summaries, key=lambda r: r['updated_at']):
-        if r['type'] in ('goal', 'goal-checkpoint'):
-            written = pt(r['updated_at'])[0]
-            k = segment(r['summary_target'], written, segs)
-            if k is None:
-                lost.append(r['summary_target'])
-            elif r['type'] == 'goal':
-                stories[k] = [k, written, 'goal', written, untag(r['content'])]
-            else:
-                checks.append([k, written, 'checkpoint', r['summary_date'], untag(r['content'])])
-    for c in checks:  # a checkpoint repeating its goal's story: that story is safe to read from the checkpoint's date
-        if (s := stories.get(c[0])) and s[4] == c[4]:
-            s[3], c[4] = min(s[3], c[3]), None
-    goals = sorted([*stories.values(), *(c for c in checks if c[4])], key=lambda e: e[0])  # per goal: story, checkpoints
-    print(f'goals.json: {len(goals)} stories for {len(stories)} goals, {save(out / "goals.json", goals) / 1e3:.0f} KB; '
+    goals, lost = goal_stories(summaries, index_days)
+    print(f'goals.json: {len(goals)} stories for {sum(g[2] == 'goal' for g in goals)} goals, {save(out / "goals.json", goals) / 1e3:.0f} KB; '
           f'{len(lost)} goal summaries matched no goal: {lost}')
     gallery = [[u, d, slug[a]] for u, (_, d, a) in sorted(links.items(), key=lambda x: x[1]) if d >= since]
     save(out / 'gallery.json', gallery)

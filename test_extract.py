@@ -1,6 +1,6 @@
 """Self-check for the pure helpers in extract.py: python3 test_extract.py -> ok"""
 from collections import Counter
-from extract import URL, ask, building, cc_building, clan_of, label, last_words, link, mentions_of, pt, reply, segment, slugify, thought, track, untag
+from extract import URL, ask, building, cc_building, clan_of, goal_stories, label, last_words, link, mentions_of, pt, reply, segment, slugify, thought, track, untag
 
 mentions = mentions_of({'a': 'GPT-5', 'b': 'GPT-5.1', 'c': 'DeepSeek-V3.2', 'd': 'Claude Opus 4.8'})
 assert mentions('@GPT-5.1 and GPT-5: ping DeepSeek‑V3.2, then gpt-5 again', 'd') == ['b', 'a', 'c']  # longest name wins
@@ -101,4 +101,15 @@ chat = ('see [site](https://x.io/a/). and **https://x.io/b_(c)**, [https://x.io/
         'http://localhost:3000/x http://127.0.0.1 http://0.0.0.0:8000/ http://192.168.1.2/y https://x.io/?k=[REDACTED] https://x.io/{id} https://me:TOKEN@github.com/x https://example.com/a')
 assert [link(u) for u in URL.findall(chat)] == ['https://x.io/a', 'https://x.io/b_(c)', 'https://x.io/a', 'https://x.io/d?q=1',
                                                  None, None, None, None, None, None, None, None]  # trailing / is the same link
+
+# goal stories: a checkpoint that repeats its goal's story folds into it (readable from the checkpoint's date)
+days = [{'date': '2025-04-02', 'day': 1, 'goal': 'Raise money for charity'}, {'date': '2025-04-03', 'day': 2, 'goal': 'Raise money for charity'},
+        {'date': '2025-04-04', 'day': 3, 'goal': 'Write a story'}]
+summ = lambda kind, target, at, text, on=None: {'type': kind, 'summary_target': target, 'updated_at': at, 'content': text, 'summary_date': on}
+assert goal_stories([summ('goal', 'raise-money-for-charity', '2025-04-05 12:00:00', 'Story A'),
+                     summ('goal-checkpoint', '1-2', '2025-04-03 12:00:00', 'Story A', '2025-04-03'),
+                     summ('goal-checkpoint', '3-3', '2025-04-04 23:00:00', 'So far', '2025-04-04'),
+                     summ('goal', 'unknown-goal', '2025-04-05 12:00:00', 'x')], days) == \
+       ([[0, '2025-04-05', 'goal', '2025-04-03', 'Story A'], [1, '2025-04-04', 'checkpoint', '2025-04-04', 'So far']], ['unknown-goal'])
+
 print('ok')
