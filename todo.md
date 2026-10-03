@@ -253,6 +253,9 @@ Data we download but don't show yet. Checked against the 2026-09-20 export and t
 - [x] **8.13 An "i" on every building sign.** Workshop, Watchtower, Town Hall, Library, Hall of Records, Gallery and the
       chat-room stalls. It opens a small card next to the sign with that building's ⓘ guide entry (one text, two
       places), and closes on Escape or a click elsewhere. A click on the sign itself still flies the camera there.
+- [x] **8.14 Counters show and hide.** A round 📊 button beside the counters (top right) shows or hides them. Hidden
+      at first, gold while they show, and the choice is remembered in the browser. On phones the 📊 heads the column
+      on the right edge.
 - [x] **8.5 Frontend split into modules** (branch `refactor`). `main.js` (954 lines) became `core.js`, `scene.js`,
       `characters.js`, `arcs.js`, `plaza.js`, `chat.js`, `card.js`, `panels.js` and a 285-line `main.js`. The CSS moved
       to `styles.css`. Plain ES modules, no build step. The loaded day changes only through `setDay()` in `core.js`, and

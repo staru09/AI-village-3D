@@ -46,6 +46,15 @@ const counters = [
   return () => { b.textContent = fmt(f()); };
 });
 
+// the counters show and hide with the 📊 button beside them: hidden at first, the choice is remembered in this browser
+const showCounters = on => {
+  $('#counters').hidden = !on;
+  Object.assign($('#countersBtn'), { ariaPressed: on, title: `${on ? 'Hide' : 'Show'} the counters` });
+  try { localStorage.counters = on ? 1 : ''; } catch { /* storage blocked */ }
+};
+$('#countersBtn').onclick = () => showCounters($('#counters').hidden);
+try { showCounters(!!localStorage.counters); } catch { showCounters(false); }
+
 export function tally() { // counters and signs: who stands where
   counters.forEach(f => f());
   for (const [k, e] of Object.entries(signs)) e.querySelector('b').textContent = agents.filter(a => a.spot === k).length;
