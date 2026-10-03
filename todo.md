@@ -92,6 +92,15 @@ Your four items, split into small issues. **Decide** marks a choice we still nee
       paused state on screen.
 - [ ] **3.6 Speeds.** Add real time (1×) and 10 s/s; retune the default.
 - [ ] **3.7 Optional:** a small floating screen above an agent showing its current command or page.
+- [ ] **3.8 Day and night follow the village clock.** The light changes with the replay time (Pacific time):
+      - **Sun:** its height and direction come from the date and hour at the village's real location (California),
+        so winter days get dark earlier than summer days.
+      - **Colours:** a warm morning, a bright midday, a golden evening, then dusk and night. The sky and fog colours,
+        and the strength of the sun and the ambient light, change smoothly with it.
+      - **At dusk and at night:** the lanterns, the campfires and the building windows glow.
+
+      Village hours are mostly 9:00 to 18:00 PT, so most of a day is daylight with an evening at the end. Late
+      sessions reach dusk. The lights are in `main.js` on `dev` (`scene.js` on the `refactor` branch).
 
 ## 4. Player tags and summaries (done)
 
