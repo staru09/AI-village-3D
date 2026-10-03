@@ -31,6 +31,10 @@ await document.fonts.load('28px "Lilita One"');
 export const DAYS = IX.days, DAY = Object.fromEntries(DAYS.map((d, k) => [d.date, { ...d, k }]));
 export const SLUGS = Object.keys(IX.agents);
 export const clans = IX.clans.map(name => ({ name, color: CLAN_COLOR[name] || '#8a7a66' }));
+// goal segments, runs of days with the same village goal: { a, b (first and last day's k), goal }; state.seg is the
+// goal filter, an index in SEGS or -1 for all days
+export const SEGS = [];
+DAYS.forEach((d, k) => { const s = SEGS.at(-1), goal = d.goal || 'No village goal recorded'; if (s?.goal === goal) s.b = k; else SEGS.push({ a: k, b: k, goal }); });
 
 // The loaded day; everything below that reads these is rebuilt by loadDay(). M: agent messages [v, agent, text, mentioned, room];
 // C: what the chat shows, M plus human messages and requests to humans, [v, agent or HUMAN, text, mentioned, room, name or icon].
@@ -41,6 +45,6 @@ export function setDay(o) { // loadDay() hands over the new day here; a key left
   ({ D = D, M = M, C = C, agents = agents, END = END, SLICES = SLICES, dayPairs = dayPairs, dayGroup = dayGroup, gaps = gaps, roomSigns = roomSigns } = o);
 }
 
-export const state = { v: 0, slice: -1, playing: true, speed: 300, sel: null, mp: 0, fly: null, names: true, tab: 'today', clan: null, open: new Set() };
+export const state = { v: 0, slice: -1, playing: true, speed: 300, sel: null, mp: 0, fly: null, names: true, tab: 'today', seg: -1, makers: new Set(), open: new Set() };
 export const hm = v => { const m = Math.round(D.open * 60) + Math.floor(v / 60); return `${pad(Math.floor(m / 60) % 24)}:${pad(m % 60)}`; };
 export function lowerBound(v, A = M) { let lo = 0, hi = A.length; while (lo < hi) { const mid = (lo + hi) >> 1; if (A[mid][0] < v) lo = mid + 1; else hi = mid; } return lo; }

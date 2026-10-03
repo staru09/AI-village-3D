@@ -2,12 +2,13 @@
 // Data: data/index.json and data/days/<date>.json from extract.py; player-card notes load lazily from
 // data/days/<date>/<agent>.json. Scenery: town.js. Models: Kenney CC0 kits in assets/.
 // Modules: core.js (helpers, index, replay state, the loaded day) · scene.js (3D stage, camera, walk mode) · characters.js
-// · arcs.js (mention arcs) · plaza.js (Hall of Records) · chat.js · card.js (player card) · panels.js · town.js · gallery.js.
+// · arcs.js (mention arcs) · plaza.js (Hall of Records) · chat.js · card.js (player card) · portrait.js (its picture)
+// · panels.js · town.js · gallery.js.
 import * as THREE from 'three';
 import { CSS2DObject } from 'three/addons/renderers/CSS2DRenderer.js';
 import { PLAZA, ROOMS, SPOTS, WALL } from './town.js';
 import { gallery } from './gallery.js';
-import { $, el, fmt, dur, YMD, longDate, bold, rich, CLAN_COLOR, HUMAN, IX, DAYS, DAY, SLUGS, state, setDay, D, M, C, agents,
+import { $, el, fmt, dur, YMD, longDate, bold, rich, CLAN_COLOR, HUMAN, IX, DAYS, DAY, SEGS, SLUGS, state, setDay, D, M, C, agents,
   END, SLICES, dayGroup, dayPairs, gaps, hm, lowerBound } from './core.js';
 import { manager, canvas, renderer, css, scene, camera, controls, HOME, town, flyTo, walker, lib } from './scene.js';
 import { ANIM, SKINS, pickables, spawn, play, place } from './characters.js';
@@ -28,6 +29,27 @@ $('#names').onclick = e => { state.names = !state.names; e.currentTarget.setAttr
 const stepDay = k => { const d = DAYS[DAY[state.date].k + k]; if (d) loadDay(d.date); };
 $('#prevDay').onclick = () => stepDay(-1);
 $('#nextDay').onclick = () => stepDay(1);
+// browse by goal: while a goal segment is picked, ◀ ▶ step through its days only (nav() disables them at its ends)
+const goalPick = $('#goalPick'), span = new Intl.DateTimeFormat('en-US', { ...YMD, timeZone: 'UTC' }), noon = k => new Date(`${DAYS[k].date}T12:00:00Z`);
+goalPick.append(el('option', { value: -1, textContent: 'All days' }), ...SEGS.map((s, k) => el('option', { value: k, title: s.goal,
+  textContent: `${span.formatRange(noon(s.a), noon(s.b))} · ${s.goal.length > 40 ? `${s.goal.slice(0, 39)}…` : s.goal} (${s.b - s.a + 1} day${s.b > s.a ? 's' : ''})` })));
+goalPick.onchange = () => { state.seg = +goalPick.value; if (state.seg >= 0) loadDay(DAYS[SEGS[state.seg].a].date); else nav(); };
+function nav() { // ◀ ▶, the goal picker and the URL follow the loaded day and the goal filter
+  const k = DAY[state.date]?.k, s = SEGS[state.seg];
+  $('#prevDay').disabled = !(k > (s ? s.a : 0));
+  $('#nextDay').disabled = !(k < (s ? s.b : DAYS.length - 1));
+  goalPick.value = state.seg;
+  goalPick.title = s ? s.goal : 'Browse the village by goal';
+  Object.assign($('#goalNow'), { textContent: s ? `🎯 ${s.goal}` : '', title: s ? s.goal : '' });
+  const u = new URL(location);
+  u.searchParams.set('date', state.date);
+  if (s) u.searchParams.set('goal', state.seg); else u.searchParams.delete('goal');
+  history.replaceState(null, '', u);
+}
+// the header starts compact (day, date, clock, ◀ ▶); ▾ opens the full panel with the calendar and the goal picker
+const titleOpen = o => { $('#title').classList.toggle('open', o); $('#titleToggle').ariaExpanded = o; try { localStorage.titleOpen = o ? 1 : ''; } catch { /* storage blocked */ } };
+$('#titleToggle').onclick = () => titleOpen($('#titleToggle').ariaExpanded !== 'true');
+try { titleOpen(!!localStorage.titleOpen); } catch { /* storage blocked: stays compact */ }
 addEventListener('keydown', e => {
   if (e.target.closest?.('input, select, button, dialog, [popover]') || walker.isLocked) return; // buttons handle Space themselves
   if (e.code === 'Space') { e.preventDefault(); playBtn.click(); }
@@ -146,17 +168,15 @@ async function loadDay(date) {
 
   const n = DAY[date]?.day ?? D.day;
   $('#range').textContent = `Day ${n}`;
+  $('#dayNo').textContent = `Day ${n} · `;
   document.title = `AI Village · Day ${n} · ${longDate(date, YMD)}`;
-  $('#prevDay').disabled = !(DAY[date]?.k > 0);
-  $('#nextDay').disabled = !(DAY[date]?.k < DAYS.length - 1);
+  if (state.seg >= 0) state.seg = SEGS.findIndex(s => s.a <= DAY[date]?.k && DAY[date].k <= s.b); // a day outside the goal filter switches to its goal
+  nav();
   time.max = END - 1;
   $('#ticks').replaceChildren(...Array.from({ length: Math.ceil(D.hours) }, (_, h) =>
     Object.assign(el('span', { textContent: hm(h * 3600) }), { style: `left:${(100 * h * 3600) / END}%` })));
   $('#recap').replaceChildren(el('div', { className: 'goal' }, el('b', { textContent: 'Village goal: ' }), ...bold(D.goal || DAY[date]?.goal || 'none recorded')),
     ...(D.recap ? rich(D.recap) : [el('p', { className: 'empty', textContent: 'No recap was written for this day.' })]));
-  const u = new URL(location);
-  u.searchParams.set('date', date);
-  history.replaceState(null, '', u);
 
   state.slice = -1; state.sel = null; state.open.clear();
   roster();
@@ -202,8 +222,9 @@ document.addEventListener('mousedown', () => {
 });
 
 // ---------- first day, then the main loop ----------
-const want = new URLSearchParams(location.search).get('date');
-if (!(await loadDay(DAY[want] ? want : DAYS.at(-1).date))) {
+const q = new URLSearchParams(location.search), want = q.get('date');
+if (SEGS[q.get('goal')]) state.seg = +q.get('goal'); // ?goal= alone opens the goal's first day; with a date, the date wins
+if (!(await loadDay(DAY[want] ? want : state.seg >= 0 ? DAYS[SEGS[state.seg].a].date : DAYS.at(-1).date))) {
   $('#loadmsg').textContent = $('#busy').textContent;
   throw new Error('first day failed to load');
 }

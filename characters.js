@@ -40,7 +40,7 @@ export function spawn(a) {
   a.root = new THREE.Group();
   a.root.visible = false;
   dayGroup.add(a.root);
-  gltf(`assets/characters/character-${SKINS[a.skin]}.glb`).then(m => {
+  a.ready = gltf(`assets/characters/character-${SKINS[a.skin]}.glb`).then(m => {
     if (a.gone) return; // the day changed while the model loaded
     const body = m.scene.clone();
     let orig;
@@ -53,6 +53,7 @@ export function spawn(a) {
     a.clips = Object.fromEntries(m.animations.map(c => [c.name, a.mixer.clipAction(c)]));
     a.anim = null;
     play(a, a.want || 'idle');
+    return m.scene; // never animated: the standing pose, for the card portrait
   });
   const tag = el('div', { className: 'tag', textContent: a.label, title: `${a.name} · ${a.role || a.clan}` });
   tag.style.background = a.color;

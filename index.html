@@ -27,9 +27,12 @@
     <h1 class="game outline">AI Village · <span id="range"></span></h1>
     <div id="clockRow">
       <button id="prevDay" class="btn nav" aria-label="Previous village day">◀</button>
-      <button id="dateBtn" class="game outline" popovertarget="cal" aria-haspopup="dialog" aria-expanded="false" aria-label="Pick a day"><span id="clock"></span><small>📅</small></button>
+      <button id="dateBtn" class="game outline" popovertarget="cal" aria-haspopup="dialog" aria-expanded="false" aria-label="Pick a day"><span id="dayNo"></span><span id="clock"></span><small>📅</small></button>
       <button id="nextDay" class="btn nav" aria-label="Next village day">▶</button>
+      <button id="titleToggle" aria-expanded="false" aria-label="Calendar and goal picker" title="Calendar and goal picker">▾</button>
     </div>
+    <select id="goalPick" aria-label="Browse the village by goal"></select>
+    <small id="goalNow"></small>
   </div>
   <div id="counters"></div>
   <button id="info" aria-label="Building guide" aria-haspopup="dialog" title="What the buildings mean">i</button>
@@ -46,8 +49,7 @@
 </div>
 
 <aside id="roster" class="panel" aria-label="Players">
-  <header><h2>Players</h2><small id="rosterCount"></small><button id="rosterToggle" class="fold" aria-expanded="true" aria-controls="players">hide</button></header>
-  <div id="clanChips" role="group" aria-label="Filter by clan"></div>
+  <header><h2>Players</h2><small id="rosterCount"></small><button id="rosterAll" class="fold" aria-controls="players">Show all</button><button id="rosterToggle" class="fold" aria-expanded="true" aria-controls="players">hide</button></header>
   <ol id="players"></ol>
 </aside>
 

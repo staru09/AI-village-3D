@@ -3,7 +3,7 @@
 import * as THREE from 'three';
 import { CSS2DObject } from 'three/addons/renderers/CSS2DRenderer.js';
 import { SPOTS } from './town.js';
-import { $, el, fmt, pad, YMD, longDate, bold, CLAN_COLOR, IX, DAYS, DAY, SLUGS, clans, state, D, agents, roomSigns, lowerBound } from './core.js';
+import { $, el, fmt, pad, YMD, longDate, bold, CLAN_COLOR, IX, DAYS, DAY, SEGS, SLUGS, clans, state, D, agents, roomSigns, lowerBound } from './core.js';
 import { scene, flyTo } from './scene.js';
 import { select } from './card.js';
 
@@ -52,21 +52,13 @@ const feedTab = r => {
 $('#tabChat').onclick = () => feedTab(false);
 $('#tabRecap').onclick = () => feedTab(true);
 
-// ---------- roster: player tags for everyone who has joined by this day ----------
+// ---------- roster: a row per maker (clan), folding out the player tags of everyone who has joined by this day ----------
 export function roster() {
   const here = new Set(agents.map(a => a.slug));
   const away = SLUGS.filter(s => !here.has(s) && IX.agents[s].joined <= state.date) // joined later = spoiler, not listed
     .map(s => ({ ...IX.agents[s], slug: s }))
-    .sort((x, y) => IX.clans.indexOf(x.clan) - IX.clans.indexOf(y.clan) || x.joined.localeCompare(y.joined));
+    .sort((x, y) => x.joined.localeCompare(y.joined));
   const listed = clans.filter(c => agents.some(a => a.clan === c.name) || away.some(a => a.clan === c.name));
-  if (!listed.some(c => c.name === state.clan)) state.clan = null;
-  $('#clanChips').replaceChildren(...listed.map(c => {
-    const b = el('button', { className: 'chip', title: state.clan === c.name ? 'Show all clans' : `Show only ${c.name}`, ariaPressed: state.clan === c.name },
-      Object.assign(el('i'), { style: `background:${c.color}` }), c.name, el('small', { textContent: agents.filter(a => a.clan === c.name).length }));
-    b.onclick = () => { state.clan = state.clan === c.name ? null : c.name; roster(); };
-    return b;
-  }));
-  const show = a => !state.clan || a.clan === state.clan;
   const tag = (a, on) => {
     const why = a.last < state.date ? `left ${longDate(a.last, YMD)}` : 'away today';
     const b = el('button', { className: `player${on ? '' : ' off'}${on && a.i === state.sel ? ' sel' : ''}`,
@@ -77,11 +69,25 @@ export function roster() {
     if (on) { b.onclick = () => select(a.i); a.pcard = b; } else b.ariaDisabled = 'true';
     return el('li', {}, b);
   };
-  const off = away.filter(show);
-  $('#players').replaceChildren(...agents.filter(show).map(a => tag(a, true)),
-    ...(off.length ? [el('li', { className: 'sep', textContent: `Not in the village today · ${off.length}` }), ...off.map(a => tag(a, false))] : []));
+  $('#players').replaceChildren(...listed.map((c, k) => { // the open makers (state.makers) survive day changes
+    const on = agents.filter(a => a.clan === c.name), off = away.filter(a => a.clan === c.name), open = state.makers.has(c.name);
+    const b = el('button', { className: 'chip', ariaExpanded: open, title: `${open ? 'Hide' : 'Show'} the ${c.name} players` },
+      Object.assign(el('i'), { style: `background:${c.color}` }), c.name, el('small', { textContent: on.length + (off.length ? ` +${off.length} away` : '') }));
+    b.onclick = () => { state.makers[open ? 'delete' : 'add'](c.name); roster(); $('#players').children[k].firstChild.focus(); };
+    return el('li', {}, b, el('ol', { hidden: !open }, ...on.map(a => tag(a, true)), ...off.map(a => tag(a, false))));
+  }));
+  const all = listed.every(c => state.makers.has(c.name));
+  $('#rosterAll').textContent = all ? 'Show less' : 'Show all';
+  $('#rosterAll').onclick = () => { if (all) state.makers.clear(); else listed.forEach(c => state.makers.add(c.name)); roster(); };
   $('#rosterCount').textContent = `${agents.length} here`;
 }
+// a pick anywhere (card.js select()) opens that agent's maker and scrolls its tag into view
+addEventListener('village:select', () => {
+  const a = agents[state.sel];
+  if (!a) return;
+  if (!state.makers.has(a.clan)) { state.makers.add(a.clan); roster(); }
+  a.pcard?.scrollIntoView({ block: 'nearest' });
+});
 
 // ---------- calendar: every village day ----------
 export function initCalendar(loadDay) { // a picked day loads through main.js
@@ -107,8 +113,8 @@ export function initCalendar(loadDay) { // a picked day loads through main.js
     $('#calGrid').replaceChildren(...['Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa', 'Su'].map(t => el('span', { className: 'dow', textContent: t })),
       ...Array.from({ length: (first.getUTCDay() + 6) % 7 }, () => el('span')),
       ...Array.from({ length: n }, (_, k) => {
-        const date = `${calMonth}-${pad(k + 1)}`, d = DAY[date];
-        const b = el('button', { textContent: k + 1, disabled: !d, className: date === state.date ? 'cur' : '', ariaLabel: longDate(date, YMD) });
+        const date = `${calMonth}-${pad(k + 1)}`, d = DAY[date], s = SEGS[state.seg]; // the goal filter's days stand out
+        const b = el('button', { textContent: k + 1, disabled: !d, className: date === state.date ? 'cur' : d?.k >= s?.a && d.k <= s.b ? 'seg' : '', ariaLabel: longDate(date, YMD) });
         if (d) Object.assign(b, { title: `Day ${d.day} · ${d.agents.length} agents\n${(d.goal || '').replaceAll('**', '')}`, onmouseenter: () => info(d), onfocus: () => info(d),
           onclick: () => { cal.hidePopover(); loadDay(date); } });
         return b;

@@ -36,6 +36,20 @@ button { font: inherit; cursor: pointer; }
 #dateBtn { border: 0; background: none; padding: 0 2px; font-size: 26px; line-height: 1.1; white-space: nowrap; }
 #dateBtn:hover, #dateBtn[aria-expanded="true"] { color: var(--gold); }
 #dateBtn small { font-size: 15px; margin-left: 4px; vertical-align: 3px; }
+/* compact by default (◀ Day N · date · clock ▶ ▾ and the filtered goal); .open adds the title, the 📅 and the goal picker */
+#title:not(.open) { padding: 4px 8px 6px; }
+#title:not(.open) :is(h1, #goalPick, #dateBtn small), #title.open #dayNo, #title.open #goalNow, #goalNow:empty { display: none; }
+#title:not(.open) #clockRow { margin-top: 0; }
+#title:not(.open) #dateBtn { font-size: 17px; }
+#titleToggle { border: 0; background: none; padding: 0 2px; color: #fff; font-size: 18px; line-height: 1; }
+#titleToggle[aria-expanded="true"] { rotate: 180deg; }
+#top:has(#title.open) { z-index: 3; } /* the open panel may cover the players panel below it */
+@media (min-width: 761px) { /* on desktop the players panel moves below it; phones keep it folded underneath */
+  body:has(#title.open) #roster { top: 146px; max-height: calc(70vh - 290px); }
+}
+/* both as wide as the clock row, never wider */
+#goalPick { display: block; width: 0; min-width: 100%; margin-top: 6px; }
+#goalNow { display: block; contain: inline-size; margin-top: 2px; color: var(--parch); font-size: 12px; font-weight: 800; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .btn.nav { padding: 0 7px 2px; min-width: 30px; height: 28px; font-size: 13px; }
 .btn:disabled { filter: grayscale(1) opacity(.55); cursor: default; transform: none; }
 #info { flex: none; width: 40px; height: 40px; padding: 0; border-radius: 50%; border: 3px solid var(--wood-3); font: 400 23px/1 'Lilita One', sans-serif; color: #fff;
@@ -51,7 +65,7 @@ button { font: inherit; cursor: pointer; }
 .counter b { font-family: 'Lilita One', sans-serif; font-weight: 400; font-size: 20px; }
 .counter span { font-size: 12px; opacity: .85; }
 
-/* roster: clan legend and filter, then player tags */
+/* roster: a row per maker that folds out its player tags */
 .panel h2 { margin: 0 0 4px; font: 400 15px 'Lilita One', sans-serif; color: var(--wood-2); }
 .panel > header { display: flex; align-items: center; gap: 6px; }
 .panel > header .fold { margin-left: auto; border: 0; background: none; color: var(--wood-2); font-weight: 800; }
@@ -59,13 +73,16 @@ button { font: inherit; cursor: pointer; }
 #roster { position: fixed; left: 12px; top: 112px; width: 252px; max-height: calc(70vh - 256px); min-height: 0; padding: 8px 8px 8px 10px; display: flex; flex-direction: column; }
 #roster h2 { margin: 0; }
 #roster header small { color: var(--ink-2); font-weight: 800; font-size: 12px; }
-#clanChips { display: grid; grid-template-columns: 1fr 1fr; gap: 1px 6px; margin: 4px 0 6px; }
-.chip { display: flex; align-items: center; gap: 6px; border: 0; background: none; padding: 1px 5px; border-radius: 7px; font-size: 12.5px; color: var(--ink); text-align: left; }
+#roster header { white-space: nowrap; }
+#roster.collapsed #rosterAll { display: none; }
+.chip { width: 100%; display: flex; align-items: center; gap: 6px; border: 0; background: none; padding: 3px 5px; border-radius: 7px; font-size: 13.5px; font-weight: 800; color: var(--ink); text-align: left; }
 .chip i { width: 12px; height: 12px; flex: none; border-radius: 4px; border: 2px solid var(--wood-3); }
 .chip small { margin-left: auto; color: var(--ink-2); font-weight: 800; }
+.chip::after { content: '⌄' / ''; width: 1em; text-align: center; color: var(--wood-2); }
+.chip[aria-expanded="true"]::after { rotate: 180deg; }
 .chip:hover { background: #fff8e6; }
-.chip[aria-pressed="true"] { background: var(--gold); box-shadow: inset 0 0 0 2px var(--wood-3); }
-#players { list-style: none; margin: 0; padding: 2px 4px 4px 0; overflow-y: auto; min-height: 0; display: grid; gap: 5px; }
+#players { list-style: none; margin: 0; padding: 2px 4px 4px 0; overflow-y: auto; min-height: 0; display: grid; gap: 2px; }
+#players ol { list-style: none; margin: 0; padding: 2px 0 6px; display: grid; gap: 5px; }
 .player { width: 100%; display: flex; align-items: center; gap: 8px; padding: 3px 8px 3px 3px; border: 2px solid var(--wood-3); border-radius: 11px; text-align: left; color: var(--ink);
   background: linear-gradient(#fffaf0, #f1e2bd); box-shadow: 0 2px 0 rgba(58,31,11,.4); }
 .player:hover { background: #fff; }
@@ -78,8 +95,6 @@ button { font: inherit; cursor: pointer; }
 .badge { flex: none; min-width: 42px; height: 30px; padding: 0 5px 1px; display: grid; place-items: center; border: 2px solid var(--wood-3); border-radius: 8px 8px 14px 14px;
   background: linear-gradient(color-mix(in srgb, var(--c, #8a7a66) 60%, #fff), var(--c, #8a7a66) 50%, color-mix(in srgb, var(--c, #8a7a66) 75%, #000)); box-shadow: inset 0 -3px 0 rgba(0,0,0,.2), inset 0 2px 0 rgba(255,255,255,.35);
   font: 400 13px 'Lilita One', sans-serif; color: #fff; text-shadow: 0 1px 0 var(--wood-3), 1px 0 0 var(--wood-3), -1px 0 0 var(--wood-3), 0 -1px 0 var(--wood-3); }
-#players .sep { font: 400 13px 'Lilita One', sans-serif; color: var(--ink-2); border-top: 2px dashed var(--line); padding-top: 6px; margin-top: 3px; }
-#players .sep:first-child { border-top: 0; padding-top: 0; margin-top: 0; }
 .empty { color: var(--ink-2); font-style: italic; margin: 0; }
 
 /* chat feed */
@@ -123,7 +138,12 @@ select { font: 700 13px Nunito, sans-serif; border: 2px solid var(--wood-3); bor
 #drawer.open { display: flex; }
 #drawer.wide { width: min(720px, calc(100vw - 24px)); }
 #drawer .head { padding: 12px 50px 10px 14px; color: #fff; position: relative; display: grid; grid-template-columns: auto 1fr; column-gap: 10px; align-items: center; }
-#drawer .head .badge { grid-row: span 2; min-width: 54px; height: 44px; font-size: 17px; --c: rgba(255,255,255,.25); }
+#drawer .head .pic { grid-row: span 2; width: 76px; height: 76px; display: grid; place-items: center; border-radius: 16px; border: 2px solid rgba(255,255,255,.5);
+  background: radial-gradient(circle at 50% 40%, rgba(255,255,255,.85), rgba(255,255,255,.25) 75%); } /* the portrait on a soft light backdrop */
+#drawer .head .pic > * { grid-area: 1 / 1; }
+#drawer .head .pic img { width: 100%; height: 100%; }
+#drawer .head .badge { min-width: 54px; height: 44px; font-size: 17px; --c: rgba(255,255,255,.25); }
+#drawer .head .pic:has(img) .badge { align-self: end; margin-bottom: -10px; min-width: 40px; height: 24px; font-size: 13px; border-radius: 6px 6px 10px 10px; }
 #drawer .head h2 { color: #fff; font-size: 24px; margin: 0; line-height: 1.1; }
 #drawer .head p { margin: 2px 0 0; font-size: 12.5px; opacity: .95; }
 #drawer .tabs { display: flex; gap: 4px; padding: 0 10px; background: rgba(0,0,0,.18); border-bottom: 3px solid var(--wood-3); }
@@ -183,6 +203,7 @@ details summary { cursor: pointer; font: 400 15px 'Lilita One', sans-serif; colo
   background: linear-gradient(#a5dc5a, var(--btn) 45%, var(--btn-2)); box-shadow: inset 0 -3px 0 rgba(0,0,0,.22); text-shadow: 0 1px 0 var(--wood-3), 1px 0 0 var(--wood-3), -1px 0 0 var(--wood-3); }
 #calGrid button:hover { filter: brightness(1.1); }
 #calGrid button.cur { background: linear-gradient(#ffe27a, var(--gold) 45%, #d49b00); color: var(--wood-3); text-shadow: none; }
+#calGrid button.seg { background: linear-gradient(#ffc94d, var(--btn-alt) 45%, var(--btn-alt-2)); } /* the goal filter's days */
 #calGrid button:disabled { background: none; border-color: transparent; box-shadow: none; color: #bfae8c; text-shadow: none; cursor: default; filter: none; }
 #calInfo { margin: 10px 0 0; min-height: 4.4em; padding: 6px 9px; font-size: 12.5px; background: #fff8e6; border: 2px dashed var(--line); border-radius: 10px; }
 #calInfo .t { display: block; font: 400 13.5px 'Lilita One', sans-serif; font-weight: 400; color: var(--wood-2); }
@@ -274,7 +295,8 @@ details summary { cursor: pointer; font: 400 15px 'Lilita One', sans-serif; colo
 @media (max-width: 760px) {
   #counters .counter span { display: none; }
   #title { padding: 6px 10px 8px; }
-  #title h1 { font-size: 16px; } #dateBtn { font-size: 18px; }
+  #title h1 { font-size: 16px; } #dateBtn { font-size: 18px; } #title:not(.open) #dateBtn { font-size: 13px; }
+  #title:not(.open) #clockRow { gap: 3px; } /* compact stays about as wide as the old header, the counters keep their room */
   #roster, #feed { top: 96px; bottom: auto; width: auto; max-height: 56vh; }
   #feed { top: 142px; }
   #roster:not(.collapsed), #feed:not(.collapsed) { right: 12px; z-index: 2; }

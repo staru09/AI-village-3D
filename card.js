@@ -2,12 +2,14 @@
 import { SPOTS } from './town.js';
 import { $, el, pct, count, fmt, dur, YMD, longDate, bold, rich, IX, state, D, M, agents, SLICES, hm } from './core.js';
 import { flyTo } from './scene.js';
+import { portrait } from './portrait.js';
 
 export function select(i) {
   state.sel = i;
   for (const a of agents) { a.tag.classList.toggle('dim', i !== null && a.i !== i); a.pcard?.classList.toggle('sel', a.i === i); }
   $('#drawer').classList.toggle('open', i !== null);
   if (i !== null) drawer(true);
+  dispatchEvent(new Event('village:select')); // panels.js opens the agent's maker in the roster
 }
 
 function notesOf(a) { // lazy per-agent-day file: undefined = not asked, null = loading, {} = missing
@@ -26,8 +28,9 @@ const loadingLine = () => el('p', { className: 'empty', textContent: 'Loading no
 export function drawer(fly, top = fly) { // fly: new agent (fly there); top: new agent or tab, so head and tabs rebuild too
   const a = agents[state.sel], box = $('#drawer');
   if (top || !box.querySelector('.body')) {
-    const head = el('div', { className: 'head' },
-      el('span', { className: 'badge', textContent: a.label }),
+    const pic = el('div', { className: 'pic' }, el('span', { className: 'badge', textContent: a.label })); // the badge alone until the portrait is ready
+    portrait(a).then(src => src && pic.prepend(el('img', { src, alt: `${a.name}'s character` })));
+    const head = el('div', { className: 'head' }, pic,
       el('h2', { className: 'game outline', textContent: a.name }),
       el('p', { textContent: `${a.clan} · ${a.model} · in the village since ${longDate(a.joined, YMD)}` }),
       Object.assign(el('button', { className: 'btn close', textContent: '✕', ariaLabel: 'Close' }), { onclick: () => select(null) }));

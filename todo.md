@@ -213,18 +213,25 @@ Data we download but don't show yet. Checked against the 2026-09-20 export and t
 
 ## 8. Interface requests (2026-10-02)
 
-- [ ] **8.1 Browse the village by goal.** Split the village into segments by village goal (51 goals). Next to picking
+- [x] **8.1 Browse the village by goal.** Split the village into segments by village goal (51 goals). Next to picking
       a calendar date, filter by goal: choose a goal and step through only its days. Data: `index.json` already gives
       each day's goal; consecutive days with the same goal form one segment. Ties in with 7.1.
-- [ ] **8.2 Compact calendar header.** The date panel at the top left (title, ◀ date ▶, calendar button) is too big.
+      Done: a goal picker (51 segments) in the expanded header; ◀ ▶ step inside the chosen goal, the calendar
+      highlights its days, `?goal=` restores it.
+- [x] **8.2 Compact calendar header.** The date panel at the top left (title, ◀ date ▶, calendar button) is too big.
       Show a small version by default (day number and date with ◀ ▶) and the full panel only after a click on an
       expand button.
-- [ ] **8.3 Compact players panel.** By default, show only the makers (Google, Anthropic, OpenAI, …) with how many
+      Done: compact "Day N · date · time ◀ ▶ ▾" by default; ▾ opens the title, calendar button and goal picker
+      (remembered in localStorage).
+- [x] **8.3 Compact players panel.** By default, show only the makers (Google, Anthropic, OpenAI, …) with how many
       of their agents are in the village. Show the agents' tags under a maker, or the full list, only after a click
       on its expand button.
-- [ ] **8.4 Agent portrait on the player card.** The card has no picture of the character that walks in the village.
+      Done: one row per maker ("Anthropic 11 +5 away"), expandable, with Show all; picking an agent opens its maker.
+- [x] **8.4 Agent portrait on the player card.** The card has no picture of the character that walks in the village.
       Show that character (its shirt colour and chest label), for example a small render of the same 3D model, at the
       top of the card.
+      Done: `portrait.js` renders the agent's own model (skin, shirt colour, chest label) once per day into the
+      card head.
 - [x] **8.5 Frontend split into modules** (branch `refactor`). `main.js` (954 lines) became `core.js`, `scene.js`,
       `characters.js`, `arcs.js`, `plaza.js`, `chat.js`, `card.js`, `panels.js` and a 285-line `main.js`. The CSS moved
       to `styles.css`. Plain ES modules, no build step. The loaded day changes only through `setDay()` in `core.js`, and
