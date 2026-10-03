@@ -3,7 +3,7 @@
 import * as THREE from 'three';
 import { CSS2DObject } from 'three/addons/renderers/CSS2DRenderer.js';
 import { SPOTS } from './town.js';
-import { $, el, fmt, pad, YMD, longDate, bold, CLAN_COLOR, IX, DAYS, DAY, SEGS, SLUGS, clans, state, agents, roomSigns, lowerBound } from './core.js';
+import { $, el, fmt, pad, YMD, longDate, bold, CLAN_COLOR, IX, DAYS, DAY, SEGS, SLUGS, clans, state, agents, roomSigns, lowerBound, kept, keep } from './core.js';
 import { scene, flyTo } from './scene.js';
 import { select } from './card.js';
 
@@ -61,22 +61,24 @@ export function tally() { // counters and signs: who stands where
   roomSigns.forEach((e, k) => { e.querySelector('b').textContent = agents.filter(a => a.spot === `H${k + 1}`).length; });
 }
 
-function foldable(panel, btn, name) { // − folds a panel down to a small button with its name; phones start folded
+function foldable(panel, btn, name, key) { // − folds a panel down to a small button with its name; kept, phones start folded
   const what = name.slice(name.indexOf(' ') + 1).toLowerCase();
-  const set = c => { panel.classList.toggle('collapsed', c); btn.textContent = c ? name : '−'; btn.ariaExpanded = !c; btn.title = btn.ariaLabel = `${c ? 'Show' : 'Minimise'} ${what}`; };
+  const set = c => { panel.classList.toggle('collapsed', c); btn.textContent = c ? name : '−'; btn.ariaExpanded = !c; btn.title = btn.ariaLabel = `${c ? 'Show' : 'Minimise'} ${what}`; keep(key, c); };
   btn.onclick = () => set(!panel.classList.contains('collapsed'));
-  if (matchMedia('(max-width: 760px)').matches) set(true);
+  set(kept(key, matchMedia('(max-width: 760px)').matches));
   return set;
 }
-const foldFeed = foldable($('#feed'), $('#feedToggle'), '💬 Village chat');
-foldable($('#roster'), $('#rosterToggle'), '👥 Players');
-const feedTab = r => {
+const foldFeed = foldable($('#feed'), $('#feedToggle'), '💬 Village chat', 'feedFolded');
+foldable($('#roster'), $('#rosterToggle'), '👥 Players', 'rosterFolded');
+const feedTab = (r, open = true) => { // a click on a tab also opens a folded chat panel; the restore on load does not
   $('#tabChat').ariaSelected = !r; $('#tabRecap').ariaSelected = r;
   $('#feedList').hidden = r; $('#recap').hidden = !r;
-  foldFeed(false);
+  if (open) foldFeed(false);
+  keep('recapTab', r);
 };
 $('#tabChat').onclick = () => feedTab(false);
 $('#tabRecap').onclick = () => feedTab(true);
+feedTab(kept('recapTab', false), false);
 
 // ---------- roster: a row per maker (clan), folding out the player tags of everyone who has joined by this day ----------
 export function roster() {
@@ -106,6 +108,7 @@ export function roster() {
   Object.assign($('#rosterAll'), { ariaPressed: all, ariaLabel: all ? 'Show fewer players' : 'Show all players', title: all ? 'Show fewer players' : 'Show all players' });
   $('#rosterAll').onclick = () => { if (all) state.makers.clear(); else listed.forEach(c => state.makers.add(c.name)); roster(); };
   $('#rosterCount').textContent = `${agents.length} here`;
+  keep('makers', [...state.makers]); // the open makers survive a refresh too
 }
 // a pick anywhere (card.js select()) opens that agent's maker and scrolls its tag into view
 addEventListener('village:select', () => {

@@ -8,7 +8,7 @@ import * as THREE from 'three';
 import { CSS2DObject } from 'three/addons/renderers/CSS2DRenderer.js';
 import { PLAZA, ROOMS, SPOTS, WALL } from './town.js';
 import { gallery } from './gallery.js';
-import { $, el, fmt, dur, YMD, longDate, bold, rich, CLAN_COLOR, HUMAN, IX, DAYS, DAY, SEGS, SLUGS, state, setDay, D, M, C, agents,
+import { $, el, fmt, dur, YMD, longDate, bold, rich, CLAN_COLOR, HUMAN, IX, DAYS, DAY, SEGS, SLUGS, state, keep, setDay, D, M, C, agents,
   END, SLICES, dayGroup, dayPairs, gaps, hm, lowerBound } from './core.js';
 import { manager, canvas, renderer, css, scene, camera, controls, HOME, town, flyTo, walker, lib } from './scene.js';
 import { ANIM, SKINS, pickables, spawn, play, place } from './characters.js';
@@ -23,9 +23,11 @@ const time = $('#time');
 const playBtn = $('#play');
 const setPlaying = p => { state.playing = p; playBtn.textContent = p ? '❚❚ Pause' : '▶ Play'; };
 playBtn.onclick = () => { if (state.v >= END - 1) setV(0, true); setPlaying(!state.playing); };
-$('#speed').onchange = e => { state.speed = +e.target.value; };
+$('#speed').value = state.speed; // speed and Names are kept across a refresh (core.js state)
+$('#speed').onchange = e => { state.speed = +e.target.value; keep('speed', state.speed); };
 time.oninput = () => setV(+time.value, true);
-$('#names').onclick = e => { state.names = !state.names; e.currentTarget.setAttribute('aria-pressed', state.names); };
+$('#names').setAttribute('aria-pressed', state.names);
+$('#names').onclick = e => { state.names = !state.names; e.currentTarget.setAttribute('aria-pressed', state.names); keep('names', state.names); };
 const stepDay = k => { const d = DAYS[DAY[state.date].k + k]; if (d) loadDay(d.date); };
 $('#prevDay').onclick = () => stepDay(-1);
 $('#nextDay').onclick = () => stepDay(1);

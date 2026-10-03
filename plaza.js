@@ -2,7 +2,7 @@
 import * as THREE from 'three';
 import { CSS2DObject } from 'three/addons/renderers/CSS2DRenderer.js';
 import { PLAZA } from './town.js';
-import { $, el, pct, count, fmt, SLUGS, clans, agents, dayGroup, SLICES } from './core.js';
+import { $, el, pct, count, fmt, SLUGS, clans, agents, dayGroup, SLICES, kept, keep } from './core.js';
 import { scene, gltf, flyTo } from './scene.js';
 import { infoButton } from './panels.js';
 
@@ -92,5 +92,6 @@ export function buildPlaza() {
   if (plaza.mesh.instanceColor) plaza.mesh.instanceColor.needsUpdate = true;
   plaza.mesh.computeBoundingSphere();
 }
-$('#metric').onchange = buildPlaza;
+$('#metric').value = kept('metric', '0'); // kept across a refresh
+$('#metric').onchange = () => { keep('metric', $('#metric').value); buildPlaza(); };
 $('#plazaBtn').onclick = () => flyTo(new THREE.Vector3(PLAZA[0], 0, PLAZA[1]), 22);

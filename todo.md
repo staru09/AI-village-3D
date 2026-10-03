@@ -344,3 +344,6 @@ add median 164k, max 524k.
       clicks. Positions are remembered in the browser and kept at least 40 px on screen; the last one dragged comes to
       the front (under the player card). Double-click a panel's header or the Goals button to put it back. The calendar
       and the Goals list open under their moved buttons.
+- [x] **8.16 The interface survives a refresh** (this browser only): minimised or open for the Village chat and
+      Players, the chat or Day recap tab, the open makers, speed, Mentions, Plaza and Names. Positions (8.15) and the
+      counters (8.14) were already kept. `kept()`/`keep()` in `core.js`; blocked storage falls back to the defaults.

@@ -3,7 +3,7 @@ import * as THREE from 'three';
 import { LineSegments2 } from 'three/addons/lines/LineSegments2.js';
 import { LineSegmentsGeometry } from 'three/addons/lines/LineSegmentsGeometry.js';
 import { LineMaterial } from 'three/addons/lines/LineMaterial.js';
-import { $, state, M, agents, dayPairs, lowerBound } from './core.js';
+import { $, state, M, agents, dayPairs, lowerBound, kept, keep } from './core.js';
 import { scene } from './scene.js';
 
 // ---------- mention arcs ----------
@@ -46,4 +46,5 @@ export function drawBeams() {
     l.geometry = new LineSegmentsGeometry().setPositions(buf[b]).setColors(col[b]);
   });
 }
-$('#beams').onchange = () => computeLive(state.v);
+$('#beams').value = kept('beams', '1'); // kept across a refresh
+$('#beams').onchange = () => { keep('beams', $('#beams').value); computeLive(state.v); };
