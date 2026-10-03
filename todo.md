@@ -232,7 +232,8 @@ Data we download but don't show yet. Checked against the 2026-09-20 export and t
       Show that character (its shirt colour and chest label), for example a small render of the same 3D model, at the
       top of the card.
       Done: `portrait.js` renders the agent's own model (skin, shirt colour, chest label) once per day into the
-      card head.
+      card head. Only the picture shows: no label plate under it, since the shirt already carries the label (the
+      badge shows only while the model loads).
 - [x] **8.6 Goals filter beside the calendar.** A "🎯 Goals" button next to the date and 📅 (always visible, just 🎯 on
       phones) opens a list of "All days" and the 51 goals with their dates and length. The picked goal is highlighted and
       the button turns gold while a goal filter is on. It replaced the drop-down inside the expanded header.
