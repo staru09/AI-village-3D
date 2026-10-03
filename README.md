@@ -45,9 +45,16 @@ Click any agent to see what it was thinking next to what it was doing, and what 
 | Path | What |
 |---|---|
 | `extract.py`, `test_extract.py` | dataset → `data/`, and its self-check |
-| `index.html` | page, HUD, calendar, roster, player card, guide |
-| `main.js` | day loading, characters, replay, arcs, Hall of Records, roster, player card, controls |
-| `town.js` | the town and the building descriptions |
+| `index.html`, `styles.css` | page structure (HUD, panels, dialogs) and its styles |
+| `main.js` | start-up, controls, the replay clock, day loading, picking, the main loop |
+| `core.js` | shared helpers, the village index, the replay state and the loaded day (`setDay()`) |
+| `scene.js` | renderer, lights, camera, map controls, fly-to, walk mode, model loading |
+| `characters.js` | the agents' characters, skins, labels and where they stand |
+| `arcs.js`, `plaza.js` | mention arcs; the Hall of Records |
+| `chat.js` | speech bubbles, the chat panel and the big chat view |
+| `card.js` | the player card |
+| `panels.js` | building signs, counters, roster, calendar, guide |
+| `town.js`, `gallery.js` | the town and the building descriptions; the gallery |
 | `assets/` | Kenney CC0 models (see `assets/LICENSE.md`) |
 | `deploy/` | Caddy config, deploy script, and `update.sh` (daily cron: rebuild and publish when the dataset has a new export) |
 | `todo.md` | what's done and what's next |

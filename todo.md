@@ -225,6 +225,11 @@ Data we download but don't show yet. Checked against the 2026-09-20 export and t
 - [ ] **8.4 Agent portrait on the player card.** The card has no picture of the character that walks in the village.
       Show that character (its shirt colour and chest label), for example a small render of the same 3D model, at the
       top of the card.
+- [x] **8.5 Frontend split into modules** (branch `refactor`). `main.js` (954 lines) became `core.js`, `scene.js`,
+      `characters.js`, `arcs.js`, `plaza.js`, `chat.js`, `card.js`, `panels.js` and a 285-line `main.js`. The CSS moved
+      to `styles.css`. Plain ES modules, no build step. The loaded day changes only through `setDay()` in `core.js`, and
+      other modules read it as live bindings. There are no import cycles. Same behaviour as `dev`: checked line by line,
+      with a lint for missing or unused names, and with the same browser session on both branches.
 
 ## 9. Ask the village: a question-answering bot (plan)
 

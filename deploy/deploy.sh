@@ -35,7 +35,7 @@ publish)
 	[ "${2:-}" = --build ] && (cd "$HERE" && python3 extract.py)
 	[ -f "$HERE/data/index.json" ] || { echo "no data/index.json: run 'deploy/deploy.sh publish --build'" >&2; exit 1; }
 	# only the site itself: page, scripts, models, data (not the extractor, docs or deploy kit)
-	rsync -a --delete --include=/index.html --include='/*.js' --include='/assets/***' --include='/data/***' --exclude='*' "$HERE/" "$WWW/"
+	rsync -a --delete --include=/index.html --include='/*.js' --include='/*.css' --include='/assets/***' --include='/data/***' --exclude='*' "$HERE/" "$WWW/"
 	echo "published $(git -C "$HERE" rev-parse --short HEAD), $(du -sh "$WWW" | cut -f1) to $WWW"
 	;;
 *)
