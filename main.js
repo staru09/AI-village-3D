@@ -54,10 +54,6 @@ function nav() { // ◀ ▶, the goal picker and the URL follow the loaded day a
   if (s) u.searchParams.set('goal', state.seg); else u.searchParams.delete('goal');
   history.replaceState(null, '', u);
 }
-// the header starts compact (day, date, clock, ◀ ▶, Goals); ▾ opens the full panel with the title and the whole goal
-const titleOpen = o => { $('#title').classList.toggle('open', o); $('#titleToggle').ariaExpanded = o; try { localStorage.titleOpen = o ? 1 : ''; } catch { /* storage blocked */ } };
-$('#titleToggle').onclick = () => titleOpen($('#titleToggle').ariaExpanded !== 'true');
-try { titleOpen(!!localStorage.titleOpen); } catch { /* storage blocked: stays compact */ }
 addEventListener('keydown', e => {
   if (e.target.closest?.('input, select, button, dialog, [popover]') || walker.isLocked) return; // buttons handle Space themselves
   if (e.code === 'Space') { e.preventDefault(); playBtn.click(); }
@@ -175,7 +171,6 @@ async function loadDay(date) {
   state.room = state.who = -1;
 
   const n = DAY[date]?.day ?? D.day;
-  $('#range').textContent = `Day ${n}`;
   $('#dayNo').textContent = `Day ${n} · `;
   document.title = `AI Village · Day ${n} · ${longDate(date, YMD)}`;
   if (state.seg >= 0) state.seg = SEGS.findIndex(s => s.a <= DAY[date]?.k && DAY[date].k <= s.b); // a day outside the goal filter switches to its goal

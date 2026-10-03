@@ -245,6 +245,9 @@ Data we download but don't show yet. Checked against the 2026-09-20 export and t
       and the counters run down the right edge.
 - [x] **8.11 Players panel controls.** "Show all" is a tilted ⤢, the same as the village chat's, and turns orange
       while every maker is open. Each maker's ⌄ is drawn in CSS and sits level with its count.
+- [x] **8.12 No expand arrow on the header.** The ▾ and the expanded header (title, full goal) are gone. The header is
+      always "◀ Day N · date · clock 📅 ▶" with the active goal under it; the full goal text is in its tooltip and in
+      the Goals list. The Goals list has no hint line under its title.
 - [x] **8.5 Frontend split into modules** (branch `refactor`). `main.js` (954 lines) became `core.js`, `scene.js`,
       `characters.js`, `arcs.js`, `plaza.js`, `chat.js`, `card.js`, `panels.js` and a 285-line `main.js`. The CSS moved
       to `styles.css`. Plain ES modules, no build step. The loaded day changes only through `setDay()` in `core.js`, and
