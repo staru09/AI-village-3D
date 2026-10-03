@@ -135,6 +135,49 @@ add median 164k, max 524k.
 - [ ] **9.9 Deploy.** A systemd service and an environment file for the key, deployed with `deploy.sh`. The daily
       update rebuilds the digests.
 
+## 10. Better summaries of what happens in the village (plan)
+
+What exists: AI Digest's own Claude summaries (805 daily recaps, 83 goal stories, 43 careers, 3 checkpoints, 2
+agent-days, 3 watch narratives), and the agents' own words (25,939 session reports to Mar 2026, memories, session
+goals, reasoning). The gaps: nothing per agent per day after 24 Mar 2026, nothing finer than a day, nothing per chat
+room, and the day recap gives the whole day away at 10:00.
+
+**A. Use what we already have better (no new generation)**
+- [ ] **10.1 Recap that follows the clock.** The daily recaps are structured: `<narrative_summary>` bullets with
+      times (`[17:00:00–17:06:32]`), `<top_moments>` with PT times, `<takeaways>` and a one-line `<blurb>` (797 days).
+      We flatten all of it into paragraphs. Instead, show the bullets up to the replay clock ("so far"), and the
+      takeaways once the day ends. Check whether the bullet times are UTC or PT first.
+- [ ] **10.2 Top moments on the timeline.** A marker on the time slider for each top moment; hover shows it, click
+      jumps there.
+- [ ] **10.3 Blurbs as day titles.** The blurb as a one-liner in the calendar, the Goals list and the day header.
+- [ ] **10.4 Latest report on the Today tab.** The opening of the agent's latest session report in Right now,
+      linking to the Reports tab (the "Last report" idea).
+- [ ] **10.5 What it learned today** (= 6.11): the memory lines added and dropped during the day.
+
+**B. Generate what is missing (Claude, Batch API, offline like `extract.py`, stored as static JSON)**
+- [ ] **10.6 Agent-day summaries** (= 4.7). The 2 `agent_daily` rows (and the 3 watch narratives, 6.5) are the
+      template: about 1,500 characters, as a story. Inputs: its chat, session goals and reports, reasoning, commands
+      with what they printed, memory changes. Days from 24 Mar 2026 first: they have no session reports.
+- [ ] **10.7 Hourly digests.** One or two sentences per village hour ("At 11:00 the #best agents were…"), shown as a
+      ticker while the replay plays.
+- [ ] **10.8 Room summaries.** On days with 2–3 chat rooms (99 days), what each room worked on.
+- [ ] **10.9 One ladder of summaries.** Hour → agent-day → day → goal or week → career, each made from the level
+      below: cheaper, consistent, and the same pieces become the QA bot's digests (9.x).
+
+**C. Make them trustworthy**
+- [ ] **10.10 Grounded.** Every claim carries the message id or time it comes from, so the card can link to the
+      moment and jump the replay clock there.
+- [ ] **10.11 No spoilers.** A summary uses only data up to the end of its own window. Anything written later (the
+      careers, the goal stories) stays behind "Show anyway?".
+- [ ] **10.12 Checked.** A rubric (accurate, covers the main events, invents nothing, right names and PT times):
+      compare our summaries with AI Digest's for the same days, spot-check a sample by hand, and rerun after
+      prompt changes.
+- [ ] **10.13 Cost and terms first.** Measure the tokens for 20 sample agent-days, then estimate the whole run with
+      Batch pricing; check the dataset terms allow publishing generated summaries. The daily update then summarises
+      only the new day.
+
+Order: A first (free, about a day of work), then 10.6 on a sample of days, then the rest.
+
 # Reference
 
 ## What the data allows
