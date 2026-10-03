@@ -5,3 +5,5 @@ __pycache__/
 # Honcho pilot: the cloned server (with its .env holding the API key) and the snapshots (dataset content)
 honcho/server/
 honcho/out/
+# thimble corpora exported from the gated dataset
+thimble/*/
