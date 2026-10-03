@@ -172,9 +172,29 @@ def thoughts(o):
                 yield from thoughts(v)
 
 
-def thought(msg):
-    text = '\n'.join(dict.fromkeys(t.strip() for t in thoughts(msg) if isinstance(t, str) and t.strip()))
-    return text[:THINK]
+def thought(msg, n=THINK):
+    return '\n'.join(dict.fromkeys(t.strip() for t in thoughts(msg) if isinstance(t, str) and t.strip()))[:n]
+
+
+def said(o):
+    """Visible text in a model response: Anthropic text blocks, OpenAI output_text, Gemini non-thought parts, chat content."""
+    if isinstance(o, list):
+        for v in o:
+            yield from said(v)
+    elif isinstance(o, dict):
+        if o.get('type') in ('text', 'output_text') or 'text' in o and 'type' not in o and o.get('thought') is not True:
+            yield o.get('text')
+        if isinstance(o.get('content'), str):
+            yield o['content']
+        for v in o.values():
+            if isinstance(v, (dict, list)):
+                yield from said(v)
+
+
+def last_words(o):
+    """The response that ended a computer session -> what the agent thought, then said, as it stopped ('' = neither)."""
+    words = '\n'.join(dict.fromkeys(t.strip() for t in said(o) if isinstance(t, str) and t.strip()))
+    return '\n\n'.join(filter(None, (thought(o, None), words)))
 
 
 def track(counts, said, n):
@@ -248,7 +268,7 @@ def main():
     enter = defaultdict(list)  # -> (second, room) moves between chat rooms
     fails = defaultdict(list)  # -> (second, error text) failed actions
     pauses = defaultdict(list)  # -> (second, seconds paused)
-    reports = defaultdict(list)  # -> (second, report) what an agent wrote on ending a computer session (Apr 2025 – Mar 2026)
+    reports = defaultdict(list)  # -> (second, report, last words) what an agent wrote on ending a computer session (Apr 2025 – Mar 2026)
     links = {}                 # url -> (created_at, date, agent) of its first share
     calls = []                 # (created_at, date, from, to, room, message id): who mentioned whom, for swarm analysis
 
@@ -301,7 +321,7 @@ def main():
             humans[d].append((s, x['speakerName'], cut(x['content'], 1500), mentions(x['content'] or '', None), room[x['roomId']]))
         elif kind == 'STOP_USING_COMPUTER' and (x.get('summary') or '').strip():
             d, s = pt(e['created_at'])
-            reports[d, x['agentId']].append((s, x['summary'].strip()))
+            reports[d, x['agentId']].append((s, x['summary'].strip(), last_words(x.get('output'))))
         elif a := ask(x):
             d, s = pt(e['created_at'])
             asks[d].append((s, x['agentId'], *a, room.get(x.get('roomId'), 'general')))  # no roomId before rooms existed
@@ -443,7 +463,7 @@ def main():
                 md, ms = pt(memory[a][0])
                 mem = {'written': f'{md} {ms // 3600:02}:{ms % 3600 // 60:02}', 'text': memory[a][1]}
             extra.append(save(dd / f'{slug[a]}.json', {'memory': mem, 'thinking': [[s - base, t] for s, t in th], 'errors': errors,
-                                                      'reports': sorted([s - base, t] for s, t in reports[k] if base <= s < base + span),
+                                                      'reports': sorted([s - base, t, w] for s, t, w in reports[k] if base <= s < base + span),
                                                       'replies': {s - o: said_back[r] for s, (*_, r) in sorted(bash[k].items()) if r in said_back}}))
         messages = sorted([s - base, idx[src], text, [idx[x] for x in to if x in idx], rooms.index(r)]
                           for s, src, text, to, r in chat[d] if base <= s < base + span)

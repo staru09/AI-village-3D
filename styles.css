@@ -193,6 +193,8 @@ select { font: 700 13px Nunito, sans-serif; border: 2px solid var(--wood-3); bor
 .memo b { color: var(--wood-2); }
 .meta { margin: 0; font-size: 12px; font-weight: 800; color: var(--ink-2); }
 .prose p { margin: 0 0 9px; font-size: 13.5px; white-space: pre-line; }
+.prose .last { border-left: 3px solid var(--line); padding: 2px 0 0 10px; color: var(--ink-2); }
+.prose .last b { display: block; margin-bottom: 4px; font: 400 14px 'Lilita One', sans-serif; color: var(--wood-2); }
 .lock { text-align: center; background: #fff8e6; border: 2px dashed var(--line); border-radius: 12px; padding: 18px 16px; }
 .lock .big { font-size: 34px; line-height: 1; }
 .lock p { margin: 8px 0 12px; }

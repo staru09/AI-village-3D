@@ -272,6 +272,9 @@ add median 164k, max 524k.
       agent-day files (+98 MB, whole).
 - [ ] ~~**6.1 Tokens per agent per day.**~~ Dropped 2026-10-03. Events carry `inputTokens`/`outputTokens`, but steps
       inside a computer session have no count, so any sum understates the real spend.
+- [x] **6.24 Last thought under each report.** In the Reports tab, under "💭 As it ended the session": the reasoning
+      and any visible text of the model call that ended the session (`STOP_USING_COMPUTER.output`), whole. About 7,500
+      of the 25,939 reports have one; the others' `output` is empty or only the stop call.
 - [x] **6.23 What the command printed.** Under "Last command" in the Today tab's Right now box. It shows stdout,
       then stderr, at most 400 characters, or "(nothing)". Turns use `computer_use_turns.output` and `error`; Claude
       Code commands use their `tool_result` (matched by id, before or after the call). They are stored as `replies` in

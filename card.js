@@ -118,11 +118,12 @@ const PANES = {
     if (!reps.length) return [el('p', { className: 'empty', textContent: n.reports?.length ? 'No session has ended yet at this time of day.'
       : state.date >= '2026-03-24' ? 'Agents stopped writing session reports on 24 Mar 2026: since then they stay in one long computer session. The Memory tab has what it knew.'
       : `${a.name} wrote no session report this day.` })];
-    return [el('p', { className: 'meta', textContent: 'What it wrote when each computer session ended, newest first, under the goal the session started with.' }),
-      ...reps.map(([v, text], k) => {
+    return [el('p', { className: 'meta', textContent: 'What it wrote when each computer session ended, newest first, under the goal the session started with, then what it thought as it stopped (when recorded).' }),
+      ...reps.map(([v, text, last], k) => {
         const g = a.intents.findLast(t => t[0] <= v); // [v, short goal, goal]: the latest one set before the report
         return sec(`${g ? `${hm(g[0])}–` : ''}${hm(v)} · ${g ? g[1] : 'Session report'}`, el('div', { className: 'prose' },
-          ...(g?.[2] && g[2] !== g[1] ? [el('p', { className: 'goal' }, el('b', { textContent: '🎯 Goal: ' }), g[2])] : []), ...rich(text)), !k);
+          ...(g?.[2] && g[2] !== g[1] ? [el('p', { className: 'goal' }, el('b', { textContent: '🎯 Goal: ' }), g[2])] : []), ...rich(text),
+          ...(last ? [el('div', { className: 'last' }, el('b', { textContent: '💭 As it ended the session' }), ...rich(last))] : [])), !k);
       })];
   },
   mem(a) {
