@@ -4,6 +4,7 @@ import { CSS2DObject } from 'three/addons/renderers/CSS2DRenderer.js';
 import { PLAZA } from './town.js';
 import { $, el, pct, count, fmt, SLUGS, clans, agents, dayGroup, SLICES } from './core.js';
 import { scene, gltf, flyTo } from './scene.js';
+import { infoButton } from './panels.js';
 
 // ---------- stats plaza: one LEGO brick column per agent ----------
 export const METRICS = [
@@ -21,7 +22,7 @@ const MAXB = 12, BS = 5.2; // bricks per full column, brick scale
 export const plaza = { cols: [] };
 const riserMat = new THREE.MeshStandardMaterial({ color: 0xcfc3a8, roughness: 0.95 });
 {
-  const sign = el('div', { className: 'sign', textContent: '🧱 Hall of Records', title: 'One LEGO column per agent; pick the measure under "Plaza"' });
+  const sign = el('div', { className: 'sign', title: 'One LEGO column per agent; pick the measure under "Plaza"' }, '🧱 Hall of Records', infoButton('Hall of Records'));
   sign.onclick = () => flyTo(new THREE.Vector3(PLAZA[0], 0, PLAZA[1]), 22);
   plaza.sign = new CSS2DObject(sign);
   plaza.sign.position.set(PLAZA[0] - 3, 8, PLAZA[1] - 5.5);

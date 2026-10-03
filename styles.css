@@ -285,6 +285,14 @@ details summary { cursor: pointer; font: 400 15px 'Lilita One', sans-serif; colo
 .sign { font: 400 15px 'Lilita One', sans-serif; color: #fff; padding: 2px 10px 4px; border-radius: 9px; border: 3px solid var(--wood-3);
   background: linear-gradient(#8a5a2e, var(--wood-2)); box-shadow: 0 3px 0 rgba(0,0,0,.35); white-space: nowrap; pointer-events: auto; cursor: pointer; }
 .sign b { font-weight: 400; color: var(--gold); margin-left: 6px; }
+.sign .ib { display: inline-grid; place-items: center; width: 17px; height: 17px; margin: 0 -4px 0 7px; padding: 0; border-radius: 50%; border: 2px solid var(--wood-3);
+  background: var(--parch); color: var(--wood-2); font: 400 12px/1 'Lilita One', sans-serif; vertical-align: 2px; cursor: help; } /* what the building is */
+.sign .ib:hover { background: #fff; }
+#binfo { position: fixed; inset: auto; margin: 0; width: min(320px, calc(100vw - 24px)); padding: 10px 12px; gap: 10px; color: var(--ink); }
+#binfo:popover-open { display: flex; }
+#binfo .ico { flex: none; font-size: 26px; line-height: 1; }
+#binfo h3 { margin: 0 0 3px; font: 400 16px 'Lilita One', sans-serif; color: var(--wood-2); }
+#binfo p { margin: 0; font-size: 13px; line-height: 1.4; }
 #tip { position: fixed; pointer-events: none; display: none; padding: 6px 9px; font-size: 12.5px; z-index: 5; }
 #cross { position: fixed; left: 50%; top: 50%; width: 18px; height: 18px; margin: -9px; display: none; }
 #cross::before, #cross::after { content: ''; position: absolute; background: #fff; box-shadow: 0 0 0 1px #0008; }

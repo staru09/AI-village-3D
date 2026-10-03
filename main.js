@@ -16,7 +16,7 @@ import { computeLive, drawBeams } from './arcs.js';
 import { METRICS, plaza, buildColumns } from './plaza.js';
 import { talk, hallObj, say, feed, chatSync } from './chat.js';
 import { select, drawer } from './card.js';
-import { tally, roster, initCalendar } from './panels.js';
+import { tally, roster, initCalendar, infoButton } from './panels.js';
 
 // ---------- controls ----------
 const time = $('#time');
@@ -156,7 +156,7 @@ async function loadDay(date) {
       o.rotation.y = ry; o.scale.setScalar(s);
       dayGroup.add(o);
     }
-    const e = el('div', { className: 'sign', title: `Chat room #${name}` });
+    const e = el('div', { className: 'sign', title: `Chat room #${name}` }, `💬 #${name}`, el('b'), infoButton('Chat rooms'));
     e.onclick = () => flyTo(new THREE.Vector3(r.yard[0], 0, r.yard[1]), 16);
     const o = new CSS2DObject(e);
     o.position.set(r.at[0], r.sign, r.at[1]);

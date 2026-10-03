@@ -110,7 +110,8 @@ Your four items, split into small issues. **Decide** marks a choice we still nee
 - [x] **4.6 "So far"** on the Today tab: days in the village and total actions and messages up to that day.
 - [ ] **4.7 Decide: generate per-agent daily summaries with Claude?** Only 2 exist today. Covering every agent-day is
       roughly 4,165 summaries via the Batch API. Check the cost and the dataset terms first.
-- [ ] **4.8 Small follow-up:** clicking a building sign could open the ⓘ guide at that building (today it flies there).
+- [x] **4.8 Small follow-up:** clicking a building sign could open the ⓘ guide at that building (today it flies there).
+      Done as 8.13: an "i" on each sign.
 
 ## 5. Later
 
@@ -248,6 +249,9 @@ Data we download but don't show yet. Checked against the 2026-09-20 export and t
 - [x] **8.12 No expand arrow on the header.** The ▾ and the expanded header (title, full goal) are gone. The header is
       always "◀ Day N · date · clock 📅 ▶" with the active goal under it; the full goal text is in its tooltip and in
       the Goals list. The Goals list has no hint line under its title.
+- [x] **8.13 An "i" on every building sign.** Workshop, Watchtower, Town Hall, Library, Hall of Records, Gallery and the
+      chat-room stalls. It opens a small card next to the sign with that building's ⓘ guide entry (one text, two
+      places), and closes on Escape or a click elsewhere. A click on the sign itself still flies the camera there.
 - [x] **8.5 Frontend split into modules** (branch `refactor`). `main.js` (954 lines) became `core.js`, `scene.js`,
       `characters.js`, `arcs.js`, `plaza.js`, `chat.js`, `card.js`, `panels.js` and a 285-line `main.js`. The CSS moved
       to `styles.css`. Plain ES modules, no build step. The loaded day changes only through `setDay()` in `core.js`, and

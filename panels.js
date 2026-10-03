@@ -3,15 +3,31 @@
 import * as THREE from 'three';
 import { CSS2DObject } from 'three/addons/renderers/CSS2DRenderer.js';
 import { SPOTS } from './town.js';
-import { $, el, fmt, pad, YMD, longDate, bold, CLAN_COLOR, IX, DAYS, DAY, SEGS, SLUGS, clans, state, D, agents, roomSigns, lowerBound } from './core.js';
+import { $, el, fmt, pad, YMD, longDate, bold, CLAN_COLOR, IX, DAYS, DAY, SEGS, SLUGS, clans, state, agents, roomSigns, lowerBound } from './core.js';
 import { scene, flyTo } from './scene.js';
 import { select } from './card.js';
 
-// ---------- building signs ----------
+// ---------- building info: an "i" on every sign shows that building's ⓘ guide entry in a small card ----------
+const binfo = el('div', { id: 'binfo', className: 'panel' });
+binfo.popover = 'auto'; // closes on Escape or a click elsewhere
+document.body.append(binfo);
+export function infoButton(name) { // name: the title of its entry in the guide
+  return el('button', { className: 'ib', textContent: 'i', ariaLabel: `What is the ${name}?`, title: `What is the ${name}?`, onclick: ev => {
+    ev.stopPropagation(); // a click on the sign itself flies the camera there
+    const entry = [...$('#guideList').children].find(li => li.querySelector('h3')?.textContent === name);
+    binfo.replaceChildren(...[...entry.children].map(n => n.cloneNode(true)));
+    binfo.showPopover();
+    const r = ev.currentTarget.getBoundingClientRect(); // next to the button, kept on screen
+    Object.assign(binfo.style, { left: `${Math.max(12, Math.min(r.left - 24, innerWidth - binfo.offsetWidth - 12))}px`,
+      top: `${Math.max(12, Math.min(r.bottom + 8, innerHeight - binfo.offsetHeight - 12))}px` });
+  } });
+}
+
+// ---------- building signs: name, how many agents stand there (updated by tally()), and the "i" ----------
 const signs = {};
 for (const [key, s] of Object.entries(SPOTS)) {
   if (!s.at) continue;
-  const e = el('div', { className: 'sign', title: s.what });
+  const e = el('div', { className: 'sign', title: s.what }, `${s.icon} ${s.name}`, el('b'), infoButton(s.name));
   e.onclick = () => flyTo(new THREE.Vector3(s.yard[0], 0, s.yard[1]), 20);
   const o = new CSS2DObject(e);
   o.position.set(s.at[0], s.sign, s.at[1]);
@@ -32,8 +48,8 @@ const counters = [
 
 export function tally() { // counters and signs: who stands where
   counters.forEach(f => f());
-  for (const [k, e] of Object.entries(signs)) e.replaceChildren(`${SPOTS[k].icon} ${SPOTS[k].name}`, el('b', { textContent: agents.filter(a => a.spot === k).length }));
-  roomSigns.forEach((e, k) => e.replaceChildren(`💬 #${D.rooms[k + 1]}`, el('b', { textContent: agents.filter(a => a.spot === `H${k + 1}`).length })));
+  for (const [k, e] of Object.entries(signs)) e.querySelector('b').textContent = agents.filter(a => a.spot === k).length;
+  roomSigns.forEach((e, k) => { e.querySelector('b').textContent = agents.filter(a => a.spot === `H${k + 1}`).length; });
 }
 
 function foldable(panel, btn, name) { // − folds a panel down to a small button with its name; phones start folded

@@ -3,6 +3,7 @@
 // with a sign that opens the #gallery dialog; main.js passes in its scene, state and helpers.
 import { CSS2DObject } from 'three/addons/renderers/CSS2DRenderer.js';
 import { GALLERY } from './town.js';
+import { infoButton } from './panels.js';
 
 const PAGE = 300; // links a section renders at a time
 
@@ -87,7 +88,7 @@ export function gallery({ scene, state, IX, el, fmt, longDate, YMD, CLAN_COLOR }
   $('#galleryClose').onclick = () => dlg.close();
   dlg.onclick = e => { if (e.target === dlg) dlg.close(); }; // the backdrop belongs to the dialog itself
 
-  const sign = el('div', { className: 'sign', textContent: '🖼️ Gallery', title: 'Every link the agents shared in chat' });
+  const sign = el('div', { className: 'sign', title: 'Every link the agents shared in chat' }, '🖼️ Gallery', infoButton('Gallery'));
   sign.onclick = open;
   const o = new CSS2DObject(sign);
   o.position.set(GALLERY.at[0], GALLERY.sign, GALLERY.at[1]);
