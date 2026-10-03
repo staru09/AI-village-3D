@@ -47,15 +47,8 @@ in both, so references between items still work. **Decide** marks a choice we st
       paused state on screen.
 - [ ] **3.6 Speeds.** Add real time (1×) and 10 s/s. (0.5 min/s exists and is the default now: 6.14, 8.9.)
 - [ ] **3.7 Optional:** a small floating screen above an agent showing its current command or page.
-- [ ] **3.8 Day and night follow the village clock.** The light changes with the replay time (Pacific time):
-      - **Sun:** its height and direction come from the date and hour at the village's real location (California),
-        so winter days get dark earlier than summer days.
-      - **Colours:** a warm morning, a bright midday, a golden evening, then dusk and night. The sky and fog colours,
-        and the strength of the sun and the ambient light, change smoothly with it.
-      - **At dusk and at night:** the lanterns, the campfires and the building windows glow.
-
-      Village hours are mostly 9:00 to 18:00 PT, so most of a day is daylight with an evening at the end. Late
-      sessions reach dusk. The lights are in `scene.js`.
+- [ ] **3.8 (rest) Lights at night.** The lanterns and the building windows glow at dusk and at night (the
+      campfires already do: their flames are unlit). The sunlight itself is done, see Done.
 
 ## 4. Player cards
 
@@ -84,12 +77,9 @@ Data we download but don't show yet. Checked against the 2026-09-20 export and t
       - Put them in that agent-day file and show them on the Today tab when present.
       - The watch narratives are 56–107k characters: show the opening paragraphs, with "Read more".
       - Too few to matter on their own; they are the format 4.7 would generate for every agent-day.
-- [ ] **6.6 Command replies in the Doing column.** `computer_use_turns.output` and the Claude Code `tool_result`
-      messages (matched to their command by id).
-      - Cap at 400 characters, folded under each command, stored in the agent-day files: about +35 MB in all, about
-        8 KB more per opened card. Day files stay the same.
-      - No extra redaction needed: the dataset already replaces credentials with `[REDACTED]` (checked on a sample).
-      - Browser actions have no text reply (their result was a screenshot; see 5.1).
+- [ ] **6.6 (rest) Command replies in the Doing column**, folded under each command. The data is there since 6.23
+      (one reply per 5-minute slice, for the command the card shows). Browser actions have no text reply (their
+      result was a screenshot; see 5.1).
 - [ ] **6.11 Later: what it learned today.** Compare an agent's first and last memory version of the day and show
       the added and dropped lines as "New today" in the Memory tab.
 - [ ] **6.18 Later: more swarm analysis** (on the `data-exploration` branch, next to 6.17). The effect of goals and
@@ -220,6 +210,10 @@ add median 164k, max 524k.
 
 ## 3. Livelier agents
 
+- [x] **3.8 (part) Sunlight follows the replay clock.** The sun's height and direction come from the date and the
+      Pacific hour over San Francisco, so winter evenings get dark earlier. The sky, the fog, the sunlight colour and
+      the strength of both lights blend from night to sunrise/sunset colours to day by the sun's height. Checked on
+      13 Jun 2026: bright at 17:00, golden at 19:45, dusk at 20:24, night by 22:00.
 - [x] **3.3 (part) Walk over to talk.** An agent walks to the Town Hall (or the message's room stall) to say each
       message, stays for as long as its bubble shows (3.2 s), then returns to the slice's place.
 
@@ -282,6 +276,11 @@ add median 164k, max 524k.
       2026-09-07).
 - [x] **6.21 Session reports in the data.** 25,937 reports (Apr 2025 – Mar 2026) as `reports: [[v, text]]` in the
       agent-day files (+98 MB, whole).
+- [x] **6.23 What the command printed.** Under "Last command" in the Today tab's Right now box. It shows stdout,
+      then stderr, at most 400 characters, or "(nothing)". Turns use `computer_use_turns.output` and `error`; Claude
+      Code commands use their `tool_result` (matched by id, before or after the call). They are stored as `replies` in
+      the agent-day files, one per slice, for the command the card shows. No extra redaction: the dataset already
+      replaces credentials with `[REDACTED]`.
 - [x] **6.22 Reports tab.** A player-card tab after Thinking | Doing: the agent's session reports up to the replay
       clock, newest first. Each sits under the session goal set before it (time span, short goal, then the whole goal).
       Empty states say when no session has ended yet, and that reports stop on 24 Mar 2026.
