@@ -339,3 +339,8 @@ add median 164k, max 524k.
 - [x] **8.14 Counters show and hide.** A round 📊 button beside the counters (top right) shows or hides them. Hidden
       at first, gold while they show, and the choice is remembered in the browser. On phones the 📊 heads the column
       on the right edge.
+- [x] **8.15 Move things around.** Drag the calendar header, the 🎯 Goals button, the Players panel and the Village
+      chat anywhere (panels by their header). A press that barely moves is still a click, and the end of a drag never
+      clicks. Positions are remembered in the browser and kept at least 40 px on screen; the last one dragged comes to
+      the front (under the player card). Double-click a panel's header or the Goals button to put it back. The calendar
+      and the Goals list open under their moved buttons.

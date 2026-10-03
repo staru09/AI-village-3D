@@ -115,6 +115,49 @@ addEventListener('village:select', () => {
   a.pcard?.scrollIntoView({ block: 'nearest' });
 });
 
+// ---------- movable: drag the calendar, Goals, Players and the chat anywhere; double-click puts one back ----------
+const layers = []; // the last one dragged comes to the front (still under the player card, z-index 3)
+function movable(box, handle = box) { // an offset (translate), so nothing around it moves; remembered in this browser
+  const key = `pos:${box.id}`, layer = box.closest('#top') || box; // the calendar and Goals live in the top bar
+  layers.push(layer);
+  let at = [0, 0], start = null, moved = false, ended = 0;
+  try { at = JSON.parse(localStorage[key] || '[0,0]'); } catch { /* storage blocked: starts in place */ }
+  const put = (x, y) => { // keeps at least 40 px of it on screen
+    const r = box.getBoundingClientRect(), l = r.left - at[0], t = r.top - at[1];
+    at = [Math.max(40 - l - r.width, Math.min(innerWidth - 40 - l, x)), Math.max(-t, Math.min(innerHeight - 40 - t, y))];
+    box.style.translate = `${at[0]}px ${at[1]}px`;
+  };
+  const save = () => { try { localStorage[key] = JSON.stringify(at); } catch { /* storage blocked */ } };
+  const move = e => {
+    if (!moved && Math.hypot(e.clientX - start[2], e.clientY - start[3]) < 6) return; // still a click
+    moved = true;
+    put(e.clientX - start[0], e.clientY - start[1]);
+  };
+  const up = () => { removeEventListener('pointermove', move); removeEventListener('pointerup', up); if (moved) { save(); ended = performance.now(); } };
+  handle.style.touchAction = 'none';
+  handle.addEventListener('pointerdown', e => {
+    if (e.button || e.target.closest('select, input')) return;
+    start = [e.clientX - at[0], e.clientY - at[1], e.clientX, e.clientY];
+    for (const l of layers) l.style.zIndex = l === layer ? 2 : '';
+    moved = false;
+    addEventListener('pointermove', move);
+    addEventListener('pointerup', up);
+  });
+  handle.addEventListener('click', e => { if (performance.now() - ended < 400) { e.stopPropagation(); e.preventDefault(); } }, true); // the end of a drag is not a click
+  handle.addEventListener('dblclick', e => {
+    if (e.target.closest('button, select, input') && e.target.closest('button, select, input') !== box) return;
+    at = [0, 0]; box.style.translate = ''; save();
+  });
+  box.style.translate = `${at[0]}px ${at[1]}px`;
+  const fit = () => put(...at); // after a resize of the window or of the panel (opened, folded)
+  addEventListener('resize', fit);
+  new ResizeObserver(fit).observe(box);
+}
+movable($('#title'));
+movable($('#goalBtn'));
+movable($('#roster'), $('#roster > header'));
+movable($('#feed'), $('#feed > header'));
+
 // ---------- calendar: every village day ----------
 export function initCalendar(loadDay) { // a picked day loads through main.js
   const cal = $('#cal'), months = [...new Set(DAYS.map(d => d.date.slice(0, 7)))];
@@ -123,7 +166,8 @@ export function initCalendar(loadDay) { // a picked day loads through main.js
     const open = e.newState === 'open';
     $('#dateBtn').ariaExpanded = open;
     if (!open) return;
-    cal.style.top = `${$('#title').getBoundingClientRect().bottom + 8}px`;
+    const t = $('#title').getBoundingClientRect(); // under the header, wherever it was moved to, kept on screen
+    Object.assign(cal.style, { top: `${t.bottom + 8}px`, left: `${Math.max(12, Math.min(t.left, innerWidth - cal.offsetWidth - 12))}px` });
     calMonth = state.date.slice(0, 7);
     calendar();
     cal.querySelector('.cur')?.focus();
@@ -162,6 +206,7 @@ $('#guideList').append(...[
   ['👤', 'Humans in the chat', 'People post in the village chat too: the AI Digest team (goals, sign-ins, approvals, guidance), viewers while the chat was public (Apr–Aug 2025) and ⚙️ Village system notices (pausing and resuming the village, nudges to idle agents). Names are shown as posted; their lines have a grey edge, and while the day plays their words pop up over the Town Hall. Pick Humans in the big view to read only them.'],
   ['🙋', 'Requests to humans', 'Agents can ask people for help: 🙋 a human helper for a task, 🔑 a Google sign-in, 📣 approval to contact someone outside the village, answered ✅ or ❌ with the reviewer\'s note. Each is a line in the chat under the agent\'s badge; while the day plays, the icon pops over the agent as it hurries to the Town Hall (or its room\'s stall).'],
   ['❗', 'Failures', 'A ❗ pops over an agent when one of its actions fails while the day plays. The error texts are in the Doing column of its player card.'],
+  ['✋', 'Move things around', 'Drag the calendar, the 🎯 Goals button, Players and the village chat anywhere on the screen; they stay where you leave them. Double-click a panel\'s header (or the Goals button) to put it back.'],
   ['💤', 'Pauses', 'An agent can pause itself for a set time; 💤 counts down what is left, mostly at the clan camp. The Today tab adds up its pauses.'],
 ].map(([icon, name, text]) => el('li', {}, el('div', { className: 'ico', textContent: icon }), el('div', {}, el('h3', { textContent: name }), el('p', { textContent: text })))));
 $('#info').onclick = () => guide.showModal();
