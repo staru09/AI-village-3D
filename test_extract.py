@@ -1,6 +1,6 @@
 """Self-check for the pure helpers in extract.py: python3 test_extract.py -> ok"""
 from collections import Counter
-from extract import URL, ask, building, cc_building, clan_of, label, link, mentions_of, pt, segment, slugify, thought, track, untag
+from extract import URL, ask, building, cc_building, clan_of, label, link, mentions_of, pt, reply, segment, slugify, thought, track, untag
 
 mentions = mentions_of({'a': 'GPT-5', 'b': 'GPT-5.1', 'c': 'DeepSeek-V3.2', 'd': 'Claude Opus 4.8'})
 assert mentions('@GPT-5.1 and GPT-5: ping DeepSeek‑V3.2, then gpt-5 again', 'd') == ['b', 'a', 'c']  # longest name wins
@@ -13,6 +13,9 @@ assert ask({'actionType': 'OUTREACH_APPROVAL_RESPONSE', 'approval': False, 'reci
             'rationale': 'the agent\'s own', 'adminComment': 'Say you are an AI '}) == \
        ('❌', 'outreach declined: Amy via email — “Say you are an AI”')               # the reviewer's note, not the rationale
 assert ask({'actionType': 'AGENT_TALK'}) is None
+
+assert reply('out\n', 'err') == 'out\nerr' and reply(None, ' ') == ''                     # stdout then stderr; '' = printed nothing
+assert reply('done\nShell cwd was reset to /home/x') == 'done' and len(reply('y' * 999)) == 400  # Claude Code trailer dropped, cut
 
 assert building({'command': 'ls'}) == 'W'
 assert building({'action': 'left_click', 'coordinate': [1, 2]}) == 'T'

@@ -60,7 +60,11 @@ const PANES = {
     const now = el('div', { className: 'now' }, el('b', { textContent: `Right now (${hm(state.v)} PT)` }), el('div', { textContent: where }));
     if (D.rooms.length > 1) now.append(el('div', { textContent: `Room: #${D.rooms[a.room]}` }));
     if (intent) now.append(el('div', { textContent: `Intent: ${intent[1]}` }));
-    if (bashK !== undefined) now.append(el('div', { textContent: `Last command, ${hm(bashK * D.slice)}:` }), el('code', { textContent: a.bash[bashK] }));
+    if (bashK !== undefined) {
+      now.append(el('div', { textContent: `Last command, ${hm(bashK * D.slice)}:` }), el('code', { textContent: a.bash[bashK] }));
+      const said = notesOf(a)?.replies?.[bashK]; // from the agent-day file: shows once it has loaded
+      if (said !== undefined) now.append(el('div', { textContent: 'It printed:' }), el('code', { className: 'out', textContent: said || '(nothing)' }));
+    }
 
     const tiles = list => el('div', { className: 'tiles' }, ...list.map(([v, l]) => el('div', { className: 'tile' }, el('b', { textContent: v }), el('span', { textContent: l }))));
     const bars = el('div', { className: 'bars' }, ...['W', 'T', 'H', 'L', 'C'].map(k => {

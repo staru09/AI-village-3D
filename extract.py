@@ -120,6 +120,12 @@ def cut(text, n):
     return (text or '')[:n]
 
 
+def reply(*parts):
+    """stdout and stderr of a command -> what it printed, cut; '' = nothing. Claude Code adds a 'Shell cwd was reset' line."""
+    text = '\n'.join(p.strip() for p in parts if p and p.strip())
+    return cut(re.sub(r'\n?Shell cwd was reset to \S+$', '', text), 400)
+
+
 def untag(text):
     """Summary sections (<narrative_summary>, <top_moments>, …) -> paragraphs; **bold** stays."""
     return TAGS.sub('\n\n', text or '').strip()
@@ -232,7 +238,8 @@ def main():
     counts = defaultdict(lambda: defaultdict(Counter))  # -> slice -> building -> n
     said = defaultdict(set)    # -> slices with a chat message
     stats = defaultdict(Counter)
-    bash = defaultdict(dict)   # -> slice -> (second, first bash line), earliest wins
+    bash = defaultdict(dict)   # -> slice -> (second, first bash line, reply id), earliest wins
+    said_back = {}             # reply id (turn id, Claude Code tool_use id) -> what the command printed
     think = defaultdict(dict)  # -> reasoning excerpt -> second
     intents = defaultdict(list)
     chat = defaultdict(list)   # date -> (second, agent, text, mentioned, room)
@@ -245,9 +252,12 @@ def main():
     links = {}                 # url -> (created_at, date, agent) of its first share
     calls = []                 # (created_at, date, from, to, room, message id): who mentioned whom, for swarm analysis
 
-    def first_bash(k, s, cmd):
-        line = (s, cut(cmd.strip().split('\n')[0], 160))
-        bash[k][s // SLICE] = min(bash[k].get(s // SLICE, line), line)
+    def first_bash(k, s, cmd, rid):
+        new, old = (s, cut(cmd.strip().split('\n')[0], 160), rid), bash[k].get(s // SLICE)
+        if old is None or new[:2] < old[:2]:
+            bash[k][s // SLICE] = new
+            if old: said_back.pop(old[2], None)  # turns come in id order, not time order: keep only the winners' replies
+            return True
 
     mentions = mentions_of(names)
     room = {r['id']: r['name'] for r in rows(snap, 'chat_rooms.jsonl.gz')}
@@ -314,8 +324,8 @@ def main():
             st['errors'] += 1
             fails[k].append((s, cut(t['error'].strip(), 300)))
         st['searches'] += a.get('action') == 'search_history'
-        if b == 'W' and a['command']:
-            first_bash(k, s, a['command'])
+        if b == 'W' and a['command'] and first_bash(k, s, a['command'], t['id']):
+            said_back[t['id']] = reply(t['output'], t['error'])
 
     for r in recent(snap, 'claude_code_messages.jsonl.gz', since):  # the Claude Code agent's own tool calls
         if r['message_type'] not in ('assistant', 'user'):
@@ -325,10 +335,13 @@ def main():
         items = (r['content'].get('message') or {}).get('content') or []
         if r['message_type'] == 'user':  # tool results: failed calls come back with is_error
             for u in items if isinstance(items, list) else []:
+                c = u.get('content') or ''
+                c = c if isinstance(c, str) else ' '.join(i.get('text', '') for i in c)
+                if u.get('tool_use_id'):  # half of them come before their call in the file: kept until the end
+                    said_back[u['tool_use_id']] = reply(c)
                 if u.get('is_error'):
                     stats[k]['errors'] += 1
-                    c = u.get('content') or ''
-                    fails[k].append((s, cut(c if isinstance(c, str) else ' '.join(i.get('text', '') for i in c), 300)))
+                    fails[k].append((s, cut(c, 300)))
             continue
         if th := thought(r['content']):
             think[k].setdefault(th, s)
@@ -338,7 +351,7 @@ def main():
                 stats[k]['turns'] += 1
                 stats[k][b] += 1
                 if u['name'] == 'Bash' and (u.get('input') or {}).get('command'):
-                    first_bash(k, s, u['input']['command'])
+                    first_bash(k, s, u['input']['command'], u['id'])
 
     by_day = defaultdict(list)
     for d, a in set(counts) | set(said):
@@ -416,7 +429,7 @@ def main():
                 'stats': dict(stats[k]),
                 'partners': [[idx[p], partners[(p, 0)], partners[(p, 1)]] for p, _ in tops.most_common(8)],
                 'intents': [i for i in ins if 0 <= i[0] < span],
-                'bash': {s - o: line for s, (_, line) in sorted(bash[k].items())},
+                'bash': {s - o: line for s, (_, line, _) in sorted(bash[k].items())},
                 'sofar': dict(sofar[a]),
                 'enter': sorted([s - base, rooms.index(r)] for s, r in enter[k] if base <= s < base + span),
                 'fails': [v for v, _ in errors],
@@ -430,7 +443,8 @@ def main():
                 md, ms = pt(memory[a][0])
                 mem = {'written': f'{md} {ms // 3600:02}:{ms % 3600 // 60:02}', 'text': memory[a][1]}
             extra.append(save(dd / f'{slug[a]}.json', {'memory': mem, 'thinking': [[s - base, t] for s, t in th], 'errors': errors,
-                                                      'reports': sorted([s - base, t] for s, t in reports[k] if base <= s < base + span)}))
+                                                      'reports': sorted([s - base, t] for s, t in reports[k] if base <= s < base + span),
+                                                      'replies': {s - o: said_back[r] for s, (*_, r) in sorted(bash[k].items()) if r in said_back}}))
         messages = sorted([s - base, idx[src], text, [idx[x] for x in to if x in idx], rooms.index(r)]
                           for s, src, text, to, r in chat[d] if base <= s < base + span)
         # humans from PT midnight on: goal announcements and 'resuming the village' come just before the window opens (v < 0)
