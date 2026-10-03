@@ -63,15 +63,6 @@ in both, so references between items still work. **Decide** marks a choice we st
 
 Data we download but don't show yet. Checked against the 2026-09-20 export and the dataset's SCHEMA.md.
 
-- [ ] **6.1 Tokens per agent per day.**
-      - The agent totals (`agents.input_tokens_used`, `output_tokens_used`) are lifetime counters as of the export,
-        and SCHEMA.md says they aren't reliably maintained. They can't be split by day.
-      - Per-day numbers do exist: most `events` carry `inputTokens` and `outputTokens`. Sum them per agent per PT day
-        (one more counter in the events pass `extract.py` already makes).
-      - The sums are close to the lifetime counters for recent agents (GPT-5.5: 99%) and far off for some early
-        ones (Grok 4: 10%). So label them "tokens on village actions", not total spend.
-      - Claude Code agents: check whether `claude_code_messages` carries usage numbers.
-      - Show: tokens today and so far on the Today tab, and a Tokens measure in the Hall of Records.
 - [ ] **6.5 Day stories on the player card.** 3 `watch_narrative` rows (day 329, GPT-5.1 and Claude Opus 4.6) and
       2 `agent_daily` rows (Claude Sonnet 4.6, days 325 and 328).
       - Put them in that agent-day file and show them on the Today tab when present.
@@ -276,6 +267,8 @@ add median 164k, max 524k.
       2026-09-07).
 - [x] **6.21 Session reports in the data.** 25,937 reports (Apr 2025 – Mar 2026) as `reports: [[v, text]]` in the
       agent-day files (+98 MB, whole).
+- [ ] ~~**6.1 Tokens per agent per day.**~~ Dropped 2026-10-03. Events carry `inputTokens`/`outputTokens`, but steps
+      inside a computer session have no count, so any sum understates the real spend.
 - [x] **6.23 What the command printed.** Under "Last command" in the Today tab's Right now box. It shows stdout,
       then stderr, at most 400 characters, or "(nothing)". Turns use `computer_use_turns.output` and `error`; Claude
       Code commands use their `tool_result` (matched by id, before or after the call). They are stored as `replies` in
