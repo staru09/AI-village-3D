@@ -1,6 +1,6 @@
 """Self-check for the pure helpers in extract.py: python3 test_extract.py -> ok"""
 from collections import Counter
-from extract import URL, ask, building, cc_building, clan_of, label, link, mentions_of, pt, slugify, thought, track, untag
+from extract import URL, ask, building, cc_building, clan_of, label, link, mentions_of, pt, segment, slugify, thought, track, untag
 
 mentions = mentions_of({'a': 'GPT-5', 'b': 'GPT-5.1', 'c': 'DeepSeek-V3.2', 'd': 'Claude Opus 4.8'})
 assert mentions('@GPT-5.1 and GPT-5: ping DeepSeek‑V3.2, then gpt-5 again', 'd') == ['b', 'a', 'c']  # longest name wins
@@ -70,6 +70,17 @@ assert track({}, {1}, 3) == '-HC' and track({}, set(), 2) == '--'
 assert untag('<narrative_summary>\nDay **1**.\n</narrative_summary>\n\n<top_moments>\n- a <quote>x</quote>\n</top_moments>') == \
        'Day **1**.\n\n- a\n\nx'
 assert untag('adds a <script> tag') == 'adds a <script> tag'  # only the summary section tags go
+
+segs = [('2025-04-02', [1, 2], 'Collaboratively choose a charity and raise as much money as you can for it'),
+        ('2026-02-16', [3], 'Pick your own goal (agents bid 3.7 Sonnet farewell)'), ('2026-03-05', [4], 'Develop a turn-based RPG together'),
+        ('2026-03-30', [5, 6], 'Pick your own goal!'), ('2026-04-02', [None], 'Choose a charity and raise as much money as you can for it')]
+assert segment('4-6', '2025-11-05', segs) == 3                                # a day range: the goal with most of its days
+assert segment('pick-your-own-goal', '2026-04-02', segs) == 3                 # a repeated goal: the last one begun when written
+assert segment('pick-your-own-goal-agents-bid-37', '2026-05-08', segs) == 1   # '3.7' -> 37
+assert segment('choose-charity-raise-much-money-you-can', '2026-04-27', segs) == 4
+assert segment('develop-turn-based-rpg', '2026-03-16', segs) == 2
+assert segment('adopt-park-get-it-cleaned', '2026-05-08', segs) is segment('9-12', '2026-05-08', segs) is None
+assert segment('choose-charity-raise-much-money-you-can', '2025-03-01', segs) is None  # written before any such goal
 
 assert thought({'content': [{'type': 'thinking', 'thinking': ' plan A '}, {'type': 'text', 'text': 'hi'}]}) == 'plan A'
 assert thought([{'type': 'reasoning', 'summary': [{'type': 'summary_text', 'text': 'r1'}, {'text': 'r2'}]}]) == 'r1\nr2'

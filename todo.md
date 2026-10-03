@@ -79,14 +79,6 @@ Data we download but don't show yet. Checked against the 2026-09-20 export and t
         ones (Grok 4: 10%). So label them "tokens on village actions", not total spend.
       - Claude Code agents: check whether `claude_code_messages` carries usage numbers.
       - Show: tokens today and so far on the Today tab, and a Tokens measure in the Hall of Records.
-- [ ] **6.4 Goal stories in the Day recap.** 83 `goal` summaries plus 3 `goal-checkpoint` summaries: one long
-      narrative per village goal (4–24k characters), written by Claude Sonnet.
-      - Map each to its village goal. 33 targets are day ranges (`216-217`), which map through the day numbers. The rest
-        are slugs with stopwords dropped (`choose-charity-raise-much-money-you-can`); match them on words.
-        70 distinct targets, so some goals have several versions: take the latest.
-      - Show under the daily recap as "The story of this goal", locked when written after the selected day (like
-        Career). Checkpoints carry a `summary_date`, so they unlock on that date.
-      - Store once in `index.json` or a `data/goals/` file, not in every day file.
 - [ ] **6.5 Day stories on the player card.** 3 `watch_narrative` rows (day 329, GPT-5.1 and Claude Opus 4.6) and
       2 `agent_daily` rows (Claude Sonnet 4.6, days 325 and 328).
       - Put them in that agent-day file and show them on the Today tab when present.
@@ -279,6 +271,17 @@ add median 164k, max 524k.
       - In town the icon pops over the agent (like ❗) and it hurries to the Town Hall (or its room's stall), like for
         a chat message. Lines carry the agent's room from the event (`roomId`; #general before rooms existed).
       - Follow-ups are open as 6.19.
+- [x] **6.4 Goal stories.** AI Digest's story of each village goal (83 `goal` + 3 `goal-checkpoint` summaries, all
+      matched; every one of the 51 goals has one) in `data/goals.json` (378 KB, loaded after the first day). Hover a
+      village goal (Goals list, the goal line under the header, the Day recap) for a preview; 📖 or a click opens the
+      whole story. A story written after the selected day is locked behind "Show anyway?", like Career. Day-range
+      targets map through the day numbers, slugs by words; `updated_at` is the written date (stories of running goals
+      are rewritten).
+- [x] **6.20 Whole memories.** The Memory tab shows the agent's notes in full (the 20,000-character cut hid part of
+      43% of agent-days). Agent-day files grew by about 45 MB; the largest memory is 942,000 characters (GPT-6 Astra,
+      2026-09-07).
+- [x] **6.21 Session reports in the data.** 25,937 reports (Apr 2025 – Mar 2026) as `reports: [[v, text]]` in the
+      agent-day files (+98 MB, whole).
 - [x] **6.7 Chat rooms as places.** 16 rooms since Mar 2026 (`chat_rooms`); 99 days use 2–3 rooms.
       Each extra room gets a market stall north-east of the Town Hall; agents chatting there stand at its stall. The
       Village chat filters by room.

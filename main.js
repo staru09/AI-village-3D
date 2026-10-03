@@ -44,13 +44,38 @@ goals.addEventListener('toggle', e => { // opens under the header like the calen
   Object.assign(goals.style, { top: `${r.bottom + 8}px`, left: `${Math.max(12, Math.min(r.left, innerWidth - goals.offsetWidth - 12))}px` });
   goals.querySelector('[aria-current]')?.scrollIntoView({ block: 'center' });
 });
-function nav() { // ◀ ▶, the goal picker and the URL follow the loaded day and the goal filter
-  const k = DAY[state.date]?.k, s = SEGS[state.seg];
+// goal stories (data/goals.json, fetched after the first day: [goal segment, written, 'goal' | 'checkpoint', readable from, text]):
+// a hover on a goal shows how its story starts; 📖 in Goals, or a click on the goal under the header or atop the Day recap,
+// opens it whole. Like the Career tab, a story is locked before the day it is readable from (a checkpoint: the day it covers up to).
+const STORY = {}, spoiled = new Set(), story = $('#story'), daySeg = () => SEGS.findIndex(s => s.a <= DAY[state.date]?.k && DAY[state.date].k <= s.b);
+const preview = k => { // undefined: no story
+  const e = STORY[k]?.find(e => e[3] <= state.date);
+  return STORY[k] && (e ? `📖 ${e[4].replaceAll('**', '').replace(/\s+/g, ' ').slice(0, 300).replace(/\s\S*$/, '…')}` : `📖 🔒 Its story was written ${longDate(STORY[k][0][1], YMD)}, after this day`);
+};
+function openStory(k) {
+  const s = SEGS[k], list = STORY[k];
+  if (!list) return;
+  $('#storyTitle').textContent = `📖 ${s.goal.replaceAll('**', '')}`;
+  $('#storyNote').textContent = `${span.formatRange(noon(s.a), noon(s.b))} · story written ${longDate(list[0][1], YMD)}`;
+  $('#storyText').replaceChildren(...list.flatMap(e => [ // the story, then its checkpoints
+    ...(e[2] === 'checkpoint' ? [el('h3', { textContent: `📍 Checkpoint: the story up to ${longDate(e[3], YMD)}` })] : []),
+    ...(e[3] > state.date && !spoiled.has(e) ? [el('div', { className: 'lock' }, el('div', { className: 'big', textContent: '🔒' }),
+      el('p', {}, el('b', { textContent: `Written ${longDate(e[1], YMD)}` }), ', after this day.'),
+      el('button', { className: 'btn alt', textContent: 'Show anyway?', onclick: () => { spoiled.add(e); openStory(k); } }))] : rich(e[4]))]));
+  if (!story.open) story.showModal();
+}
+$('#storyClose').onclick = () => story.close();
+story.onclick = e => { if (e.target === story) story.close(); }; // the backdrop belongs to the dialog itself
+$('#goalNow').onclick = () => openStory(state.seg);
+$('#recap').onclick = e => { if (e.target.closest('.goal')) openStory(daySeg()); };
+function nav() { // ◀ ▶, the goal picker, goal story previews and the URL follow the loaded day and the goal filter
+  const k = DAY[state.date]?.k, s = SEGS[state.seg], g = $('#recap .goal');
   $('#prevDay').disabled = !(k > (s ? s.a : 0));
   $('#nextDay').disabled = !(k < (s ? s.b : DAYS.length - 1));
-  for (const b of $('#goalList').querySelectorAll('button')) b.ariaCurrent = +b.value === state.seg ? 'true' : null;
+  for (const b of $('#goalList').querySelectorAll('button[value]')) Object.assign(b, { ariaCurrent: +b.value === state.seg ? 'true' : null, title: preview(+b.value) || SEGS[b.value]?.goal || '' });
   Object.assign($('#goalBtn'), { ariaPressed: !!s, title: s ? `Goal: ${s.goal}` : 'Browse the village by goal' });
-  Object.assign($('#goalNow'), { textContent: s ? `🎯 ${s.goal}` : '', title: s ? s.goal : '' });
+  Object.assign($('#goalNow'), { textContent: s ? `🎯 ${s.goal}` : '', title: s ? preview(state.seg) || s.goal : '', className: STORY[state.seg] ? 'story' : '' });
+  if (g) Object.assign(g, { title: preview(daySeg()) || '', className: STORY[daySeg()] ? 'goal story' : 'goal' });
   const u = new URL(location);
   u.searchParams.set('date', state.date);
   if (s) u.searchParams.set('goal', state.seg); else u.searchParams.delete('goal');
@@ -175,13 +200,13 @@ async function loadDay(date) {
   const n = DAY[date]?.day ?? D.day;
   $('#dayNo').textContent = `Day ${n} · `;
   document.title = `AI Village · Day ${n} · ${longDate(date, YMD)}`;
-  if (state.seg >= 0) state.seg = SEGS.findIndex(s => s.a <= DAY[date]?.k && DAY[date].k <= s.b); // a day outside the goal filter switches to its goal
+  $('#recap').replaceChildren(el('div', { className: 'goal' }, el('b', { textContent: 'Village goal: ' }), ...bold(D.goal || DAY[date]?.goal || 'none recorded')),
+    ...(D.recap ? rich(D.recap) : [el('p', { className: 'empty', textContent: 'No recap was written for this day.' })]));
+  if (state.seg >= 0) state.seg = daySeg(); // a day outside the goal filter switches to its goal
   nav();
   time.max = END - 1;
   $('#ticks').replaceChildren(...Array.from({ length: Math.ceil(D.hours) }, (_, h) =>
     Object.assign(el('span', { textContent: hm(h * 3600) }), { style: `left:${(100 * h * 3600) / END}%` })));
-  $('#recap').replaceChildren(el('div', { className: 'goal' }, el('b', { textContent: 'Village goal: ' }), ...bold(D.goal || DAY[date]?.goal || 'none recorded')),
-    ...(D.recap ? rich(D.recap) : [el('p', { className: 'empty', textContent: 'No recap was written for this day.' })]));
 
   state.slice = -1; state.sel = null; state.open.clear();
   roster();
@@ -233,6 +258,11 @@ if (!(await loadDay(DAY[want] ? want : state.seg >= 0 ? DAYS[SEGS[state.seg].a].
   $('#loadmsg').textContent = $('#busy').textContent;
   throw new Error('first day failed to load');
 }
+fetch('data/goals.json').then(r => r.json()).then(rows => { // the goal stories, then 📖 on each goal in Goals that has one
+  for (const e of rows) (STORY[e[0]] ||= []).push(e);
+  for (const k in STORY) $('#goalList').children[+k + 1].append(el('button', { className: 'read', textContent: '📖', title: 'Read the story of this goal', ariaLabel: `Read the story of: ${SEGS[k].goal}`, onclick: () => openStory(+k) }));
+  nav();
+}).catch(() => {}); // none built yet: goals without stories
 const timer = new THREE.Timer();
 const face = new THREE.Vector3();
 renderer.setAnimationLoop(t => {

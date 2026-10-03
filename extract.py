@@ -13,7 +13,7 @@ HOUR = 3600 // SLICE
 STRAY = 2  # an edge hour with a single active agent-slice is a stray (2026-02-24 07:xx); busier edges are real work
 PTZ = ZoneInfo('America/Los_Angeles')
 PERMA = '2026-03-24'  # perma-computer-use: before it, history searches were events, after it, turns
-THINK, THINKS, MEMORY, LONG = 400, 150, 20000, 20000  # excerpt chars, excerpts per agent-day, memory chars, recap chars
+THINK, THINKS, MEMORY, LONG = 400, 150, None, 20000  # excerpt chars, excerpts per agent-day, memory chars (None: whole), recap chars
 HALL = {'send_message_back_to_chat', 'move_to_room', 'request_approval_for_unsolicited_outreach',
         'request_Google_sign_in', 'request_human_helper'}
 CLANS = {'Google': ('gemini',), 'Anthropic': ('claude',), 'OpenAI': ('gpt', 'o1', 'o3', 'o4'),  # colour-palette slot order;
@@ -24,7 +24,7 @@ CLANS = {'Google': ('gemini',), 'Anthropic': ('claude',), 'OpenAI': ('gpt', 'o1'
 CC = {'WebFetch': 'T', 'WebSearch': 'T', 'mcp__village__edit_memory': 'L', 'mcp__village__search_history': 'L'}
 PREFIX = re.compile(r'^(Claude|GPT-|Gemini|DeepSeek-|Kimi|Grok|Muse Spark)\s*')
 TS = re.compile(rb'"created_at":\s*"([^"]+)"')
-TAGS = re.compile(r'(?:\s*</?(?:narrative_summary|list_of_chronological_events|top_moments?|takeaways?|blurb|quote)>)+\s*')
+TAGS = re.compile(r'(?:\s*</?(?:narrative_summary|list_of_chronological_events|top_moments?|takeaways?|blurb|quote|your_previous_summary)>)+\s*')
 HYPHENS = str.maketrans({'‐': '-', '‑': '-', '–': '-'})
 URL = re.compile(r'https?://[^\s<>"\'`]+')
 # a bash turn's 'error' is its stderr, also on success (git push, curl progress): only failure-looking stderr counts.
@@ -123,6 +123,21 @@ def cut(text, n):
 def untag(text):
     """Summary sections (<narrative_summary>, <top_moments>, …) -> paragraphs; **bold** stays."""
     return TAGS.sub('\n\n', text or '').strip()
+
+
+def words(text):
+    """Goal text or summary slug -> its words as the slugs spell them: lowercase, apostrophes and dots dropped ('3.7' -> '37')."""
+    return re.sub(r'[^a-z0-9\s-]', '', text.lower()).replace('-', ' ').split()
+
+
+def segment(target, written, segs):
+    """A goal summary's target -> index in segs [(first date, day numbers, goal)], or None. 'a-b' is a range of village
+    days: the segment with most of them. Else a slug of the goal (stopwords dropped): a goal with all its words; when the
+    goal repeats, the last one started by the date the summary was written."""
+    if m := re.fullmatch(r'(\d+)-(\d+)', target):
+        n = [len(set(nums) & set(range(int(m[1]), int(m[2]) + 1))) for _, nums, _ in segs]
+        return n.index(max(n)) if any(n) else None
+    return next((k for k in reversed(range(len(segs))) if segs[k][0] <= written and set(words(target)) <= set(words(segs[k][2]))), None)
 
 
 def pt(ts):
@@ -226,6 +241,7 @@ def main():
     enter = defaultdict(list)  # -> (second, room) moves between chat rooms
     fails = defaultdict(list)  # -> (second, error text) failed actions
     pauses = defaultdict(list)  # -> (second, seconds paused)
+    reports = defaultdict(list)  # -> (second, report) what an agent wrote on ending a computer session (Apr 2025 – Mar 2026)
     links = {}                 # url -> (created_at, date, agent) of its first share
     calls = []                 # (created_at, date, from, to, room, message id): who mentioned whom, for swarm analysis
 
@@ -273,6 +289,9 @@ def main():
         elif kind == 'USER_TALK':  # the AI Digest team, viewers while the chat was public (2025), 'automated' notices
             d, s = pt(e['created_at'])
             humans[d].append((s, x['speakerName'], cut(x['content'], 1500), mentions(x['content'] or '', None), room[x['roomId']]))
+        elif kind == 'STOP_USING_COMPUTER' and (x.get('summary') or '').strip():
+            d, s = pt(e['created_at'])
+            reports[d, x['agentId']].append((s, x['summary'].strip()))
         elif a := ask(x):
             d, s = pt(e['created_at'])
             asks[d].append((s, x['agentId'], *a, room.get(x.get('roomId'), 'general')))  # no roomId before rooms existed
@@ -410,8 +429,8 @@ def main():
             if memory[a]:
                 md, ms = pt(memory[a][0])
                 mem = {'written': f'{md} {ms // 3600:02}:{ms % 3600 // 60:02}', 'text': memory[a][1]}
-            extra.append(save(dd / f'{slug[a]}.json', {'memory': mem, 'thinking': [[s - base, t] for s, t in th],
-                                                      'errors': errors}))
+            extra.append(save(dd / f'{slug[a]}.json', {'memory': mem, 'thinking': [[s - base, t] for s, t in th], 'errors': errors,
+                                                      'reports': sorted([s - base, t] for s, t in reports[k] if base <= s < base + span)}))
         messages = sorted([s - base, idx[src], text, [idx[x] for x in to if x in idx], rooms.index(r)]
                           for s, src, text, to, r in chat[d] if base <= s < base + span)
         # humans from PT midnight on: goal announcements and 'resuming the village' come just before the window opens (v < 0)
@@ -440,6 +459,32 @@ def main():
                    for a, ds in sorted(active.items(), key=lambda x: x[1][0])},
         'days': index_days,
     })
+    # goal stories: each goal summary goes to its goal segment (core.js SEGS: a run of days with the same goal), the latest
+    # written wins; a checkpoint (the story so far) unlocks on its summary_date. updated_at is when it was written: a live
+    # goal's row is created at its start ('pick-your-own-goal' on 2026-02-16, then rewritten for the next such goal).
+    segs = []  # [first date, day numbers, goal]
+    for x in index_days:
+        if segs and segs[-1][2] == x['goal']:
+            segs[-1][1].append(x['day'])
+        else:
+            segs.append([x['date'], [x['day']], x['goal']])
+    stories, checks, lost = {}, [], []
+    for r in sorted(summaries, key=lambda r: r['updated_at']):
+        if r['type'] in ('goal', 'goal-checkpoint'):
+            written = pt(r['updated_at'])[0]
+            k = segment(r['summary_target'], written, segs)
+            if k is None:
+                lost.append(r['summary_target'])
+            elif r['type'] == 'goal':
+                stories[k] = [k, written, 'goal', written, untag(r['content'])]
+            else:
+                checks.append([k, written, 'checkpoint', r['summary_date'], untag(r['content'])])
+    for c in checks:  # a checkpoint repeating its goal's story: that story is safe to read from the checkpoint's date
+        if (s := stories.get(c[0])) and s[4] == c[4]:
+            s[3], c[4] = min(s[3], c[3]), None
+    goals = sorted([*stories.values(), *(c for c in checks if c[4])], key=lambda e: e[0])  # per goal: story, checkpoints
+    print(f'goals.json: {len(goals)} stories for {len(stories)} goals, {save(out / "goals.json", goals) / 1e3:.0f} KB; '
+          f'{len(lost)} goal summaries matched no goal: {lost}')
     gallery = [[u, d, slug[a]] for u, (_, d, a) in sorted(links.items(), key=lambda x: x[1]) if d >= since]
     save(out / 'gallery.json', gallery)
     with open(out / 'mentions.csv', 'w', newline='', encoding='utf-8') as f:  # every agent-to-agent mention, whole day

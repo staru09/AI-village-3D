@@ -218,23 +218,32 @@ details summary { cursor: pointer; font: 400 15px 'Lilita One', sans-serif; colo
 #goalList button small { display: block; color: var(--ink-2); font-size: 11.5px; font-weight: 800; }
 #goalList button:hover { border-color: var(--btn-alt); }
 #goalList button[aria-current="true"] { background: linear-gradient(#ffd97a, #ffc94d); border-color: var(--wood-3); }
+#goalList li { display: flex; gap: 4px; }
+#goalList .read { width: auto; flex: none; padding: 0 7px; font-size: 16px; } /* 📖 opens the goal's story */
 #calInfo .t { display: block; font: 400 13.5px 'Lilita One', sans-serif; font-weight: 400; color: var(--wood-2); }
 
 /* building guide */
-#guide, #gallery, #chat { width: min(600px, calc(100vw - 24px)); max-height: min(86vh, 780px); padding: 0; color: var(--ink); overflow: hidden; }
-:is(#guide, #gallery, #chat)[open] { display: flex; flex-direction: column; }
-:is(#guide, #gallery, #chat)::backdrop { background: rgba(35,18,5,.5); }
+#guide, #gallery, #chat, #story { width: min(600px, calc(100vw - 24px)); max-height: min(86vh, 780px); padding: 0; color: var(--ink); overflow: hidden; }
+:is(#guide, #gallery, #chat, #story)[open] { display: flex; flex-direction: column; }
+:is(#guide, #gallery, #chat, #story)::backdrop { background: rgba(35,18,5,.5); }
 #guide footer { padding: 8px 16px; font-size: 12px; color: var(--ink-2); border-top: 2px solid var(--line); background: var(--parch-2); }
 #guide footer a { color: var(--wood-2); font-weight: 800; }
-:is(#guide, #gallery, #chat) header { display: block; position: relative; padding: 12px 56px 12px 16px; background: linear-gradient(#8a5a2e, var(--wood) 40%, var(--wood-2)); border-bottom: 3px solid var(--wood-3); }
-:is(#guide, #gallery, #chat) header h2 { margin: 0; font-size: 24px; color: #fff; }
-:is(#guide, #gallery, #chat) header p { margin: 1px 0 0; color: #f6ecd2; font-size: 13px; }
-:is(#guide, #gallery, #chat) .close { position: absolute; top: 10px; right: 10px; padding: 1px 10px 4px; }
+:is(#guide, #gallery, #chat, #story) header { display: block; position: relative; padding: 12px 56px 12px 16px; background: linear-gradient(#8a5a2e, var(--wood) 40%, var(--wood-2)); border-bottom: 3px solid var(--wood-3); }
+:is(#guide, #gallery, #chat, #story) header h2 { margin: 0; font-size: 24px; color: #fff; }
+:is(#guide, #gallery, #chat, #story) header p { margin: 1px 0 0; color: #f6ecd2; font-size: 13px; }
+:is(#guide, #gallery, #chat, #story) .close { position: absolute; top: 10px; right: 10px; padding: 1px 10px 4px; }
 #guideList { list-style: none; margin: 0; padding: 12px 14px 16px; overflow-y: auto; display: grid; gap: 8px; }
 #guideList li { display: grid; grid-template-columns: 40px 1fr; gap: 10px; align-items: start; padding: 8px 10px; background: #fff8e6; border: 2px solid var(--line); border-radius: 12px; }
 #guideList .ico { width: 40px; height: 40px; font-size: 21px; }
 #guideList h3 { margin: 1px 0 0; font: 400 16px 'Lilita One', sans-serif; color: var(--wood-2); }
 #guideList p { margin: 1px 0 0; font-size: 13px; }
+
+/* a goal's story: the goal and its checkpoints; the goal under the header and atop the Day recap open it too */
+#story header h2 { font-size: 21px; }
+#storyText { overflow-y: auto; padding: 12px 16px 8px; }
+#storyText h3 { margin: 6px 0 9px; padding-top: 12px; border-top: 2px dashed var(--line); font: 400 17px 'Lilita One', sans-serif; color: var(--wood-2); }
+:is(#goalNow, #recap .goal).story { cursor: pointer; }
+:is(#goalNow, #recap .goal).story:hover { text-decoration: underline dotted; }
 
 /* gallery: links grouped in sections, each link a row */
 #gallery { width: min(760px, calc(100vw - 24px)); }
