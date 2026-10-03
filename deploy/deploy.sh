@@ -2,7 +2,7 @@
 # Host village-3d on this machine behind Caddy.
 #   sudo deploy/deploy.sh tunnel                       # once: public, behind a Cloudflare Tunnel (Cloudflare does HTTPS)
 #   sudo deploy/deploy.sh setup village.example.com   # or, without Cloudflare: Caddy's own HTTPS + password on ports 80/443
-#   deploy/deploy.sh publish [--build]                 # every release: pull from GitHub, copy the site to /var/www
+#   deploy/deploy.sh publish [--build]                 # every release: pull from GitHub, copy frontend/ to /var/www
 #                                                      #   (--build reruns extract.py first)
 # setup only: VILLAGE_USER (default "village") and VILLAGE_PASSWORD (default: random, printed once) set the login.
 set -euo pipefail
@@ -33,9 +33,9 @@ setup | tunnel)
 publish)
 	git -C "$HERE" pull --ff-only --quiet  # GitHub is the source of truth
 	[ "${2:-}" = --build ] && (cd "$HERE" && python3 extract.py)
-	[ -f "$HERE/data/index.json" ] || { echo "no data/index.json: run 'deploy/deploy.sh publish --build'" >&2; exit 1; }
-	# only the site itself: page, scripts, models, data (not the extractor, docs or deploy kit)
-	rsync -a --delete --include=/index.html --include='/*.js' --include='/*.css' --include='/assets/***' --include='/data/***' --exclude='*' "$HERE/" "$WWW/"
+	[ -f "$HERE/frontend/data/index.json" ] || { echo "no frontend/data/index.json: run 'deploy/deploy.sh publish --build'" >&2; exit 1; }
+	# the site is frontend/: page, scripts, models, data (a data symlink out of the tree is copied as files)
+	rsync -a --copy-unsafe-links --delete "$HERE/frontend/" "$WWW/"
 	echo "published $(git -C "$HERE" rev-parse --short HEAD), $(du -sh "$WWW" | cut -f1) to $WWW"
 	;;
 *)

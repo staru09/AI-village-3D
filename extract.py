@@ -240,7 +240,7 @@ def save(path, obj):
 
 
 def main():
-    ap = argparse.ArgumentParser(description='Build data/ for the 3D village.')
+    ap = argparse.ArgumentParser(description='Build frontend/data/ for the 3D village.')
     ap.add_argument('--since', default='', help='YYYY-MM-DD: only build PT days from this date on')
     since = ap.parse_args().since
     snap = snapshot()
@@ -402,7 +402,7 @@ def main():
     recaps = {r['summary_date']: r['content'] for r in summaries if r['type'] == 'daily'}
     careers = {r['summary_target']: r for r in summaries if r['type'] == 'agent'}
 
-    out = HERE / 'data'
+    out = HERE / 'frontend' / 'data'
     (out / 'days').mkdir(parents=True, exist_ok=True)
     sofar, memory, index_days, sizes, extra, dropped, gaps = defaultdict(Counter), {}, [], [], [], Counter(), []
     for d in days:

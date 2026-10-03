@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Daily job: when aidigestorg/ai-village publishes a new revision, fetch the tables extract.py reads, rebuild data/
+# Daily job: when aidigestorg/ai-village publishes a new revision, fetch the tables extract.py reads, rebuild frontend/data/
 # and publish the site. Same revision as the last build: exits without downloading or rebuilding anything.
 # The tables live as one copy in $VILLAGE_DATA, updated in place (only changed files are fetched; the screenshot
 # archives are never downloaded).

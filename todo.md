@@ -17,6 +17,7 @@ in both, so references between items still work. **Decide** marks a choice we st
 
 - [ ] **1.12 Go live with the new work.** Merge `refactor` into `dev` and `dev` into `main`. Then switch the live site
       and the daily update (`deploy/update.sh`, cron) from the `agent-swarm` copy to `AI-village-3D`.
+      The site now lives in `frontend/`: after the merge, move the built `data/` to `frontend/data` (or rebuild).
 - [ ] **1.6 Optional:** a GitHub Actions workflow that runs `deploy.sh publish` on the box on every push.
 - [ ] **1.7 Frontend production pass.** Pin three.js with SRI or vendor it (it's a pinned jsDelivr version today).
 - [ ] **1.8 CI.** On every PR, run `test_extract.py` and a headless smoke test: load a day, expect no console errors.
