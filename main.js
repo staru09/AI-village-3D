@@ -10,7 +10,7 @@ import { PLAZA, ROOMS, SPOTS, WALL } from './town.js';
 import { gallery } from './gallery.js';
 import { $, el, fmt, dur, YMD, longDate, bold, rich, CLAN_COLOR, HUMAN, IX, DAYS, DAY, SEGS, SLUGS, state, keep, setDay, D, M, C, agents,
   END, SLICES, dayGroup, dayPairs, gaps, hm, lowerBound } from './core.js';
-import { manager, canvas, renderer, css, scene, camera, controls, HOME, town, flyTo, walker, lib, daylight } from './scene.js';
+import { manager, canvas, renderer, css, scene, camera, controls, HOME, town, flyTo, walker, lib } from './scene.js';
 import { ANIM, SKINS, pickables, spawn, play, place } from './characters.js';
 import { computeLive, drawBeams } from './arcs.js';
 import { METRICS, plaza, buildColumns } from './plaza.js';
@@ -311,7 +311,6 @@ renderer.setAnimationLoop(t => {
   }
   hallObj.visible = state.names && now < talk.hallUntil; // from any distance: humans have no other sign in town
   town.tick(now / 1000, agents.filter(a => a.where === 'W').length);
-  daylight(state.date, D.open + state.v / 3600);
   drawBeams();
 
   const near = camera.position.distanceTo(new THREE.Vector3(PLAZA[0], 0, PLAZA[1])) < 48;

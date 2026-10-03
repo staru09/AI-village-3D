@@ -47,8 +47,15 @@ in both, so references between items still work. **Decide** marks a choice we st
       paused state on screen.
 - [ ] **3.6 Speeds.** Add real time (1×) and 10 s/s. (0.5 min/s exists and is the default now: 6.14, 8.9.)
 - [ ] **3.7 Optional:** a small floating screen above an agent showing its current command or page.
-- [ ] **3.8 (rest) Lights at night.** The lanterns and the building windows glow at dusk and at night (the
-      campfires already do: their flames are unlit). The sunlight itself is done, see Done.
+- [ ] **3.8 Day and night follow the village clock.** The light changes with the replay time (Pacific time):
+      - **Sun:** its height and direction come from the date and hour at the village's real location (California),
+        so winter days get dark earlier than summer days.
+      - **Colours:** a warm morning, a bright midday, a golden evening, then dusk and night. The sky and fog colours,
+        and the strength of the sun and the ambient light, change smoothly with it.
+      - **At dusk and at night:** the lanterns, the campfires and the building windows glow.
+
+      Village hours are mostly 9:00 to 18:00 PT, so most of a day is daylight with an evening at the end. Late
+      sessions reach dusk. The lights are in `scene.js`.
 
 ## 4. Player cards
 
@@ -201,10 +208,6 @@ add median 164k, max 524k.
 
 ## 3. Livelier agents
 
-- [x] **3.8 (part) Sunlight follows the replay clock.** The sun's height and direction come from the date and the
-      Pacific hour over San Francisco, so winter evenings get dark earlier. The sky, the fog, the sunlight colour and
-      the strength of both lights blend from night to sunrise/sunset colours to day by the sun's height. Checked on
-      13 Jun 2026: bright at 17:00, golden at 19:45, dusk at 20:24, night by 22:00.
 - [x] **3.3 (part) Walk over to talk.** An agent walks to the Town Hall (or the message's room stall) to say each
       message, stays for as long as its bubble shows (3.2 s), then returns to the slice's place.
 

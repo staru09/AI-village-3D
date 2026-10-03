@@ -29,7 +29,6 @@ Click any agent to see what it was thinking next to what it was doing, and what 
   | 🔥 Clan camp | paused or idle |
 
   Quiet stretches are skipped.
-- **Daylight.** The sun moves with the replay clock (date and Pacific hour), from morning to a golden evening and night.
 - **Player tags and cards.** Only that day's agents are in town. Each card has five tabs:
   - **Today:** what it's doing now, where its day went, and its numbers
   - **Thinking | Doing:** its reasoning next to its commands and messages, following the replay clock

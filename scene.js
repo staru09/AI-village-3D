@@ -30,8 +30,7 @@ renderer.toneMapping = THREE.ACESFilmicToneMapping;
 export const css = new CSS2DRenderer({ element: $('#labels') });
 export const scene = new THREE.Scene();
 scene.fog = new THREE.Fog(0xcdeeff, 90, 200);
-const sky = new THREE.HemisphereLight(0xeaf6ff, 0x5b7d31, 1.7);
-scene.add(sky);
+scene.add(new THREE.HemisphereLight(0xeaf6ff, 0x5b7d31, 1.7));
 const sun = new THREE.DirectionalLight(0xfff0d8, 2.9);
 sun.position.set(-30, 52, 34);
 sun.castShadow = true;
@@ -40,35 +39,6 @@ Object.assign(sun.shadow.camera, { left: -44, right: 44, top: 44, bottom: -44, n
 sun.shadow.bias = -0.0005;
 sun.shadow.normalBias = 0.03;
 scene.add(sun);
-
-// Daylight follows the replay clock: the sun over San Francisco for the date and the Pacific hour. North is -z.
-const LAT = 37.77 * Math.PI / 180, LON = -122.42;
-const zone = new Intl.DateTimeFormat('en-US', { timeZone: 'America/Los_Angeles', timeZoneName: 'short' });
-export function sunAt(date, hour) { // -> [altitude, azimuth clockwise from north], radians
-  const n = (Date.parse(date) - Date.UTC(+date.slice(0, 4), 0, 0)) / 864e5;
-  const dec = 23.44 * Math.PI / 180 * Math.sin(2 * Math.PI * (284 + n) / 365);
-  const dst = zone.format(new Date(`${date}T20:00Z`)).endsWith('PDT') ? 1 : 0;
-  const h = (hour - dst + (LON + 120) / 15 - 12) * Math.PI / 12; // hour angle; ponytail: no equation of time (±16 min)
-  const alt = Math.asin(Math.sin(LAT) * Math.sin(dec) + Math.cos(LAT) * Math.cos(dec) * Math.cos(h));
-  return [alt, Math.PI + Math.atan2(Math.sin(h), Math.cos(h) * Math.sin(LAT) - Math.tan(dec) * Math.cos(LAT))];
-}
-const LOOK = { night: ['#0e1a3a', '#2c3d6b', '#8fa8ff'], low: ['#5d86c9', '#ffc690', '#ffa860'], day: ['#5fb8f5', '#cdeeff', '#fff0d8'] }; // sky top, sky bottom and fog, sunlight
-const ramp = (x, a, b) => Math.min(1, Math.max(0, (x - a) / (b - a)));
-const tint = new THREE.Color(), to = new THREE.Color();
-let lit = '';
-export function daylight(date, hour) {
-  if (lit === (lit = `${date} ${Math.round(hour * 60)}`)) return; // once per village minute
-  const [alt, az] = sunAt(date, hour), deg = alt * 180 / Math.PI, up = Math.max(alt, 0.17); // shadows from at least 10° up
-  const night = ramp(deg, -8, 2), day = ramp(deg, 2, 20); // night -> sunrise/sunset colours -> day
-  const look = i => (night < 1 ? tint.set(LOOK.night[i]).lerp(to.set(LOOK.low[i]), night) : tint.set(LOOK.low[i]).lerp(to.set(LOOK.day[i]), day));
-  document.documentElement.style.setProperty('--sky-1', look(0).getStyle());
-  scene.fog.color.copy(look(1));
-  document.documentElement.style.setProperty('--sky-2', tint.getStyle());
-  sun.color.copy(look(2));
-  sun.intensity = 0.3 + 2.6 * ramp(deg, -4, 20);
-  sky.intensity = 0.5 + 1.2 * ramp(deg, -8, 15);
-  sun.position.set(Math.sin(az) * Math.cos(up), Math.sin(up), -Math.cos(az) * Math.cos(up)).multiplyScalar(70);
-}
 
 export const camera = new THREE.PerspectiveCamera(40, 1, 0.1, 600);
 export const HOME = { pos: new THREE.Vector3(24, 36, 64), target: new THREE.Vector3(0, 0, 4) };
