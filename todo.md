@@ -232,6 +232,13 @@ Data we download but don't show yet. Checked against the 2026-09-20 export and t
       top of the card.
       Done: `portrait.js` renders the agent's own model (skin, shirt colour, chest label) once per day into the
       card head.
+- [x] **8.6 Goals filter beside the calendar.** A "🎯 Goals" button next to the date and 📅 (always visible, just 🎯 on
+      phones) opens a list of "All days" and the 51 goals with their dates and length. The picked goal is highlighted and
+      the button turns gold while a goal filter is on. It replaced the drop-down inside the expanded header.
+- [x] **8.7 Maker rows show only a count.** "Anthropic 11": the maker's agents in the village today. Agents who are
+      away are mentioned only in the tooltip, and still listed greyed when the maker is opened.
+- [x] **8.8 Minimise to a small button.** The fold buttons are "−". A minimised panel becomes a small "💬 Village chat"
+      or "👥 Players" button that opens it again.
 - [x] **8.5 Frontend split into modules** (branch `refactor`). `main.js` (954 lines) became `core.js`, `scene.js`,
       `characters.js`, `arcs.js`, `plaza.js`, `chat.js`, `card.js`, `panels.js` and a 285-line `main.js`. The CSS moved
       to `styles.css`. Plain ES modules, no build step. The loaded day changes only through `setDay()` in `core.js`, and

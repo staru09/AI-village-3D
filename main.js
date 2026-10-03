@@ -30,23 +30,30 @@ const stepDay = k => { const d = DAYS[DAY[state.date].k + k]; if (d) loadDay(d.d
 $('#prevDay').onclick = () => stepDay(-1);
 $('#nextDay').onclick = () => stepDay(1);
 // browse by goal: while a goal segment is picked, ◀ ▶ step through its days only (nav() disables them at its ends)
-const goalPick = $('#goalPick'), span = new Intl.DateTimeFormat('en-US', { ...YMD, timeZone: 'UTC' }), noon = k => new Date(`${DAYS[k].date}T12:00:00Z`);
-goalPick.append(el('option', { value: -1, textContent: 'All days' }), ...SEGS.map((s, k) => el('option', { value: k, title: s.goal,
-  textContent: `${span.formatRange(noon(s.a), noon(s.b))} · ${s.goal.length > 40 ? `${s.goal.slice(0, 39)}…` : s.goal} (${s.b - s.a + 1} day${s.b > s.a ? 's' : ''})` })));
-goalPick.onchange = () => { state.seg = +goalPick.value; if (state.seg >= 0) loadDay(DAYS[SEGS[state.seg].a].date); else nav(); };
+const goals = $('#goals'), span = new Intl.DateTimeFormat('en-US', { ...YMD, timeZone: 'UTC' }), noon = k => new Date(`${DAYS[k].date}T12:00:00Z`);
+const pickGoal = k => { state.seg = k; goals.hidePopover(); if (k >= 0) loadDay(DAYS[SEGS[k].a].date); else nav(); };
+$('#goalList').append(el('li', {}, el('button', { value: -1, textContent: 'All days', onclick: () => pickGoal(-1) })),
+  ...SEGS.map((s, k) => el('li', {}, el('button', { value: k, title: s.goal, onclick: () => pickGoal(k) },
+    el('small', { textContent: `${span.formatRange(noon(s.a), noon(s.b))} · ${s.b - s.a + 1} day${s.b > s.a ? 's' : ''}` }), s.goal))));
+goals.addEventListener('toggle', e => { // opens under the header like the calendar, at the picked goal
+  $('#goalBtn').ariaExpanded = e.newState === 'open';
+  if (e.newState !== 'open') return;
+  goals.style.top = `${$('#title').getBoundingClientRect().bottom + 8}px`;
+  goals.querySelector('[aria-current]')?.scrollIntoView({ block: 'center' });
+});
 function nav() { // ◀ ▶, the goal picker and the URL follow the loaded day and the goal filter
   const k = DAY[state.date]?.k, s = SEGS[state.seg];
   $('#prevDay').disabled = !(k > (s ? s.a : 0));
   $('#nextDay').disabled = !(k < (s ? s.b : DAYS.length - 1));
-  goalPick.value = state.seg;
-  goalPick.title = s ? s.goal : 'Browse the village by goal';
+  for (const b of $('#goalList').querySelectorAll('button')) b.ariaCurrent = +b.value === state.seg ? 'true' : null;
+  Object.assign($('#goalBtn'), { ariaPressed: !!s, title: s ? `Goal: ${s.goal}` : 'Browse the village by goal' });
   Object.assign($('#goalNow'), { textContent: s ? `🎯 ${s.goal}` : '', title: s ? s.goal : '' });
   const u = new URL(location);
   u.searchParams.set('date', state.date);
   if (s) u.searchParams.set('goal', state.seg); else u.searchParams.delete('goal');
   history.replaceState(null, '', u);
 }
-// the header starts compact (day, date, clock, ◀ ▶); ▾ opens the full panel with the calendar and the goal picker
+// the header starts compact (day, date, clock, ◀ ▶, Goals); ▾ opens the full panel with the title and the whole goal
 const titleOpen = o => { $('#title').classList.toggle('open', o); $('#titleToggle').ariaExpanded = o; try { localStorage.titleOpen = o ? 1 : ''; } catch { /* storage blocked */ } };
 $('#titleToggle').onclick = () => titleOpen($('#titleToggle').ariaExpanded !== 'true');
 try { titleOpen(!!localStorage.titleOpen); } catch { /* storage blocked: stays compact */ }

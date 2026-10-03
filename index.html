@@ -29,9 +29,9 @@
       <button id="prevDay" class="btn nav" aria-label="Previous village day">◀</button>
       <button id="dateBtn" class="game outline" popovertarget="cal" aria-haspopup="dialog" aria-expanded="false" aria-label="Pick a day"><span id="dayNo"></span><span id="clock"></span><small>📅</small></button>
       <button id="nextDay" class="btn nav" aria-label="Next village day">▶</button>
+      <button id="goalBtn" popovertarget="goals" aria-haspopup="dialog" aria-expanded="false" title="Browse the village by goal">🎯<span> Goals</span></button>
       <button id="titleToggle" aria-expanded="false" aria-label="Calendar and goal picker" title="Calendar and goal picker">▾</button>
     </div>
-    <select id="goalPick" aria-label="Browse the village by goal"></select>
     <small id="goalNow"></small>
   </div>
   <div id="counters"></div>
@@ -48,8 +48,13 @@
   <p id="calInfo" aria-live="polite"></p>
 </div>
 
+<div id="goals" class="panel" popover aria-label="Browse the village by goal">
+  <header><h2>Goals</h2><small>Pick one, then ◀ ▶ step through its days only</small></header>
+  <ol id="goalList"></ol>
+</div>
+
 <aside id="roster" class="panel" aria-label="Players">
-  <header><h2>Players</h2><small id="rosterCount"></small><button id="rosterAll" class="fold" aria-controls="players">Show all</button><button id="rosterToggle" class="fold" aria-expanded="true" aria-controls="players">hide</button></header>
+  <header><h2>Players</h2><small id="rosterCount"></small><button id="rosterAll" class="fold" aria-controls="players">Show all</button><button id="rosterToggle" class="fold" aria-expanded="true" aria-controls="players">−</button></header>
   <ol id="players"></ol>
 </aside>
 
@@ -58,7 +63,7 @@
     <div role="tablist" aria-label="Chat or recap"><button id="tabChat" role="tab" aria-selected="true" aria-controls="feedList">Village chat</button><button id="tabRecap" role="tab" aria-selected="false" aria-controls="recap">Day recap</button></div>
     <select id="roomPick" aria-label="Chat room"></select>
     <button id="chatBtn" class="fold" aria-label="Open the whole chat in a big view" aria-haspopup="dialog" title="Open the whole chat">⤢</button>
-    <button id="feedToggle" class="fold" aria-expanded="true">hide</button>
+    <button id="feedToggle" class="fold" aria-expanded="true">−</button>
   </header>
   <ol id="feedList" role="tabpanel" aria-labelledby="tabChat"></ol>
   <div id="recap" role="tabpanel" aria-labelledby="tabRecap" hidden></div>

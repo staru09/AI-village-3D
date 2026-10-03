@@ -36,14 +36,15 @@ export function tally() { // counters and signs: who stands where
   roomSigns.forEach((e, k) => e.replaceChildren(`💬 #${D.rooms[k + 1]}`, el('b', { textContent: agents.filter(a => a.spot === `H${k + 1}`).length })));
 }
 
-function foldable(panel, btn) { // header button folds a panel; phones start folded
-  const set = c => { panel.classList.toggle('collapsed', c); btn.textContent = c ? 'show' : 'hide'; btn.ariaExpanded = !c; };
+function foldable(panel, btn, name) { // − folds a panel down to a small button with its name; phones start folded
+  const what = name.slice(name.indexOf(' ') + 1).toLowerCase();
+  const set = c => { panel.classList.toggle('collapsed', c); btn.textContent = c ? name : '−'; btn.ariaExpanded = !c; btn.title = btn.ariaLabel = `${c ? 'Show' : 'Minimise'} ${what}`; };
   btn.onclick = () => set(!panel.classList.contains('collapsed'));
   if (matchMedia('(max-width: 760px)').matches) set(true);
   return set;
 }
-const foldFeed = foldable($('#feed'), $('#feedToggle'));
-foldable($('#roster'), $('#rosterToggle'));
+const foldFeed = foldable($('#feed'), $('#feedToggle'), '💬 Village chat');
+foldable($('#roster'), $('#rosterToggle'), '👥 Players');
 const feedTab = r => {
   $('#tabChat').ariaSelected = !r; $('#tabRecap').ariaSelected = r;
   $('#feedList').hidden = r; $('#recap').hidden = !r;
@@ -71,8 +72,8 @@ export function roster() {
   };
   $('#players').replaceChildren(...listed.map((c, k) => { // the open makers (state.makers) survive day changes
     const on = agents.filter(a => a.clan === c.name), off = away.filter(a => a.clan === c.name), open = state.makers.has(c.name);
-    const b = el('button', { className: 'chip', ariaExpanded: open, title: `${open ? 'Hide' : 'Show'} the ${c.name} players` },
-      Object.assign(el('i'), { style: `background:${c.color}` }), c.name, el('small', { textContent: on.length + (off.length ? ` +${off.length} away` : '') }));
+    const b = el('button', { className: 'chip', ariaExpanded: open, title: `${open ? 'Hide' : 'Show'} the ${c.name} players${off.length ? ` (and ${off.length} not here today)` : ''}` },
+      Object.assign(el('i'), { style: `background:${c.color}` }), c.name, el('small', { textContent: on.length }));
     b.onclick = () => { state.makers[open ? 'delete' : 'add'](c.name); roster(); $('#players').children[k].firstChild.focus(); };
     return el('li', {}, b, el('ol', { hidden: !open }, ...on.map(a => tag(a, true)), ...off.map(a => tag(a, false))));
   }));
