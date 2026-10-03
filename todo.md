@@ -58,11 +58,6 @@ in both, so references between items still work. **Decide** marks a choice we st
       Village hours are mostly 9:00 to 18:00 PT, so most of a day is daylight with an evening at the end. Late
       sessions reach dusk. The lights are in `scene.js`.
 
-## 4. Player cards
-
-- [ ] **4.7 Decide: generate per-agent daily summaries with Claude?** Only 2 exist today. Covering every agent-day is
-      roughly 4,480 summaries via the Batch API. Check the cost and the dataset terms first.
-
 ## 5. Later
 
 - [ ] **5.1 Agent screenshots** from the dataset's per-day image archives (available up to 2026-08-21). Parked for now.
@@ -71,16 +66,9 @@ in both, so references between items still work. **Decide** marks a choice we st
 
 Data we download but don't show yet. Checked against the 2026-09-20 export and the dataset's SCHEMA.md.
 
-- [ ] **6.5 Day stories on the player card.** 3 `watch_narrative` rows (day 329, GPT-5.1 and Claude Opus 4.6) and
-      2 `agent_daily` rows (Claude Sonnet 4.6, days 325 and 328).
-      - Put them in that agent-day file and show them on the Today tab when present.
-      - The watch narratives are 56–107k characters: show the opening paragraphs, with "Read more".
-      - Too few to matter on their own; they are the format 4.7 would generate for every agent-day.
 - [ ] **6.6 (rest) Command replies in the Doing column**, folded under each command. The data is there since 6.23
       (one reply per 5-minute slice, for the command the card shows). Browser actions have no text reply (their
       result was a screenshot; see 5.1).
-- [ ] **6.11 Later: what it learned today.** Compare an agent's first and last memory version of the day and show
-      the added and dropped lines as "New today" in the Memory tab.
 - [ ] **6.18 Later: more swarm analysis** (on the `data-exploration` branch, next to 6.17). The effect of goals and
       rooms on who talks to whom, ties over time per pair, who answers whom (reply time), human-to-agent mentions as
       a second edge list, and a graph view in the village.
@@ -153,12 +141,15 @@ room, and the day recap gives the whole day away at 10:00.
 - [ ] **10.3 Blurbs as day titles.** The blurb as a one-liner in the calendar, the Goals list and the day header.
 - [ ] **10.4 Latest report on the Today tab.** The opening of the agent's latest session report in Right now,
       linking to the Reports tab (the "Last report" idea).
-- [ ] **10.5 What it learned today** (= 6.11): the memory lines added and dropped during the day.
+- [ ] **10.5 What it learned today.** Compare the agent's first and last memory of the day; show the added and
+      dropped lines as "New today" in the Memory tab.
 
 **B. Generate what is missing (Claude, Batch API, offline like `extract.py`, stored as static JSON)**
-- [ ] **10.6 Agent-day summaries** (= 4.7). The 2 `agent_daily` rows (and the 3 watch narratives, 6.5) are the
-      template: about 1,500 characters, as a story. Inputs: its chat, session goals and reports, reasoning, commands
-      with what they printed, memory changes. Days from 24 Mar 2026 first: they have no session reports.
+- [ ] **10.6 Agent-day summaries.** About 4,480 agent-days in all, via the Batch API. The template: the 2
+      `agent_daily` rows (Claude Sonnet 4.6, days 325 and 328) and the 3 `watch_narrative` rows (day 329, 56–107k
+      characters), which can show on the Today tab as they are; then generated ones in the same form, about 1,500
+      characters, as a story. Inputs: its chat, session goals and reports, reasoning, commands with what they printed,
+      memory changes. Days from 24 Mar 2026 first: they have no session reports.
 - [ ] **10.7 Hourly digests.** One or two sentences per village hour ("At 11:00 the #best agents were…"), shown as a
       ticker while the replay plays.
 - [ ] **10.8 Room summaries.** On days with 2–3 chat rooms (99 days), what each room worked on.
