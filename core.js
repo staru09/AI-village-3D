@@ -45,6 +45,6 @@ export function setDay(o) { // loadDay() hands over the new day here; a key left
   ({ D = D, M = M, C = C, agents = agents, END = END, SLICES = SLICES, dayPairs = dayPairs, dayGroup = dayGroup, gaps = gaps, roomSigns = roomSigns } = o);
 }
 
-export const state = { v: 0, slice: -1, playing: true, speed: 300, sel: null, mp: 0, fly: null, names: true, tab: 'today', seg: -1, makers: new Set(), open: new Set() };
+export const state = { v: 0, slice: -1, playing: true, speed: 30, sel: null, mp: 0, fly: null, names: true, tab: 'today', seg: -1, makers: new Set(), open: new Set() };
 export const hm = v => { const m = Math.round(D.open * 60) + Math.floor(v / 60); return `${pad(Math.floor(m / 60) % 24)}:${pad(m % 60)}`; };
 export function lowerBound(v, A = M) { let lo = 0, hi = A.length; while (lo < hi) { const mid = (lo + hi) >> 1; if (A[mid][0] < v) lo = mid + 1; else hi = mid; } return lo; }

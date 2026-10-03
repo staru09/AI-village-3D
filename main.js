@@ -29,7 +29,7 @@ $('#names').onclick = e => { state.names = !state.names; e.currentTarget.setAttr
 const stepDay = k => { const d = DAYS[DAY[state.date].k + k]; if (d) loadDay(d.date); };
 $('#prevDay').onclick = () => stepDay(-1);
 $('#nextDay').onclick = () => stepDay(1);
-// browse by goal: while a goal segment is picked, ◀ ▶ step through its days only (nav() disables them at its ends)
+// browse by goal (the 🎯 Goals button beside the header): while a goal is picked, ◀ ▶ step through its days only
 const goals = $('#goals'), span = new Intl.DateTimeFormat('en-US', { ...YMD, timeZone: 'UTC' }), noon = k => new Date(`${DAYS[k].date}T12:00:00Z`);
 const pickGoal = k => { state.seg = k; goals.hidePopover(); if (k >= 0) loadDay(DAYS[SEGS[k].a].date); else nav(); };
 $('#goalList').append(el('li', {}, el('button', { value: -1, textContent: 'All days', onclick: () => pickGoal(-1) })),
@@ -38,7 +38,8 @@ $('#goalList').append(el('li', {}, el('button', { value: -1, textContent: 'All d
 goals.addEventListener('toggle', e => { // opens under the header like the calendar, at the picked goal
   $('#goalBtn').ariaExpanded = e.newState === 'open';
   if (e.newState !== 'open') return;
-  goals.style.top = `${$('#title').getBoundingClientRect().bottom + 8}px`;
+  const r = $('#goalBtn').getBoundingClientRect(); // under its button, kept on screen
+  Object.assign(goals.style, { top: `${r.bottom + 8}px`, left: `${Math.max(12, Math.min(r.left, innerWidth - goals.offsetWidth - 12))}px` });
   goals.querySelector('[aria-current]')?.scrollIntoView({ block: 'center' });
 });
 function nav() { // ◀ ▶, the goal picker and the URL follow the loaded day and the goal filter

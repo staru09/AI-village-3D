@@ -49,9 +49,11 @@ button { font: inherit; cursor: pointer; }
 }
 /* both as wide as the clock row, never wider */
 #title.open #goalNow { white-space: normal; } /* the whole goal when the header is open */
-#goalBtn { border: 0; border-radius: 999px; padding: 2px 9px; background: rgba(255,255,255,.16); color: #fff; font: 400 15px 'Lilita One', sans-serif; white-space: nowrap; }
-#goalBtn:hover, #goalBtn[aria-expanded="true"] { background: rgba(255,255,255,.3); }
-#goalBtn[aria-pressed="true"] { background: var(--gold); color: var(--wood-3); } /* a goal filter is on */
+/* Goals: its own wooden button beside the header (the calendar stays in the header) */
+#goalBtn { flex: none; padding: 7px 14px; background: linear-gradient(#8a5a2e, var(--wood) 40%, var(--wood-2)); border: 3px solid var(--wood-3); border-radius: 14px;
+  box-shadow: inset 0 2px 0 rgba(255,255,255,.2), 0 5px 0 rgba(58,31,11,.6); color: #fff; font-size: 18px; line-height: 1.1; white-space: nowrap; }
+#goalBtn:hover, #goalBtn[aria-expanded="true"] { filter: brightness(1.12); }
+#goalBtn[aria-pressed="true"] { background: linear-gradient(#ffe27a, var(--gold) 45%, #d49b00); color: var(--wood-3); text-shadow: none; } /* a goal filter is on */
 #goalNow { display: block; contain: inline-size; margin-top: 2px; color: var(--parch); font-size: 12px; font-weight: 800; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .btn.nav { padding: 0 7px 2px; min-width: 30px; height: 28px; font-size: 13px; }
 .btn:disabled { filter: grayscale(1) opacity(.55); cursor: default; transform: none; }
@@ -83,11 +85,13 @@ button { font: inherit; cursor: pointer; }
 #roster header small { color: var(--ink-2); font-weight: 800; font-size: 12px; }
 #roster header { white-space: nowrap; }
 #roster.collapsed #rosterAll { display: none; }
+#rosterAll[aria-pressed="true"] { color: var(--btn-alt-2); } /* every maker is open */
 .chip { width: 100%; display: flex; align-items: center; gap: 6px; border: 0; background: none; padding: 3px 5px; border-radius: 7px; font-size: 13.5px; font-weight: 800; color: var(--ink); text-align: left; }
 .chip i { width: 12px; height: 12px; flex: none; border-radius: 4px; border: 2px solid var(--wood-3); }
 .chip small { margin-left: auto; color: var(--ink-2); font-weight: 800; }
-.chip::after { content: '⌄' / ''; width: 1em; text-align: center; color: var(--wood-2); }
-.chip[aria-expanded="true"]::after { rotate: 180deg; }
+/* the chevron is a drawn V, centred on the count's line (a ⌄ glyph sat below it, and above it when flipped) */
+.chip::after { content: ''; flex: none; width: 6px; height: 6px; margin: 0 4px 0 3px; border: solid var(--wood-2); border-width: 0 2.5px 2.5px 0; translate: 0 -2px; rotate: 45deg; }
+.chip[aria-expanded="true"]::after { translate: 0 2px; rotate: 225deg; }
 .chip:hover { background: #fff8e6; }
 #players { list-style: none; margin: 0; padding: 2px 4px 4px 0; overflow-y: auto; min-height: 0; display: grid; gap: 2px; }
 #players ol { list-style: none; margin: 0; padding: 2px 0 6px; display: grid; gap: 5px; }
@@ -313,7 +317,9 @@ details summary { cursor: pointer; font: 400 15px 'Lilita One', sans-serif; colo
   #counters .counter span { display: none; }
   #title { padding: 6px 10px 8px; }
   #title h1 { font-size: 16px; } #dateBtn { font-size: 18px; } #title:not(.open) #dateBtn { font-size: 13px; }
-  #goalBtn { padding: 1px 6px; font-size: 13px; } #goalBtn span { display: none; } /* phones: just 🎯 */
+  #goalBtn { padding: 5px 8px; font-size: 15px; } #goalBtn span { display: none; } /* phones: just 🎯 */
+  #title:not(.open) #dayNo { display: none; } /* header, 🎯 and ⓘ share the top row; Day N is in the open header */
+  #counters { position: fixed; top: 64px; right: 12px; flex-direction: column; margin: 0; } /* a column down the right edge */
   #title:not(.open) #clockRow { gap: 3px; } /* compact stays about as wide as the old header, the counters keep their room */
   #roster, #feed { top: 96px; bottom: auto; width: auto; max-height: 56vh; }
   #feed { top: 142px; }

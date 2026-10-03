@@ -78,7 +78,7 @@ export function roster() {
     return el('li', {}, b, el('ol', { hidden: !open }, ...on.map(a => tag(a, true)), ...off.map(a => tag(a, false))));
   }));
   const all = listed.every(c => state.makers.has(c.name));
-  $('#rosterAll').textContent = all ? 'Show less' : 'Show all';
+  Object.assign($('#rosterAll'), { ariaPressed: all, ariaLabel: all ? 'Show fewer players' : 'Show all players', title: all ? 'Show fewer players' : 'Show all players' });
   $('#rosterAll').onclick = () => { if (all) state.makers.clear(); else listed.forEach(c => state.makers.add(c.name)); roster(); };
   $('#rosterCount').textContent = `${agents.length} here`;
 }
