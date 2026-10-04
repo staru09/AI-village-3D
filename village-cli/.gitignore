@@ -1,0 +1,20 @@
+# Local environment
+.venv/
+__pycache__/
+*.py[cod]
+
+# Generated data: never commit
+village.db
+village.tmp
+*.db
+*.jsonl.gz
+
+# Labels and eval runs quote the gated dataset
+labels.db
+evals/runs/
+history.jsonl
+.venv-docetl/
+docetl/out/
+evals/ground_truth/
+web.log
+build_all.log
