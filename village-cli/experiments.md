@@ -101,16 +101,6 @@ What the experiments below have taught us, with the entry each one comes from. U
 
 ## 2026-10-04
 
-### E26. The CLI moved into the AI Village 3D repo; write-up and questions published
-- The CLI now lives in the AI-village-3D repo as `village-cli/` (branch `experiment-only`), imported with
-  `git subtree` from AI-Village-CLI's `experiments` branch, so its history is kept. The AI-Village-CLI repo is left as
-  it was.
-- `writeup.md`: how the ground truth was made, the three approaches (our harness, DocETL, RLM), charts of the E22
-  comparison and costs, and the limitations.
-- `evals/ground_truth_questions.json`: the 19 questions with verified answers (id, goal, question, answer only). The
-  comparison script and `village eval` read it directly. It goes only to the 3D repo, which is private: the answers
-  summarise the gated dataset.
-
 ### E25. "What is happening in the village?" in Ask AI: a fast path for the moment being watched
 - **Why:** the question is common, and the search loop answered it with 11 commands and $0.18 for 13 May 11:30.
 - **What:** the 🔎 Ask AI dialog now sends the day and replay time being watched (`ask … --date "YYYY-MM-DD HH:MM"`).
