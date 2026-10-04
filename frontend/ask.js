@@ -31,6 +31,14 @@ bar.addEventListener('pointerdown', e => {
   bar.onpointerup = () => { bar.onpointermove = bar.onpointerup = null; };
 });
 
+// Enter asks; Shift+Enter or Ctrl+Enter starts a new line (not while an input method is composing text)
+q.addEventListener('keydown', e => {
+  if (e.key !== 'Enter' || e.isComposing) return;
+  e.preventDefault();
+  if (e.shiftKey || e.ctrlKey) q.setRangeText('\n', q.selectionStart, q.selectionEnd, 'end');
+  else if (!go.disabled) $('#askForm').requestSubmit();
+});
+
 $('#askForm').onsubmit = async e => {
   e.preventDefault();
   const question = q.value.trim(), g = SEGS[goal.value].goal.replaceAll('**', '');
