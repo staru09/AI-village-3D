@@ -13,14 +13,38 @@ goal.append(...SEGS.map((s, k) => el('option', { value: k, textContent: s.goal.r
 const keep = (x, y) => Object.assign(dlg.style, {
   left: `${Math.max(0, Math.min(x, innerWidth - dlg.offsetWidth))}px`, top: `${Math.max(0, Math.min(y, innerHeight - dlg.offsetHeight))}px` });
 let placed = false;
+// new content makes the panel taller: grow it upwards from the replay bar, or, once dragged, keep it on screen
+const grow = () => keep(dlg.offsetLeft, placed ? dlg.offsetTop : $('#bottom').getBoundingClientRect().top - dlg.offsetHeight - 10);
 $('#askBtn').onclick = () => { // preselect the goal being watched
   const k = state.seg >= 0 ? state.seg : SEGS.findIndex(s => s.a <= DAY[state.date]?.k && DAY[state.date].k <= s.b);
   if (k >= 0) goal.value = k;
   if (!dlg.open) dlg.show();
+  if (!out.childElementCount) showPast();
   if (!placed) keep((innerWidth - dlg.offsetWidth) / 2, $('#bottom').getBoundingClientRect().top - dlg.offsetHeight - 10);
   q.focus();
 };
 $('#askClose').onclick = () => dlg.close();
+
+// Past answers: what the harness answered when it was tested on questions with verified answers (ask_examples.json,
+// from the AI-Village-CLI experiments E21 and E22). Shown when nothing has been asked yet, and from the 📚 button.
+let past;
+async function showPast() {
+  past ??= await fetch('ask_examples.json').then(r => r.json()).catch(() => []);
+  out.replaceChildren(el('p', { className: 'note', textContent: past.length
+      ? `How the harness answers: ${past.length} questions it was tested on, each with a verified answer to check it against. Click one to read its answer.`
+      : 'No earlier answers available.' }),
+    el('ol', { className: 'past' }, ...past.map(x => el('li', {}, el('button', { type: 'button', onclick: () => showOne(x) },
+      el('small', { textContent: `${x.category} · ${x.goal}` }), x.question.length > 170 ? `${x.question.slice(0, 170).replace(/\s\S*$/, '')}…` : x.question)))));
+  grow();
+}
+function showOne(x) {
+  q.value = x.question;
+  out.replaceChildren(el('p', { className: 'note', textContent: `📚 A saved answer, not a new run. ${x.note}` }), ...rich(x.answer));
+  out.scrollTop = 0;
+  grow();
+}
+$('#askPast').onclick = showPast;
+
 dlg.addEventListener('keydown', e => { if (e.key === 'Escape') dlg.close(); });
 const bar = dlg.querySelector('header');
 bar.addEventListener('pointerdown', e => {
@@ -45,8 +69,6 @@ $('#askForm').onsubmit = async e => {
   if (!question) return;
   go.disabled = true;
   out.replaceChildren(el('p', { className: 'note', textContent: '⏳ The harness is reading the village records. This can take a few minutes…' }));
-  // the answer makes the panel taller: grow it upwards from the replay bar, or, once dragged, keep it on screen
-  const grow = () => keep(dlg.offsetLeft, placed ? dlg.offsetTop : $('#bottom').getBoundingClientRect().top - dlg.offsetHeight - 10);
   // the day and replay time being watched: "what is happening?" is answered for that moment (a fast path in `village ask`)
   const cmd = `ask ${JSON.stringify(question)} --goal ${JSON.stringify(g)} --date ${JSON.stringify(`${state.date} ${hm(state.v)}`)}`;
   try {

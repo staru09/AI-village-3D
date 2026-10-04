@@ -251,6 +251,11 @@ details summary { cursor: pointer; font: 400 15px 'Lilita One', sans-serif; colo
 #askForm .btn { align-self: stretch; }
 #askOut { overflow-y: auto; padding: 8px 16px 12px; white-space: pre-wrap; overflow-wrap: anywhere; }
 #askOut .note { color: var(--wood-2); font-size: 13px; }
+#ask .pastbtn { align-self: flex-start; margin: 6px 16px 0; border: 0; background: none; padding: 2px 0; color: var(--wood-2); font: inherit; font-size: 13px; text-decoration: underline; cursor: pointer; }
+#askOut ol.past { list-style: none; margin: 4px 0 0; padding: 0; display: grid; gap: 4px; white-space: normal; }
+#askOut ol.past button { display: block; width: 100%; text-align: left; font: inherit; font-size: 14px; color: var(--ink); background: var(--parch-2); border: 2px solid var(--line); border-radius: 8px; padding: 6px 10px; cursor: pointer; }
+#askOut ol.past button:hover { border-color: var(--wood-2); }
+#askOut ol.past small { display: block; color: var(--wood-2); font-size: 11.5px; text-transform: uppercase; letter-spacing: .04em; }
 #storyText h3 { margin: 6px 0 9px; padding-top: 12px; border-top: 2px dashed var(--line); font: 400 17px 'Lilita One', sans-serif; color: var(--wood-2); }
 :is(#goalNow, #recap .goal).story { cursor: pointer; }
 :is(#goalNow, #recap .goal).story:hover { text-decoration: underline dotted; }
