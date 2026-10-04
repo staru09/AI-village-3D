@@ -26,4 +26,4 @@ ANTHROPIC_API_KEY=… .venv/bin/village web            # 127.0.0.1:8765; Caddy p
 
 The data is the gated Hugging Face dataset `aidigestorg/ai-village`. No login or rate limit yet: anyone who can reach
 `/api/` can spend API credit. The experiments behind this (ground truth, comparisons with DocETL and an RLM, costs)
-are in the separate AI-Village-CLI repo (branch `experiments`, `writeup.md`).
+are summed up in [writeup.md](writeup.md); the full run log and the DocETL and RLM code stay in the AI-Village-CLI repo.
