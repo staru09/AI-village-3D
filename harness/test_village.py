@@ -140,6 +140,22 @@ unit = llm.unit_text(con, {'unit': 'session', 'shows': 'full'}, uid(100))
 assert llm.refs_in(unit) >= {'s:000000640000', 't:000000c90000', 'e:0000012c0000', 'k:000001900000'}
 assert 'ACTIONS' not in llm.unit_text(con, {'unit': 'session', 'shows': 'intent'}, uid(100))
 assert 'THE MESSAGE TO LABEL · m:000000050000' in llm.unit_text(con, {'unit': 'message', 'context': '2'}, uid(5))
+# ground-truth files: a quote is checked against the record it cites, and the review page shows the miss
+import sys
+sys.path.insert(0, str(Path(__file__).parent / 'evals'))
+import check_citations, review_page
+gt = db.DB.parent / 'gt.json'
+gt.write_text(json.dumps({'question': 'Q?', 'answer': 'A.', 'confidence': 'high', 'tables': [{'title': 'Per agent', 'columns': ['Agent', 'n'], 'rows': [['Alpha', 3]]}], 'findings': [
+    {'claim': 'scores came from a script', 'kind': 'ground truth', 'citations': [{'ref': 't:000000c90000', 'field': 'action', 'quote': 'random.randint(7,  10)'}]},
+    {'claim': 'it was read by hand', 'kind': 'claim', 'citations': [{'ref': 't:000000c90000', 'field': 'action', 'quote': 'scored by hand'}]}]}))
+with contextlib.redirect_stdout(io.StringIO()):
+    assert not check_citations.check(con, gt)
+assert [f['verified'] for f in json.loads(gt.read_text())['findings']] == [True, False]
+sys.argv = ['review_page', str(db.DB.parent / 'gt.html'), f'Group={gt}']
+with contextlib.redirect_stdout(io.StringIO()):
+    review_page.main()
+page = (db.DB.parent / 'gt.html').read_text()
+assert 'quote NOT found in the record' in page and '<td class="num">3</td>' in page
 con.close()
 g = lambda check, text: llm.grade(None, {'check': check, 'question': '', 'truth': ''}, text, None)[0]
 assert g({'number': 22}, 'It ran many.\nANSWER: 22 sessions') and not g({'number': 22}, 'ANSWER: 21 sessions [t:000000c90000]')
@@ -147,5 +163,9 @@ assert g({'number': 1014, 'tol': 5}, 'ANSWER: about 1,012') and g({'all': ['gemi
 assert not g({'all': ['gemini'], 'none': ['o3 did']}, 'gemini\nANSWER: o3 did it')
 for name in (p.stem for p in (Path(__file__).parent / 'rubrics').glob('*.md')):
     assert llm.rubric(name)['labels']
+for qn in json.loads((Path(__file__).parent / 'evals' / 'questions.json').read_text()):
+    assert {'id', 'question', 'truth', 'kind', 'source'} <= qn.keys() and (qn.get('check') or qn.get('judge')), qn['id']
 assert llm.NOW.search('What is happening in the village?') and not llm.NOW.search('Which agent ran the most commands?')
+for qn in json.loads((Path(__file__).parent / 'evals' / 'ground_truth_questions.json').read_text()):
+    assert qn.keys() == {'id', 'goal', 'question', 'answer'} and qn['answer'], qn['id']
 print('ok')

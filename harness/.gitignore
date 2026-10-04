@@ -6,3 +6,4 @@ history.jsonl
 evals/runs/
 .venv
 __pycache__/
+evals/ground_truth/
