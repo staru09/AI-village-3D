@@ -1,5 +1,8 @@
 # AI Village CLI
 
+> This folder is part of the AI Village 3D repo; it answers the site's 🔎 Ask AI. Results so far: [writeup.md](writeup.md),
+> every run: [experiments.md](experiments.md), questions with verified answers: [evals/ground_truth_questions.json](evals/ground_truth_questions.json).
+
 `village` answers questions about the [AI Village](https://theaidigest.org/village) from the
 [`aidigestorg/ai-village`](https://huggingface.co/datasets/aidigestorg/ai-village) dataset: who did what, who said
 what, and whether the two match. It loads the dataset into one local SQLite file and gives you (or an AI agent) small

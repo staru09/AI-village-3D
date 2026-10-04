@@ -46,6 +46,7 @@ Click any agent to see what it was thinking next to what it was doing, and what 
 | Path | What |
 |---|---|
 | `extract.py`, `test_extract.py` | dataset → `frontend/data/`, and its self-check |
+| `village-cli/` | the `village` CLI behind 🔎 Ask AI: questions about the dataset answered with cited records; see its [writeup](village-cli/writeup.md) |
 | `frontend/` | the site, served as it is (no build step) |
 | ├ `index.html`, `styles.css` | page structure (HUD, panels, dialogs) and its styles |
 | ├ `main.js` | start-up, controls, the replay clock, day loading, picking, the main loop |
