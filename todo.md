@@ -3,13 +3,13 @@
 **Open** work is at the top and everything already built is in **Done** at the bottom. Item numbers stay the same
 in both, so references between items still work. **Decide** marks a choice we still need from you.
 
-**Status (2026-10-03):**
+**Status (2026-10-04):**
 - **Live site:** https://village.gensis-kb-tunnel.com, still built from the old `agent-swarm` copy. Everything newer is
   on the `dev` and `refactor` branches of `AI-village-3D` (see 1.12).
 - **Built:** the calendar, player cards, deployment, a lot more from the dataset (rooms, failures, pauses, gallery,
   chat, human messages, mentions), the interface requests of section 8, and the module split.
 - **Next:** going live (1.12), livelier agents (section 3), the rest of section 6, across days (section 7), and the
-  question-answering bot (section 9).
+  question-answering engine, goal by goal (section 9).
 
 # Open
 
@@ -84,16 +84,19 @@ Data we download but don't show yet. Checked against the 2026-09-20 export and t
 - [ ] **7.3 All-time Hall of Fame.** Totals across the whole run.
 - [ ] **7.4 Search across all days.** Too much text for the browser; needs the small API from the notes below.
 
-## 9. Ask the village: a question-answering bot (plan)
+## 9. Ask the village: a question-answering engine, goal by goal (plan)
 
-Goal: visitors ask about a day ("What happened on Day 506?", "Why did GPT-5.2 stop the push?", "Who approved the
-outreach to the Mental Health Coalition?") and get a short answer with citations that link to the moment in the
-replay. Sizes measured on the built data: a day's core record (agent chat, human messages, requests, recap, goal,
+Goal: ask a question about the village ("Is the goal being followed?", "Which strategy worked best?", "Why did GPT-5.2
+stop the push?") and get a short answer that cites its evidence and links to the moment in the replay. No graph: a
+question in, an answer out. **Users:** us first, the public site later (decided 2026-10-03). **The unit is a village
+goal** (decided 2026-10-04): every row of the dataset belongs to the goal running when it happened, so a question is
+scoped to a goal first, and questions across goals combine several. The day-based items 9.2–9.4 wait for the probe
+(9.14). Sizes measured on the built data: a day's core record (agent chat, human messages, requests, recap, goal,
 session goals) is median 66k tokens, p90 137k, max 345k. The agents' own notes for a day (memories, reasoning, errors)
 add median 164k, max 524k.
 
 - [ ] **9.1 Decide the scope and the budget.**
-      - **Questions:** about one day (first), up to a day, or across the whole run (later)?
+      - **Questions:** one goal at a time first (decided 2026-10-04), across goals later.
       - **Model and cost cap:** check current Claude models and prices before building.
       - **Spoilers:** answer only from data up to the selected day, or up to the replay clock?
 - [ ] **9.2 Day digests (no vector database needed for one day).** `extract.py` writes `data/days/<date>/digest.txt`:
@@ -123,6 +126,54 @@ add median 164k, max 524k.
       the accuracy and that every citation points at a real line. Run them again after each change.
 - [ ] **9.9 Deploy.** A systemd service and an environment file for the key, deployed with `deploy.sh`. The daily
       update rebuilds the digests.
+- [ ] **9.10 Split the dataset by goal.** Tag every row with the village goal running at its timestamp (`village_goals`
+      start and end times, in UTC, not the day: 9 of the 50 goal changes fall inside village hours, e.g. "Write a story
+      and celebrate it…" started 15 May 2025 at 11:00 PT, and the games week on 18 Aug 2025 at 09:08 PT).
+      - Rows between two goals (weekends, holidays) go to a "between goals" bucket.
+      - The last goal, "Each agent: Maximize your assigned goal!" (from 6 Jul 2026, 55 days, 32 agents, no end time
+        yet), splits further by each agent's own goal (`agent_goals`).
+      - The site's goal segments (8.1) are whole days; the engine uses the exact times.
+- [ ] **9.11 One SQLite database, built on AI-Village-CLI** (github.com/staru09/AI-Village-CLI). It already has: only
+      the standard library, the full history in 25 s, careful name matching with tests (GPT-5 is not GPT-5.1), a `--goal`
+      filter, and `examples` to list the messages behind any count. It reads chat only. Add sessions (`session_goal`),
+      actions (`agent_action`, `output`, `error`, reasoning), memories, events and each turn's screenshot location.
+      Drop its graph UI. Its `# graph covers` header ignores the filters (a small fix).
+- [ ] **9.12 Evidence tiers.** The dataset's README: "Treat an agent's narration as a claim, not ground truth — check
+      the screenshots."
+
+      | Tier | Sources | In an answer |
+      |---|---|---|
+      | Ground truth | screenshots (all 370 days are in the local HF cache, 160 GB), `agent_action`, `output`, `error`, `events`, goals, agent metadata, who sent which chat message when | what happened |
+      | Claims | chat text, `session_goal`, reasoning (`agent_messages`), memories, Claude Code assistant text | quoted as "X said…" |
+      | Secondary | `summaries` (written by an LLM that never saw inside computer sessions), `village-transcript.json` (a rendering of the tables) | where to look, never evidence |
+- [ ] **9.13 Computer-use data is the main evidence.** Measured on the AI Assistant goal (about 109k turns):
+      - 37,404 bash commands: 70% have output, 9% an error. The system's own reply (e.g. a git commit line).
+      - About 52,000 clicks, keys and typing with no text reply: the proof is the screenshot.
+      - 3,195 `send_message_back_to_chat`: ties each chat message to the reasoning just before it (thought vs said).
+      - 483 `search_history`: agents searching village history (the memory-horizon question).
+      - Reasoning on 99% of turns, about 1.7k characters each.
+
+      There is no success field: outcomes come from the output, or from a screenshot checked by a vision model when a
+      claim needs it. Too big to read per question (about 180M characters of reasoning for this goal): narrow with SQL
+      and search first, or use labels (9.15). Older goals have less: the games week (Aug 2025) has no bash at all.
+- [ ] **9.14 Probe: which strategy answers best.** **Decide:** start it. Throwaway code, on the last goal with an end
+      time: "Compete to be the best AI Assistant!" (29 Jun – 3 Jul 2026, Days 454–458, 21 agents, 3,194 chat messages,
+      about 400k tokens; no session reports, they stop in Mar 2026). The same model and about 12 questions for each:
+      1. Long context: the goal's chat and each agent's latest memory in one cached prompt.
+      2. An agent with read-only `sql`, `search` and `read` tools over the 9.11 database.
+      3. Summaries first: 105 agent-day and 5 day summaries, with the same tools to drill down (section 10).
+
+      Grading: AI Digest's goal story and recaps are secondary (9.12), so check their key claims against the actions
+      first. A blind judge scores correctness, specificity and citations, and we read the main answers. Report the
+      score, cost and seconds per question.
+- [ ] **9.15 Research questions as labelling passes** (the "AI Village Data Project Ideas" list). One batch pass per
+      question, stored as a table the engine reads with SQL. A detector must first catch false claims we planted or
+      verified ourselves, and labels about deception or over-reporting rest on actions, not reasoning.
+      - **Need computer-use data:** over-reporting success (split into "done" when the check failed, and "done" when no
+        check ran), goal following, planned deception in reasoning, model-spec violations, risk-taking, mantras,
+        memory horizon, human vs agent performance.
+      - **Chat alone** (AI-Village-CLI covers these): pronouns, term spread (partly), the peer-relationship matrix,
+        factions, who mentions or ignores whom.
 
 ## 10. Better summaries of what happens in the village (plan)
 
