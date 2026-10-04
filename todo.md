@@ -196,6 +196,10 @@ whole goals.
         goals people will ask about. Only goal 41 has actions loaded today; on other goals the answer rests on chat.
       - **Known limit:** an answer can take minutes, and Cloudflare's tunnel cuts a request at about 100 s. Long
         questions need a start-then-poll endpoint.
+      - **Live since 2026-10-04 (from `experiment-only`):** `/var/www/village-3d` published from this branch (old site
+        kept in `/var/www/village-3d.bak-20261004`); `/etc/caddy/Caddyfile` proxies `/api/*` to `village web` on
+        127.0.0.1:8765 (old config in `Caddyfile.bak-20261004`). Open: `village web` runs under nohup, not a service,
+        so it stops on a reboot; the daily data job (crontab) still publishes from `/data/agent-swarm/village-3d`.
 
 ## 10. Better summaries of what happens in the village (plan)
 
