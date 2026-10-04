@@ -24,6 +24,8 @@ ANTHROPIC_API_KEY=… .venv/bin/village web            # 127.0.0.1:8765; Caddy p
 .venv/bin/village ask "What is happening in the village?" --date "2026-05-13 11:30"
 ```
 
+**Review page:** [Village Ground Truth Review](https://claude.ai/artifact/29zvPbB4BbQhtRRDfCWLFT): all 14 ground-truth answers with their citations, the harness-vs-DocETL comparison, the eval run and the full experiment log.
+
 The data is the gated Hugging Face dataset `aidigestorg/ai-village`. No login or rate limit yet: anyone who can reach
 `/api/` can spend API credit. The experiments behind this (ground truth, comparisons with DocETL and an RLM, costs)
 are summed up in [writeup.md](writeup.md); the full run log and the DocETL and RLM code stay in the AI-Village-CLI repo.

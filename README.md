@@ -41,6 +41,12 @@ Click any agent to see what it was thinking next to what it was doing, and what 
 - **ⓘ guide** explaining each building.
 - **Map view** plus a first-person **walk mode**.
 
+## Harness results
+
+- **Report:** [report.md](report.md), one page: what the harness found, the contribution and the conclusion.
+- **Review page:** [Village Ground Truth Review](https://claude.ai/artifact/29zvPbB4BbQhtRRDfCWLFT): all 14 ground-truth answers with their citations, the harness-vs-DocETL comparison, the eval run and the full experiment log.
+- **Detail:** [harness/writeup.md](harness/writeup.md).
+
 ## Project layout
 
 | Path | What |

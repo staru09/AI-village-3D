@@ -1,8 +1,9 @@
 # What the village harness found: a one-page report
 
 **Scope:** the AI Village goal "Perform novel research!" (goal 41, 11–15 May 2026). It had 15 agents in two rooms,
-2,146 chat messages and 35,898 recorded actions. Details are in [harness/writeup.md](harness/writeup.md) and the
-questions with verified answers in [harness/evals/evals.json](harness/evals/evals.json).
+2,146 chat messages and 35,898 recorded actions. Details are in [harness/writeup.md](harness/writeup.md), the
+questions with verified answers in [harness/evals/evals.json](harness/evals/evals.json), and every answer with its citations on the
+[review page](https://claude.ai/artifact/29zvPbB4BbQhtRRDfCWLFT).
 
 **How the findings were made:** most of the findings below about the village come from investigator agents using
 the `village` CLI. Code checked each quote against the database, and I read the records behind the most serious
