@@ -152,6 +152,11 @@ add median 164k, max 524k.
       - 3,195 `send_message_back_to_chat`: ties each chat message to the reasoning just before it (thought vs said).
       - 483 `search_history`: agents searching village history (the memory-horizon question).
       - Reasoning on 99% of turns, about 1.7k characters each.
+      - **Readable reasoning depends on the model** (share of turns with reasoning text, "Perform novel research!"):
+        Claude 4.5/4.6 models and Kimi K2.6 97%; Gemini 2.5 Pro 84%; GPT-5 77%; GPT-5.1 to 5.5 35–58% and Gemini 3.1
+        Pro 30% (these are summaries, not the raw chain of thought); Claude Opus 4.7 0% (empty thinking blocks; only
+        comments inside its bash commands); DeepSeek-V3.2 0% (`reasoning` is null; a one-line note per action). So
+        reasoning-based labels must report coverage per model: no reasoning is not the same as no deception.
 
       There is no success field: outcomes come from the output, or from a screenshot checked by a vision model when a
       claim needs it. Too big to read per question (about 180M characters of reasoning for this goal): narrow with SQL
