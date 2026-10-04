@@ -39,16 +39,6 @@ AI-Village-CLI repo. Every answer and its citations can be reviewed on the
   question on the visitor's Anthropic key and never on the server's. The key stays in the browser and travels only as
   an `Authorization` header, which Caddy does not log.
 
-### Deployment
-- **Serving:** Caddy serves `/var/www/village-3d` on 127.0.0.1:8080 behind a Cloudflare tunnel, and proxies `/api/*`
-  to `village web` on 127.0.0.1:8765. Publish with `deploy/deploy.sh publish`.
-- **Backups:** the site before Ask AI is at `/var/www/village-3d.bak-20261004`, and the Caddy config at
-  `/etc/caddy/Caddyfile.bak-20261004`.
-- **Open:**
-  - `village web` is a background process, not a service, so a reboot stops Ask AI;
-  - the daily data job (cron, 04:30) is switched off;
-  - with no login or rate limit, visitors spend the server's API credit until the `byok` branch is deployed.
-
 ## 2. The harness (`harness/`)
 
 - **Database:** `village build` loads the dataset into one SQLite file, `village.db`. Chat, sessions and events cover
