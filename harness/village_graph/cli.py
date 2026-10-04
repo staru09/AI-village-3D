@@ -142,7 +142,7 @@ def parser():
     p.add_argument('--max-steps', type=int, default=40)
     p.add_argument('--quiet', action='store_true', help="don't print each command as it runs")
     p = add('eval', 'run the agent on questions with known answers and grade it', scoped=False)
-    p.add_argument('file', nargs='?', default='evals/questions.json')
+    p.add_argument('file', nargs='?', default='evals/evals.json')
     p.add_argument('--ids', help='only these question ids, comma-separated')
     p.add_argument('--model')
     p.add_argument('--agent-cmd', help='grade another agent instead: a shell command with {question} in it that prints the answer')

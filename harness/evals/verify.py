@@ -2,7 +2,7 @@
 
     VILLAGE_DATA=/path/to/tables python3 evals/verify.py     # about 3 minutes; prints each fact
 
-Run it after a new dataset export: if a number here changes, update evals/questions.json to match.
+Run it after a new dataset export: if a number here changes, update evals/evals.json to match.
 """
 import gzip, json, os, re
 from collections import Counter

@@ -5,7 +5,7 @@
     .venv/bin/python evals/harness_vs_docetl.py judge              # gpt-6.1-sol scores both answers against the ground truth
     .venv/bin/python evals/harness_vs_docetl.py report             # one JSON with answers, scores, verdicts and costs
 
-Questions and truths come from evals/ground_truth_questions.json. Everything is written to evals/ground_truth/compare/
+Questions and truths come from evals/evals.json. Everything is written to evals/ground_truth/compare/
 (git-ignored: it quotes the gated dataset).
 
 DocETL has no search tool, so its pipeline reads the whole goal: every computer session (the same text `village label` shows, 16,000
@@ -27,7 +27,7 @@ JUDGE_MODEL = 'gpt-6.1-sol'
 
 
 def questions():
-    qs = {q['id']: q for q in json.loads((ROOT / 'evals' / 'ground_truth_questions.json').read_text())}
+    qs = {q['id']: q for q in json.loads((ROOT / 'evals' / 'evals.json').read_text())}
     return [{'id': i, 'question': qs[i]['question'], 'truth': qs[i]['answer']} for i in IDS]
 
 

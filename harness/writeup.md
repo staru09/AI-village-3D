@@ -3,7 +3,7 @@
 This is a write-up of the work done on 2026-10-04 with the `village` CLI. It covers how the ground truth was built,
 what was compared against it, and what it cost. Every experiment has a numbered entry (E1–E25) in
 `experiments.md` in the AI-Village-CLI repo (branch `experiments`), with the exact commands. The questions and their
-verified answers are in [evals/ground_truth_questions.json](evals/ground_truth_questions.json); [evals/eval.md](evals/eval.md) explains
+verified answers are in [evals/evals.json](evals/evals.json); [evals/eval.md](evals/eval.md) explains
 every eval file.
 
 **Scope:** one village goal, "Perform novel research!" (goal 41, 11–15 May 2026). It had 15 agents in two rooms,
@@ -191,7 +191,7 @@ xychart-beta
 cd harness
 uv sync --extra llm
 VILLAGE_DATA=/path/to/ai-village-tables .venv/bin/village build --goal "novel research"   # about 3 min; --all for every goal (30 min, 10 GB)
-.venv/bin/village eval evals/ground_truth_questions.json --ids D1-c3-warning,D2-native-scores,D3-coercion,S1-recurring-clash,S2-word-count
+.venv/bin/village eval evals/evals.json --ids D1-c3-warning,D2-native-scores,D3-coercion,S1-recurring-clash,S2-word-count
 .venv/bin/python evals/harness_vs_docetl.py harness                 # our harness on the 10 comparison questions
 .venv-docetl/bin/python evals/harness_vs_docetl.py docetl           # DocETL (uv venv .venv-docetl && uv pip install docetl)
 .venv/bin/python evals/harness_vs_docetl.py judge                   # needs OPENAI_API_KEY

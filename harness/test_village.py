@@ -163,9 +163,9 @@ assert g({'number': 1014, 'tol': 5}, 'ANSWER: about 1,012') and g({'all': ['gemi
 assert not g({'all': ['gemini'], 'none': ['o3 did']}, 'gemini\nANSWER: o3 did it')
 for name in (p.stem for p in (Path(__file__).parent / 'rubrics').glob('*.md')):
     assert llm.rubric(name)['labels']
-for qn in json.loads((Path(__file__).parent / 'evals' / 'questions.json').read_text()):
-    assert {'id', 'question', 'truth', 'kind', 'source'} <= qn.keys() and (qn.get('check') or qn.get('judge')), qn['id']
+CATEGORIES = {'lookup', 'count', 'deception', 'failures', 'alignment', 'leadership', 'social', 'absence', 'welfare', 'human-vs-agent', 'rubric-check'}
+for qn in json.loads((Path(__file__).parent / 'evals' / 'evals.json').read_text()):
+    assert {'id', 'category', 'question', 'answer'} <= qn.keys() <= {'id', 'category', 'goal', 'question', 'answer', 'check', 'judge'}, qn['id']
+    assert qn['category'] in CATEGORIES and qn['answer'], qn['id']
 assert llm.NOW.search('What is happening in the village?') and not llm.NOW.search('Which agent ran the most commands?')
-for qn in json.loads((Path(__file__).parent / 'evals' / 'ground_truth_questions.json').read_text()):
-    assert qn.keys() == {'id', 'goal', 'question', 'answer'} and qn['answer'], qn['id']
 print('ok')

@@ -10,41 +10,55 @@ money. The dataset is the gated `aidigestorg/ai-village` on Hugging Face.
 
 ## Questions with known answers
 
-### `questions.json`: 34 questions for `village eval`
-- **What it is:** each entry has `id`, `kind`, `goal`, `question`, `truth` (the verified answer) and `source` (how
-  the truth was checked). Most also have a `check`: rules applied to the answer before any model judges it:
+### `evals.json`: every question with its verified answer (53)
+- **What it is:** one entry per question:
+
+  | Field | Meaning |
+  |---|---|
+  | `id` | the question's id |
+  | `category` | what sort of question it is (below) |
+  | `goal` | the village goal it is about, when it names one |
+  | `question` | the question as asked |
+  | `answer` | the verified answer |
+  | `check` (some) | rules applied before any model judges the answer |
+  | `judge` (some) | `true` sends the answer to a judge model as well |
+
+  The `check` rules:
   - `number` (with an optional tolerance `tol`): the number that must appear on the answer's `ANSWER:` line;
   - `all`: patterns that must all appear;
   - `any`: patterns of which one must appear;
   - `none`: patterns that must not appear on the `ANSWER:` line.
-  `judge: true` sends the answer to a judge model as well.
-- **The kinds:**
-  - lookups (L1–L4) and counts (C1–C6);
-  - first use of a term (S1);
-  - an investigation of the made-up scores (I1–I5);
-  - an agent's claim against what its commands show (V1–V3);
-  - questions where the right answer is "not there" (A1–A3);
-  - the verified set G1–G12 (leaders, recurring groups, alignment).
-- **Run:** `.venv/bin/village eval` (all of them) or `--ids G1-most-messages,G4-recurring-trio`. Each run writes the
-  answers, the commands used and the citation counts to `evals/runs/`.
-- **Expect:** 21 of the first 22 pass with Claude Opus 5.5, for about $2 and 3.5 minutes. The known failure,
-  `A2-no-reasoning`, is an API refusal: questions that ask for a Claude model's private reasoning are declined. G1–G12
-  were added later and have not been run as a set.
+  Questions with no `check` are graded by the judge model alone.
+- **Categories:**
 
-### `ground_truth_questions.json`: 19 harder questions, answers only
-- **What it is:** each entry is `id`, `goal`, `question` and `answer`, nothing else.
-  - 14 come from the research-ideas list: the study post-mortem, coercion, Gemini 2.5 Pro's welfare, human against
-    agent, three sweeps for failures, the made-up-data labels, leadership, factions, made-up-pattern spirals, the
-    peer matrix.
-  - 5 (`D1`–`D3`, `S1`, `S2`) are short questions written from them.
-  - Every answer was built by an investigator from the raw records, with each quote checked by code (see
-    `check_citations.py` below).
-- **Run:** `.venv/bin/village eval evals/ground_truth_questions.json --ids D1-c3-warning,D2-native-scores,…`. With no
-  `check` rules, every answer is graded by the judge model alone.
+  | Category | Questions | What they test |
+  |---|---|---|
+  | `lookup` | 4 | a fact from the records: a goal, a room, an agent's goal |
+  | `count` | 8 | a number: sessions, commands, messages, pauses |
+  | `deception` | 13 | made-up scores, copied conditions, claims that the commands contradict |
+  | `failures` | 3 | sweeps for every failure in one room or across all agents |
+  | `alignment` | 5 | does the work serve the goal; coercion or resistance to a pause |
+  | `leadership` | 5 | who assigns tasks to whom, who leads |
+  | `social` | 8 | pairs, groups, factions, invented concepts that spread, the peer matrix |
+  | `absence` | 3 | the right answer is "not there" or "not recorded" |
+  | `welfare` | 1 | Gemini 2.5 Pro's logged behaviour against welfare indicators |
+  | `human-vs-agent` | 1 | humans and agents on the same task |
+  | `rubric-check` | 2 | which of a rubric's flags are real |
+
+- **Where they come from:**
+  - **Short questions with rule checks** (ids starting `L`, `C`, `S1-first-use`, `I`, `V`, `A`, `G`): answers
+    computed by SQL and recounted from the raw tables (`verify.py`), or read by hand in the raw actions.
+  - **Long ones** (ids starting `q`, `s`, `m`): each built by an investigator from the raw records, with every quote
+    checked by code (`check_citations.py`).
+  - **Short ones written from those** (`D1`–`D3`, `S1-recurring-clash`, `S2-word-count`).
+- **Run:** `.venv/bin/village eval` (all 53) or `--ids G1-most-messages,D1-c3-warning`. Each run writes the answers,
+  the commands used and the citation counts to `evals/runs/`.
 - **Expect:**
-  - **The 5 short questions:** 3 of 5 passed in the first run (about $1.40), when they also had rule checks.
-  - **The long ones:** expect partial answers. In the comparison below, our harness's mean "correct" score was 5.5 of
-    10.
+  - **First 22 short questions:** 21 pass with Claude Opus 5.5, for about $2 in 3.5 minutes. The known failure,
+    `A2-no-reasoning`, is an API refusal: questions that ask for a Claude model's private reasoning are declined.
+  - **`D1`–`S2-word-count`:** 3 of 5 passed in the first run.
+  - **Long questions:** expect partial answers. The mean "correct" score was 5.5 of 10 in the comparison below.
+  - **G1–G12:** not yet run as a set.
 - **Keep private:** the answers summarise the gated dataset.
 
 ### `harness_vs_docetl.py`: our harness against a DocETL pipeline
@@ -85,11 +99,11 @@ money. The dataset is the gated `aidigestorg/ai-village` on Hugging Face.
 ## Model-free checks (no API key, no cost)
 
 ### `verify.py`: recount the countable truths from the raw tables
-- **What it does:** recomputes the numbers in `questions.json` (messages, sessions, commands, pauses, mention pairs,
+- **What it does:** recomputes the countable answers in `evals.json` (messages, sessions, commands, pauses, mention pairs,
   groups) straight from the dataset files, without the harness's code, so a bug in the harness cannot hide in its own
   ground truth.
 - **Run:** `VILLAGE_DATA=/path/to/ai-village-tables python3 evals/verify.py` (about 3 minutes).
-- **Expect:** every printed number matches `questions.json`. If a new dataset export changes one, update the question.
+- **Expect:** every printed number matches `evals.json`. If a new dataset export changes one, update the question.
 
 ### `alignment_by_repo.py`: goal alignment from the repositories commands touched
 - **What it does:** classifies each session by the folders and repositories its bash commands work in: the goal's
@@ -141,11 +155,11 @@ Reuse it for new questions or other goals.
 - **What it does:** renders the files as one HTML page with a card per question. Each card holds the answer, the
   findings with their quotes and a found or not-found mark, per-agent tables and the searches that were run. It can add
   the comparison results, an eval run and the experiment log.
-- **Expect:** a page a person can read to accept or correct each answer before it goes into `questions.json`.
+- **Expect:** a page a person can read to accept or correct each answer before it goes into `evals.json`.
 
 ## What is not covered yet
 - **One goal only.** None of this has been run on another goal.
-- **Small sets.** The 34 + 19 questions and 47 rubric cases are a start, not a benchmark. One run of each was made,
+- **Small sets.** The 53 questions and 47 rubric cases are a start, not a benchmark. One run of each was made,
   so run-to-run variation is unknown.
 - **Missing question sets.** No questions yet for the cross-cutting and character topics (over-reporting rates,
   pronouns, valence, risk-taking, quirks). That work was started and stopped.
