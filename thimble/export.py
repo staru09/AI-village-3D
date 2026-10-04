@@ -90,7 +90,7 @@ about 10:00–14:00 Pacific time, {len(names)} agents: {', '.join(names.values()
 | `actions.jsonl` ({len(actions):,}) | computer action (click, key, scroll, type, screenshot, chat send…) | agent, date, time_pt, session, action, coordinate / text / key…, reasoning (the model's own, when it gave one), error, output |
 | `memory/<agent>.md` | the agent's own notes as of the end of each day (it rewrites them many times a day) | |
 
-Screenshots are not in the dataset. A turn's `error` is what the tool reported; `reasoning` is present on {sum(bool(a['reasoning']) for a in actions):,} actions.
+Screenshots are not in this folder (the dataset has them, one tar per day under `images/computer-use-turns/`). A turn's `error` is what the tool reported; `reasoning` is present on {sum(bool(a['reasoning']) for a in actions):,} actions.
 """)
     S = sorted(map(json.loads, gzip.open(snap / 'summaries.jsonl.gz')), key=lambda r: r['created_at'])
     nums = {d['day'] for d in days}
