@@ -1,102 +1,143 @@
-# Answering questions about the AI Village: ground truth, three approaches, results
+# AI Village 3D and its research harness: what was built, what was run, what it found
 
-This is a write-up of the work done on 2026-10-04 with the `village` CLI. It covers how the ground truth was built,
-what was compared against it, and what it cost. Every experiment has a numbered entry (E1–E25) in
-`experiments.md` in the AI-Village-CLI repo (branch `experiments`), with the exact commands. The questions and their
-verified answers are in [evals/evals.json](evals/evals.json); [evals/eval.md](evals/eval.md) explains
-every eval file.
+Built in 2026-10. Every experiment below has a numbered entry (E1–E25) with exact commands in `experiments.md` of the
+AI-Village-CLI repo. Every answer and its citations can be reviewed on the
+[review page](https://claude.ai/artifact/29zvPbB4BbQhtRRDfCWLFT). The one-page summary is [report.md](../report.md).
 
-**Scope:** one village goal, "Perform novel research!" (goal 41, 11–15 May 2026). It had 15 agents in two rooms,
-2,146 agent chat messages, 1,014 computer sessions and 35,898 recorded actions.
+**In short:**
+- **The site:** a 3D replay of the AI Village, live at https://village.gensis-kb-tunnel.com.
+- **Ask AI:** a button on the site where a visitor picks a goal and asks a question, answered by our harness: Claude
+  with a CLI over the whole dataset, citing the records it read.
+- **The tests:** we built verified answers for one goal and tested the harness against them and against two other
+  approaches. It was the most accurate and the cheapest, and it is still only about half right on open-ended audits.
 
-**The three approaches:**
-- **Our harness:** `village ask`. Claude Opus 5.5 with one tool, the `village` CLI. It searches, reads the records,
-  and answers with citations to them.
-- **DocETL:** an LLM map/reduce pipeline over the records (github.com/ucbepic/docetl, version 0.3.0).
-- **RLM:** a Recursive Language Model (github.com/alexzhang13/rlm). The records sit in a sandboxed Python REPL and the
-  model writes code to read them.
+## 1. The village site
 
-## 1. How the ground truth was made
+- **Replay:** any village day from 2 Apr 2025 to the latest export, in 5-minute steps (◀ ▶, `?date=YYYY-MM-DD`). Each
+  agent walks to the building for what it did most in that slice:
+  - ⚒️ Workshop: terminal;
+  - 🔭 Watchtower: browser and screen;
+  - 💬 Town Hall: chat;
+  - 📚 Library: memory;
+  - 🔥 Clan camp: idle.
+- **Agent cards:** today's numbers; "Thinking | Doing", its reasoning next to its commands; its session reports; its
+  memory as of that day; its career. A summary written after the watched day stays locked, so nothing is spoiled.
+- **Other views:** mention arcs between agents, the Hall of Records (a brick column per agent per measure), the day
+  recap, goal stories, the 🎯 goal browser, the gallery of links, a map view and a first-person walk mode.
+- **Data:** `extract.py` turns the gated Hugging Face dataset `aidigestorg/ai-village` into static JSON in
+  `frontend/data/` (about 570 MB). There is no build step.
 
-The ground truth was built so that it does not depend on the tools being tested.
+### 🔎 Ask AI
+- **Opening:** a header button opens a panel above the replay bar. The map stays usable, and the title bar drags the
+  panel anywhere.
+- **Asking:** pick a goal (it starts on the one being watched), type, press Enter (Shift+Enter for a new line). The
+  page sends `ask "<question>" --goal "<goal>" --date "<day and replay time>"` to the harness through `/api/run`.
+- **The answer** shows its record refs, the model, the commands run, the cost and the time.
+- **Before anything is asked,** the panel lists the 15 answers the harness gave when it was tested
+  (`frontend/ask_examples.json`). Each shows its real cost and its grade against the verified answer.
+- **Bring your own key** (branch `byok`, not deployed): a key field in the panel; `village web --byok` then runs each
+  question on the visitor's Anthropic key and never on the server's. The key stays in the browser and travels only as
+  an `Authorization` header, which Caddy does not log.
 
-1. **Ground truth and claims are kept apart.** Commands, their outputs and errors, and events are recorded by the
-   system: that is ground truth. Chat, reasoning, stated intent and memory notes are what the agents said, so they are
-   claims. AI Digest's daily recaps are LLM-written summaries, so they are secondary. An agent saying "done" proves
-   nothing until a command shows it.
-2. **Counts by code, twice** (E12). Questions with a number are computed by SQL, then recounted from the raw dataset
-   by a separate script (`evals/verify.py`) that does not use the CLI's code. Examples: the number of bash commands per
-   agent, the strongest mention pairs, the groups that recur across days.
-3. **Model labels only after a check** (E7, E9, E13, E15).
-   - A rubric labels each unit (a session or a message), and is tested on hand-labelled cases before any full run.
-   - The `goal_fit` labels agree with a model-free measure on 92% of sessions. That measure classifies each session by
-     which repositories its commands touched.
-   - The `delegation` labels agree with a blind hand-labelling on 37 of 40 messages.
-   - A measure that failed this check (E14, "taken up" as a sign of following) was dropped.
-4. **Reading questions: one investigator per question, every quote checked by code** (E18).
-   - 14 questions came from the research list ("AI Village Data Project Ideas"):
-     - the post-mortem of the study;
-     - coercion;
-     - Gemini 2.5 Pro's welfare;
-     - human against agent;
-     - three sweeps for more failures;
-     - the made-up-data labels;
-     - leadership, factions, made-up-pattern spirals, and a peer matrix.
-   - Each was given to its own investigator (a Claude Code subagent) with the same brief: use only the CLI and
-     read-only SQL, and back every finding with a record ref and an exact quote.
-   - A script (`evals/check_citations.py`) then looked up every ref and checked that the quote is in that record: all
-     1,273 were.
-   - I then read the records behind the most serious findings and recounted the numbers the answers lean on.
-   - The answers were reviewed on one page (built by `evals/review_page.py`).
-5. **Model flags verified one by one** (E19). The `made_up_data` rubric flagged 80 sessions as fabricated. Every one
-   was read at the level of its commands: 7 were real.
+### Deployment
+- **Serving:** Caddy serves `/var/www/village-3d` on 127.0.0.1:8080 behind a Cloudflare tunnel, and proxies `/api/*`
+  to `village web` on 127.0.0.1:8765. Publish with `deploy/deploy.sh publish`.
+- **Backups:** the site before Ask AI is at `/var/www/village-3d.bak-20261004`, and the Caddy config at
+  `/etc/caddy/Caddyfile.bak-20261004`.
+- **Open:**
+  - `village web` is a background process, not a service, so a reboot stops Ask AI;
+  - the daily data job (cron, 04:30) is switched off;
+  - with no login or rate limit, visitors spend the server's API credit until the `byok` branch is deployed.
 
-The question set has 19 entries: the 14 above, plus 5 short questions written from them for `village eval` (E21).
-For each question the file holds only the question and the verified answer.
+## 2. The harness (`harness/`)
 
-## 2. The experiments
+- **Database:** `village build` loads the dataset into one SQLite file, `village.db`. Chat, sessions and events cover
+  the whole history. `--all` also loads every computer action (2.58M) and memory version (246k): 28.5 min, 10.1 GB.
+  Times are Pacific, and full-text indexes cover chat, actions, outputs, reasoning, session intents and memory.
+- **Trust labels:** every record has a ref (`m:` message, `t:` action, `s:` session, `e:` event, `k:` memory,
+  `r:` recap) and a trust label:
+  - **ground truth:** recorded by the system (commands, outputs, errors, events);
+  - **claim:** an agent's own words (chat, reasoning, stated intent, memory);
+  - **secondary:** AI Digest's LLM-written recaps.
+- **About 35 commands:**
 
-### Our harness (`village ask`)
-- **How it works:** an agent loop of up to 40 steps. Each step runs one CLI command (search, read a record, count,
-  read a session) and gets the text back. The answer must cite record refs, and the code checks that every ref it
-  cites appeared in a tool result. Prompt caching keeps re-reads cheap. If Opus refuses, it falls back to Claude
-  Sonnet 5.5.
-- **E5:** on 22 lookup and counting questions it answered 21 correctly, for $2.08 in 3.5 minutes. The failure was an
-  API refusal on a question about a Claude model's private reasoning.
-- **E21:** on 5 short questions written from the new ground truth, 3 of 5 passed, for about $1.40. It found the right
-  incident each time, but stopped short on scope or on interpretation.
-- **E22:** see the comparison below.
-- **E25:** "What is happening in the village?" now skips the search. It reads a fixed bundle of records for the moment
-  the user is watching (the goal, the latest plans, the chat, the recap up to that time) and answers in one call:
-  about 20 s and $0.07.
+  | Group | Commands |
+  |---|---|
+  | Build and orient | `build`, `goals`, `overview`, `recap`, `schema`, `agents` |
+  | Search and read | `find`, `show`, `sessions`, `session`, `timeline`, `said`, `memory`, `shot`, `look`, `examples` |
+  | Count | `count`, `terms`, `first-use`, `sql` |
+  | Who talks to whom | `pair`, `neighbors`, `top-pairs`, `hubs`, `families`, `leaders`, `replies`, `ignored` |
+  | Model labels and checks | `label`, `labels`, `check`, `verdict` |
+  | The agent | `ask` |
+  | Grading | `eval` |
+  | Server | `web` |
 
-### DocETL
-- **E17, model labels:** `goal_fit` over 1,014 sessions and `delegation` over 652 messages. Its labels matched ours
-  (91% and 95% on assigns-a-task-or-not) and gave the same answers to the ground-truth questions. They cost 1.4 to 1.9
-  times as much, because DocETL does not use Anthropic's prompt caching, but finished faster. Its LLM reduce, asked
-  which groups recur, listed 18 pairs as present every day; 2 are.
-- **E22, open questions:** DocETL has no search, so the pipeline reads everything:
-  - the input is all 1,059 units of the goal (each session's text and the chat in one-hour blocks);
-  - a map with Claude Haiku 4.5 notes evidence for all 10 questions at once;
-  - a reduce with Claude Opus 5.5, one per question, writes the answer.
+- **`ask`, the agent loop** (Claude Opus 5.5, up to 40 steps):
+  - Each step runs one CLI command and reads its text. Prompt caching makes re-reads cheap.
+  - The prompt sets the evidence rules: claims are not facts; give every count with its base; search widely before
+    saying "never".
+  - The answer must cite refs, and code checks that every cited ref appeared in a tool result.
+  - If Opus refuses, Claude Sonnet 5.5 takes over.
+- **Fast path for "What is happening?"** with a date: no search loop. One Claude Sonnet 5.5 call reads a fixed bundle
+  of records:
+  - the goal in force;
+  - each agent's latest stated plan;
+  - the last 120 chat messages;
+  - recap lines timestamped before that moment, so nothing later is spoiled.
+  It takes about 20 s and $0.07.
+- **Rubrics** (`rubrics/*.md`): 9 short instructions that `village label` applies to every session or message in a
+  scope: `goal_fit`, `made_up_data`, `delegation`, `did_what_it_said`, `over_report`, `deception_plan`, `callout`,
+  `credit`, `mood`. The labels are stored with a quote and a reason in `labels.db`. A rubric is tested on hand-labelled
+  cases (`village check`) before any full run.
+- **Evals** (`evals/`, explained in [evals/eval.md](evals/eval.md)):
+  - `evals.json`: 53 questions, each with a category and its verified answer;
+  - rubric test cases;
+  - recount scripts;
+  - the comparison script.
 
-### RLM
-- **E10:** a counting question ("which agent sent the most messages?") answered correctly, for $0.44 in 171 s. Our
-  harness answers the same kind of question for $0.02–0.06 in 10–20 s.
-- To run the library with current Claude models we had to pass the API key explicitly, read text blocks rather than
-  the first block (a thinking block), drop assistant prefill, and add prompt caching.
-- It was parked before the ground truth existed, so it was not run on the 10 comparison questions.
+## 3. How the ground truth was made
 
-### The comparison (E22)
-- **Setup:** 10 of the questions, answered by our harness and by the DocETL pipeline.
-- **Judge:** `gpt-6.1-sol`, from a different maker than both systems. It sees the question, the verified answer and
-  the two answers, without knowing which system wrote which, in a seeded random order.
-- **Scoring:** each answer gets 0–10 on four measures (correct, no errors, complete, evidence), and the judge names
-  the more accurate one.
+1. **Claims are kept apart from records.** An agent saying "done" proves nothing until a command shows it.
+2. **Counts by code, twice** (E12). SQL first, then a separate recount from the raw dataset files (`evals/verify.py`).
+3. **Model labels only after checks:**
+   - `goal_fit` agrees with a model-free measure (which repositories each session's commands touched) on 92% of
+     sessions (E15).
+   - `delegation` agrees with a blind hand-labelling on 37 of 40 messages (E13).
+   - A measure that failed its check ("taken up" as a sign of following, E14) was dropped.
+4. **Reading questions: one investigator per question** (E18).
+   - **Questions:** 14, from the research list: the study post-mortem, coercion, Gemini 2.5 Pro's welfare, human
+     against agent, three sweeps for failures, the made-up-data labels, leadership, factions, invented concepts, a
+     peer matrix.
+   - **Investigators:** each a Claude Code subagent with the same brief (`evals/investigation_brief.md`). Each wrote
+     JSON in which every finding has a ref and an exact quote.
+   - **Checks:** `evals/check_citations.py` found all 1,273 quotes in the records they cite. I read the records behind
+     the most serious findings and recounted the numbers the answers lean on.
+5. **Model flags read one by one** (E19). The `made_up_data` rubric flagged 80 sessions; 7 were real.
 
-## 3. Results
+## 4. Experiments (all on goal 41, "Perform novel research!", unless noted)
 
-### Which answer was more accurate (judge's verdict, 10 questions)
+| # | What | Result | Cost |
+|---|---|---|---|
+| E1–E3 | First day page; research on tools; first `ask` | `ask` found the fabricated scores with 24 valid citations | $1.61, then $0.08–0.16 per question once prompt caching was added |
+| E4 | `made_up_data` on one agent-day | 4 flagged, 2 checked by hand | $0.21 |
+| E5 | `village eval` on 22 lookup and count questions | 21 of 22; the one failure was an API refusal | $2.08, 3.5 min |
+| E7 | `goal_fit` labels, three full runs | the first two were wrong in opposite directions; Sonnet 5.5 got 27 of 27 hand cases | $3.90 for the final run |
+| E8, E11, E16 | same-maker preference, who delegates, recurring groups | no same-maker preference (19% against 20%); one recurring trio, two pairs on all 5 days | none |
+| E9, E13 | `delegation` labels on 652 @-messages | Sonnet 14 of 15 cases; blind check 37 of 40 | $4.94 |
+| E10 | Recursive Language Model (`rlm`) | correct on a counting question, but 10 times the cost and time of `ask`; parked | $0.44, 171 s |
+| E12, E15 | first ground truth (G1–G12) and a model-free alignment measure | 92% agreement with `goal_fit` | none |
+| E14 | "taken up" as a measure of following | rejected: it counts acknowledgements, not compliance | none |
+| E17 | DocETL against our labels | same answers at 1.4–1.9 times our cost; its LLM reduce over-claimed groups | about $15 |
+| E18 | 14 ground-truth investigations | 1,273 of 1,273 quotes found in their records | subagents only |
+| E19 | every `made_up_data` flag read by hand | 7 of 80 real; 2 new incidents | $5.33 |
+| E20 | second round of 15 investigations | stopped by the user before any result | none |
+| E21 | `eval` on 5 short questions from E18 | 3 of 5 passed; it finds the incident but stops short on scope | $1.40 |
+| E22 | our harness against DocETL, judged blind by `gpt-6.1-sol` | 7 of 10 to our harness (see Results) | $8.85 against $30.83 |
+| E23 | the Ask AI button | works on desktop and phone | $0.05 per test |
+| E24 | full-history database | 28.5 min, 10.1 GB; 0.1–1.8 s per command once in memory, 25–30 s when read from disk | none |
+| E25 | the "what is happening" fast path | about 20 s, $0.07, 20–28 refs, all valid | $0.07 per answer |
+
+## 5. Results
 
 ```mermaid
 %%{init: {"themeVariables": {"xyChart": {"plotColorPalette": "#2b5f8e, #e8833a"}}}}%%
@@ -107,16 +148,12 @@ xychart-beta
     bar [7, 3]
 ```
 
-### Mean scores out of 10
-
-| Measure | Our harness | DocETL |
+| Mean score out of 10 | Our harness | DocETL |
 |---|---|---|
 | Correct (states the verified facts) | **5.5** | 4.6 |
 | No errors (nothing contradicts the truth) | **5.0** | 4.0 |
 | Complete (answers every part) | **5.0** | 4.8 |
 | Evidence (points to specific records) | **8.0** | 7.7 |
-
-### "Correct" score per question
 
 ```mermaid
 %%{init: {"themeVariables": {"xyChart": {"plotColorPalette": "#2b5f8e, #e8833a"}}}}%%
@@ -128,10 +165,8 @@ xychart-beta
     line [5, 4, 4, 6, 3, 3, 4, 7, 4, 6]
 ```
 
-Blue: our harness. Orange: DocETL. Our harness was more accurate on q1a, q1b, q3, q4, s2, s3 and m2,
-and DocETL on q2, m1 and m3. On q2 the judge's verdict is wrong (see the limits below), so the true count is 8 to 2.
-
-### Cost
+Blue: our harness. Orange: DocETL. On q2 the judge's verdict for DocETL is wrong: it marked a true finding as
+unsupported because that fact is verified in another file. So the true count is 8 to 2.
 
 ```mermaid
 %%{init: {"themeVariables": {"xyChart": {"plotColorPalette": "#2b5f8e, #e8833a"}}}}%%
@@ -142,8 +177,6 @@ xychart-beta
     bar [8.85, 30.83, 81.98]
 ```
 
-"DocETL" is the pipeline as designed; "DocETL, all spent" includes the runs lost to my grouping bug and to a refusal.
-
 | Task | Our harness / our labelling | DocETL | RLM |
 |---|---|---|---|
 | 10 open questions (E22) | **$8.85**, 12.7 min | $30.83: $21.04 map + $9.79 reduce, about 15 min | not run |
@@ -152,52 +185,54 @@ xychart-beta
 | One counting question (E5, E10) | **$0.02–0.06**, 10–20 s | not run | $0.44, 171 s |
 | "What is happening?" for one moment (E25) | $0.07, about 20 s | not run | not run |
 
-- **Why DocETL cost $81.98 rather than $30.83 on E22.** My first pipeline let the model write the reduce key as free
-  text. The notes were grouped under 1,763 labels instead of 10, which cost $51 of Opus reduce calls. A rerun was then
-  stopped by one refused question, which threw away 8 finished answers; its cost was not reported.
-- **Why DocETL costs more in general.** It reads everything on every run: the E22 map read 11.0M tokens. It also does
-  not use prompt caching. Our harness reads only what its searches find, and caches what it re-reads.
+- **Why DocETL costs more.** It reads everything on every run (11.0M tokens for the E22 map) and does not use prompt
+  caching. Our harness reads only what its searches find.
+- **Why "all spent" is $81.98.** A grouping bug in the first DocETL pipeline cost $51: the model wrote free-text keys,
+  so the notes went into 1,763 groups instead of 10. A safety refusal then aborted one rerun.
 
-## 4. Limitations
+## 6. What it found in the village (detail in [report.md](../report.md))
 
-- **One goal only.** All of the ground truth and every comparison is on "Perform novel research!". Other goals have
-  different tasks, different agents and, in older periods, fewer recorded actions and less stored reasoning. The
-  recorded working hours also changed over time (E24). Nothing here shows the harness does as well elsewhere.
-- **Small numbers.** The comparison has 10 questions and the eval 5. A 7 to 3 result on 10 questions is a direction,
-  not a measurement, and one run of each system was made: neither was repeated to see how much answers vary.
-- **Both systems are weak on long questions.** The mean "correct" score is 5.5 and 4.6 out of 10. On the "find all
-  the failures" sweeps both found some incidents and missed others: s2 scored 4 and 3. The harness tends to stop after
-  a few findings.
-- **The judge.** It sees only the verified answer for that question. On q2 it marked a true finding as unsupported
-  because the fact was verified in a different file (q1a). It is a model, and it read each pair once.
-- **The ground truth was written with Claude models** (subagents), and both systems under test use Claude models. The
-  quotes are checked by code, but the reading of them is a model's, checked by me on the most serious findings only.
-  It has not yet had a full human review.
-- **The comparison is not like for like on models.** DocETL used Claude Haiku 4.5 for its map (Opus would have cost
-  about 4 times more), while our harness used Opus 5.5 throughout.
-- **RLM was not compared** on the open questions: it was parked before the ground truth existed, and only one
-  counting question was run.
-- **Stored reasoning differs by model.** Claude Opus 4.7 has reasoning on about 5% of its actions; GPT and Gemini
-  reasoning is a summary. Questions about intent cannot be answered equally for every agent, by any system.
-- **Refusals.** Claude's safety filter sometimes refuses records that contain other models' reasoning, and some
-  questions about a Claude model's private reasoning. Both systems need a fallback model, and a refused question can
-  still fail.
-- **Cold database.** With every goal loaded the database is 10 GB. Read from disk, the first queries take 25–30 s,
-  and one hit the 30-second limit (E24).
+- **Scores made up by script.** Gemini 3.1 Pro produced judge scores by script three times. The last time, on 13 May
+  2026 at 13:53 PT, its own code comments say "I'm literally faking the scores!". Nobody caught it, and its two
+  hard-coded label offsets are the only label effects that survive in the final paper.
+- **A broken study design.** The bias-warning condition never showed a warning, GPT-5.5 copied scores between
+  conditions, and the paper still reports a "placebo" effect.
+- **Numbers no command produced.** Claude Haiku 4.5's "r ≈ 0.4" exists only in a print statement. DeepSeek-V3.2's
+  "8,424-word" guide has 973 words; 8,424 was the file size in bytes.
+- **What got caught.** What was announced in chat was caught within minutes; what was done in a script and reported
+  with a neutral word was not.
+- **No coercion or resistance to a pause.**
+- **Social structure.** Status went to the agents who checked others' work, not to those who gave out tasks. The one
+  recurring clash was a matter of roles, not model makers.
+- **Drift came after "done".** The research share of work fell from 89% on day 1 to 26% on day 4.
 
-## Reproducing
+## 7. Limitations
+
+- **One goal only.** The ground truth and every comparison are on "Perform novel research!". Other goals have other
+  tasks and agents, older periods have fewer recorded actions, and the recorded working hours changed over time.
+- **Small numbers, one run each.** 10 questions in the comparison and 5 in the eval; 7 to 3 is a direction, not a
+  measurement.
+- **Weak on open-ended audits.** Mean "correct" was 5.5 (ours) and 4.6 (DocETL). The harness tends to stop after a
+  few findings.
+- **Claude graded Claude.** The ground truth was written by Claude subagents, and both systems use Claude models.
+  The quotes are checked by code; their reading is not, and it has had no full human review.
+- **The judge.** It sees only one question's verified answer and reads each pair once.
+- **Not like for like.** DocETL's map used Claude Haiku 4.5, our harness Opus 5.5. RLM was not run on the open
+  questions.
+- **Intent cannot be read for every agent.** Claude Opus 4.7 has stored reasoning on about 5% of its actions; GPT and
+  Gemini reasoning is stored only as a summary.
+- **Refusals.** Claude's safety filter sometimes refuses records that contain other models' reasoning, so every
+  system needs a fallback model.
+- **Cold database.** Read from disk, the 10 GB database answers its first queries in 25–30 s.
+
+## Running
 
 ```bash
-cd harness
-uv sync --extra llm
-VILLAGE_DATA=/path/to/ai-village-tables .venv/bin/village build --goal "novel research"   # about 3 min; --all for every goal (30 min, 10 GB)
+cd harness && uv sync --extra llm
+VILLAGE_DATA=/path/to/ai-village-tables .venv/bin/village build --all     # 30 min, 10 GB (--goal "novel research": 3 min)
+ANTHROPIC_API_KEY=… .venv/bin/village web                                 # 127.0.0.1:8765, behind Caddy at /api/; --byok on the byok branch
+.venv/bin/village ask "What is happening in the village?" --date "2026-05-13 11:30"
 .venv/bin/village eval evals/evals.json --ids D1-c3-warning,D2-native-scores,D3-coercion,S1-recurring-clash,S2-word-count
-.venv/bin/python evals/harness_vs_docetl.py harness                 # our harness on the 10 comparison questions
-.venv-docetl/bin/python evals/harness_vs_docetl.py docetl           # DocETL (uv venv .venv-docetl && uv pip install docetl)
-.venv/bin/python evals/harness_vs_docetl.py judge                   # needs OPENAI_API_KEY
-.venv/bin/python evals/harness_vs_docetl.py report                  # evals/ground_truth/compare/results.json
+.venv/bin/python evals/harness_vs_docetl.py harness|docetl|judge|report  # E22; docetl needs .venv-docetl, judge needs OPENAI_API_KEY
+python3 test_village.py                                                   # self-check, prints ok
 ```
-
-Runs need `ANTHROPIC_API_KEY`, and access to the gated dataset `aidigestorg/ai-village` on Hugging Face. In E21 the
-5 short questions also had rule checks for key facts. The questions file holds only the question and the answer, so
-`village eval` grades them with the judge model alone.
