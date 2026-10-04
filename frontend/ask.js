@@ -1,7 +1,8 @@
 // 🔎 Ask AI: a question about one village goal, answered by the research harness (`village ask` in the AI-Village-CLI repo).
 // The page calls the CLI's web server (`village web`, which Caddy proxies at /api/) and shows the answer with its record refs.
-// ?askapi=http://host:port points it elsewhere. An answer takes 20 s to a few minutes: the agent runs 5-40 CLI commands.
-import { $, el, rich, SEGS, DAY, state } from './core.js';
+// ?askapi=http://host:port points it elsewhere. An answer takes 20 s to a few minutes: the agent runs 5-40 CLI commands;
+// "what is happening?" is quicker (about 20 s): one model call over that day's records up to the replay time.
+import { $, el, rich, SEGS, DAY, state, hm } from './core.js';
 
 const API = new URLSearchParams(location.search).get('askapi') || '';
 const dlg = $('#ask'), goal = $('#askGoal'), q = $('#askQ'), out = $('#askOut'), go = $('#askGo');
@@ -21,7 +22,8 @@ $('#askForm').onsubmit = async e => {
   if (!question) return;
   go.disabled = true;
   out.replaceChildren(el('p', { className: 'note', textContent: '⏳ The harness is reading the village records. This can take a few minutes…' }));
-  const cmd = `ask ${JSON.stringify(question)} --goal ${JSON.stringify(g)}`;
+  // the day and replay time being watched: "what is happening?" is answered for that moment (a fast path in `village ask`)
+  const cmd = `ask ${JSON.stringify(question)} --goal ${JSON.stringify(g)} --date ${JSON.stringify(`${state.date} ${hm(state.v)}`)}`;
   try {
     const r = await (await fetch(`${API}/api/run?cmd=${encodeURIComponent(cmd)}`)).json();
     if (r.error) throw new Error(r.error);
