@@ -244,9 +244,11 @@ details summary { cursor: pointer; font: 400 15px 'Lilita One', sans-serif; colo
 /* a goal's story: the goal and its checkpoints; the goal under the header and atop the Day recap open it too */
 #story header h2 { font-size: 21px; }
 #storyText { overflow-y: auto; padding: 12px 16px 8px; }
-#askForm { display: grid; gap: 8px; padding: 12px 16px 0; }
+#ask { position: fixed; inset: auto; margin: 0; z-index: 4; width: min(860px, calc(100vw - 24px)); max-height: min(62vh, 640px); }
+#ask header { cursor: move; touch-action: none; user-select: none; }
+#askForm { display: grid; grid-template-columns: minmax(150px, 240px) minmax(0, 1fr) auto; align-items: start; gap: 8px; padding: 10px 16px 0; }
 #askForm :is(select, textarea) { font: inherit; width: 100%; box-sizing: border-box; }
-#askForm .btn { justify-self: end; }
+#askForm .btn { align-self: stretch; }
 #askOut { overflow-y: auto; padding: 8px 16px 12px; white-space: pre-wrap; overflow-wrap: anywhere; }
 #askOut .note { color: var(--wood-2); font-size: 13px; }
 #storyText h3 { margin: 6px 0 9px; padding-top: 12px; border-top: 2px dashed var(--line); font: 400 17px 'Lilita One', sans-serif; color: var(--wood-2); }
@@ -335,7 +337,8 @@ details summary { cursor: pointer; font: 400 15px 'Lilita One', sans-serif; colo
   :is(#goalBtn, #askBtn) { padding: 5px 8px; font-size: 15px; } :is(#goalBtn, #askBtn) span { display: none; } /* phones: just 🎯 */
   #dayNo { display: none; } /* date and clock only, so the header, 🎯 and ⓘ share the top row */
   #countersBtn { position: fixed; top: 64px; right: 12px; } /* phones: the 📊 heads the column down the right edge */
-  #askBtn { position: fixed; top: 64px; right: 60px; } /* phones: 🔎 beside 📊, so the top row keeps ⓘ */
+  #askBtn { position: fixed; top: 64px; right: 60px; }
+  #askForm { grid-template-columns: minmax(0, 1fr); } #askForm .btn { justify-self: end; } /* phones: 🔎 beside 📊, so the top row keeps ⓘ */
   #counters { position: fixed; top: 112px; right: 12px; flex-direction: column; margin: 0; }
   #clockRow { gap: 3px; }
   #roster, #feed { top: 96px; bottom: auto; width: auto; max-height: 56vh; }
