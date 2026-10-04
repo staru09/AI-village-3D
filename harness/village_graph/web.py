@@ -8,7 +8,7 @@ from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 from urllib.parse import parse_qs, unquote, urlparse
 
-from . import cli, db, evidence
+from . import cli, db, evidence, llm
 from .core import connect, lookup
 
 PAGE = Path(__file__).with_name('web.html')
@@ -74,6 +74,7 @@ def meta():
 
 class Handler(BaseHTTPRequestHandler):
     llm = True
+    byok = False  # model calls only with the visitor's own key (Authorization: Bearer …), never the server's
 
     def send(self, body, kind='application/json', status=200):
         data = body if isinstance(body, bytes) else json.dumps(body, ensure_ascii=False, default=str).encode()
@@ -100,7 +101,13 @@ class Handler(BaseHTTPRequestHandler):
             if u.path == '/api/run':
                 cmd = q.get('cmd', '').strip().removeprefix('village ').strip()
                 t = time.time()
-                blocks, err = cli.run_cmd(cmd, deny=NEVER + (() if self.llm else cli.SPENDS)) if cmd else (None, 'Type a command, for example: goals')
+                key = self.headers.get('Authorization', '').removeprefix('Bearer ').strip() or None  # never logged or stored
+                deny = NEVER + (() if self.llm else cli.SPENDS) + (('label', 'check', 'verdict') if self.byok else ())  # batch jobs: terminal only
+                llm.KEY.value = key
+                try:
+                    blocks, err = cli.run_cmd(cmd, deny=deny) if cmd else (None, 'Type a command, for example: goals')
+                finally:
+                    llm.KEY.value = None
                 return self.send(remember(cmd, blocks, time.time() - t, 'web', err))
             if u.path.startswith('/shot/'):
                 con = connect()
@@ -120,12 +127,14 @@ class Handler(BaseHTTPRequestHandler):
         pass
 
 
-def serve(host, port, llm=False):
-    Handler.llm = llm or host in ('127.0.0.1', 'localhost', '::1')
+def serve(host, port, llm_ok=False, byok=False):
+    Handler.llm = llm_ok or host in ('127.0.0.1', 'localhost', '::1')
+    Handler.byok = llm.BYOK = byok
     server = ThreadingHTTPServer((host, port), Handler)
     print(f'village web: http://{host}:{port}  (Ctrl-C to stop)\n'
           f'  On a remote machine, tunnel it: ssh -L {port}:127.0.0.1:{port} <host>   There is no login: do not expose it.\n'
-          f'  Commands that call a model (ask, label, look, check) are {"allowed" if Handler.llm else "off (start with --llm to allow them)"}.')
+          f'  Commands that call a model (ask, label, look, check) are {"allowed" if Handler.llm else "off (start with --llm to allow them)"}.'
+          + ("\n  --byok: only with each visitor's own Anthropic key; the server's key is never used." if byok else ''))
     try:
         server.serve_forever()
     except KeyboardInterrupt:

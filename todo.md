@@ -201,6 +201,10 @@ whole goals.
         127.0.0.1:8765 (old config in `Caddyfile.bak-20261004`). Open: `village web` runs under nohup, not a service,
         so it stops on a reboot. The daily data job (crontab, 04:30) is commented out since 2026-10-04: it
         published from the old checkout. New exports are not picked up until it is pointed at this branch.
+      - **Bring your own key (branch `byok`, not deployed):** a key field in the Ask AI panel; `village web --byok` runs
+        each question on the visitor's key and never on the server's. Tested on local ports: no key, a wrong key and a
+        real key each give the right message, and the key never reaches the Caddy log. To deploy: merge, publish
+        `frontend/`, and run `harness/` with `village web --byok` in place of the current server.
 
 ## 10. Better summaries of what happens in the village (plan)
 

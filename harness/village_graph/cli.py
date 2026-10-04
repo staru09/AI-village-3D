@@ -151,6 +151,7 @@ def parser():
     p.add_argument('--host', default='127.0.0.1')
     p.add_argument('--port', type=int, default=8765)
     p.add_argument('--llm', action='store_true', help='let the page run commands that call a model, even when --host is not local')
+    p.add_argument('--byok', action='store_true', help="model calls use each visitor's own Anthropic key (sent as Authorization: Bearer), never the server's")
     return ap
 
 
@@ -228,7 +229,7 @@ def main(argv=None):
         return db.build(a.days, a.goal, a.since, a.until, a.all)
     from . import web
     if a.cmd == 'web':
-        return web.serve(a.host, a.port, a.llm)
+        return web.serve(a.host, a.port, a.llm, a.byok)
     t = time.time()
     blocks = run(a)
     web.remember(shlex.join(sys.argv[1:] if argv is None else argv), blocks, time.time() - t, 'terminal')  # the page can follow the terminal
