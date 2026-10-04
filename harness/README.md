@@ -13,6 +13,7 @@ village?" for a given day and time skips the search: one call over that moment's
 | `village_graph/web.py`, `web.html` | `village web`: the HTTP endpoint Ask AI calls (`/api/run`), and a page to run commands by hand |
 | `rubrics/*.md` | what `village label` asks a model to judge per session or message (goal fit, made-up data, delegation, …) |
 | `evals/` | questions with verified answers, rubric test cases, recount scripts and the harness-vs-DocETL comparison; [evals/eval.md](evals/eval.md) explains each file and what to expect |
+| `writeup.md` | how the ground truth was made, our harness against DocETL and an RLM, charts, costs and limitations |
 | `test_village.py` | self-check on a small synthetic database: `python3 test_village.py` prints `ok` |
 
 ```bash
