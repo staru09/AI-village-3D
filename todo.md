@@ -199,7 +199,8 @@ whole goals.
       - **Live since 2026-10-04 (from `experiment-only`):** `/var/www/village-3d` published from this branch (old site
         kept in `/var/www/village-3d.bak-20261004`); `/etc/caddy/Caddyfile` proxies `/api/*` to `village web` on
         127.0.0.1:8765 (old config in `Caddyfile.bak-20261004`). Open: `village web` runs under nohup, not a service,
-        so it stops on a reboot; the daily data job (crontab) still publishes from `/data/agent-swarm/village-3d`.
+        so it stops on a reboot. The daily data job (crontab, 04:30) is commented out since 2026-10-04: it
+        published from the old checkout. New exports are not picked up until it is pointed at this branch.
 
 ## 10. Better summaries of what happens in the village (plan)
 
