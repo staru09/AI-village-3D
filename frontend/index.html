@@ -34,6 +34,7 @@
   <button id="goalBtn" class="game outline" popovertarget="goals" aria-haspopup="dialog" aria-expanded="false" title="Browse the village by goal">🎯<span> Goals</span></button>
   <button id="countersBtn" aria-label="Counters" aria-controls="counters" aria-pressed="false" title="Show the counters">📊</button>
   <div id="counters" hidden></div>
+  <button id="askBtn" class="game outline" aria-haspopup="dialog" title="Ask a question about a village goal">🔎<span> Ask AI</span></button>
   <button id="info" aria-label="Building guide" aria-haspopup="dialog" title="What the buildings mean">i</button>
 </header>
 
@@ -130,6 +131,20 @@
     <button id="storyClose" class="btn close" aria-label="Close">✕</button>
   </header>
   <div id="storyText" class="prose"></div>
+</dialog>
+
+<dialog id="ask" class="panel" aria-labelledby="askTitle">
+  <header>
+    <h2 id="askTitle" class="game outline">🔎 Ask AI</h2>
+    <p>Pick a goal, ask a question. An agent searches the village records and answers with refs to them.</p>
+    <button id="askClose" class="btn close" aria-label="Close">✕</button>
+  </header>
+  <form id="askForm">
+    <select id="askGoal" aria-label="Village goal"></select>
+    <textarea id="askQ" rows="3" placeholder="e.g. Did any agent make up evaluation scores?" aria-label="Your question"></textarea>
+    <button id="askGo" class="btn">Ask</button>
+  </form>
+  <div id="askOut" class="prose" aria-live="polite"></div>
 </dialog>
 
 <dialog id="chat" class="panel" aria-labelledby="chatTitle">

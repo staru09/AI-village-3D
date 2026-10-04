@@ -186,6 +186,16 @@ whole goals.
         memory horizon, human vs agent performance.
       - **Chat alone** (AI-Village-CLI covers these): pronouns, term spread (partly), the peer-relationship matrix,
         factions, who mentions or ignores whom.
+- [x] **9.16 🔎 Ask AI button (branch `experiment-only`).** In the header: pick a goal (preselected: the one being
+      watched), ask a question; `frontend/ask.js` sends `ask "…" --goal "…"` to the AI-Village-CLI's `village web`
+      (`/api/run`), which Caddy proxies at `/api/`, and shows the answer with its refs, cost and time. Checked in a
+      headless browser (desktop and phone; one real question: 15 agents, two rooms, 17 s, $0.05).
+      - **Not done (asked to leave for later):** login and rate limits. As it is, anyone who can open the site can
+        spend Anthropic credit.
+      - **To deploy:** run `village web` (port 8765) on the server next to Caddy, with its `village.db` built for the
+        goals people will ask about. Only goal 41 has actions loaded today; on other goals the answer rests on chat.
+      - **Known limit:** an answer can take minutes, and Cloudflare's tunnel cuts a request at about 100 s. Long
+        questions need a start-then-poll endpoint.
 
 ## 10. Better summaries of what happens in the village (plan)
 

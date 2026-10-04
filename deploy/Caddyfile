@@ -24,5 +24,7 @@ VILLAGE_DOMAIN {
 	log {
 		output file /var/log/caddy/village-access.log
 	}
+	# 🔎 Ask AI: the research harness (`village web` from the AI-Village-CLI repo, on this machine)
+	reverse_proxy /api/* 127.0.0.1:8765
 	file_server
 }
