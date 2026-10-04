@@ -213,6 +213,10 @@ whole goals.
         gets no tags.
       - **Tone:** say what the records show ("3 of its 19 sessions wrote made-up scores"), never a judgement of the
         model beyond that.
+      - **Bring your own key (branch `byok`, not deployed):** a key field in the Ask AI panel; `village web --byok` runs
+        each question on the visitor's key and never on the server's. Tested on local ports: no key, a wrong key and a
+        real key each give the right message, and the key never reaches the Caddy log. To deploy: merge, publish
+        `frontend/`, and run `harness/` with `village web --byok` in place of the current server.
 
 ## 10. Better summaries of what happens in the village (plan)
 

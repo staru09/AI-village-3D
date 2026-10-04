@@ -25,14 +25,21 @@ LABELS_SCHEMA = '''CREATE TABLE IF NOT EXISTS labels(rubric TEXT, ref TEXT, rev 
     PRIMARY KEY(rubric, ref))'''
 
 
+# Bring your own key: `village web --byok` sets BYOK, and each request's own key goes in KEY.value for the thread that
+# serves it. With BYOK on, a model call without a visitor's key fails instead of falling back to ANTHROPIC_API_KEY, so
+# the server's key is never spent on a visitor's question (worker threads, which have no KEY, fail the same way).
+BYOK, KEY = False, threading.local()
+
+
 def client():
     try:
         import anthropic
     except ImportError:
         sys.exit('this command calls Claude: install the SDK with `uv sync --extra llm` (or `pip install anthropic`).')
-    if not os.environ.get('ANTHROPIC_API_KEY'):
-        sys.exit('set ANTHROPIC_API_KEY to use this command.')
-    return anthropic.Anthropic(max_retries=6)
+    key = getattr(KEY, 'value', None) or (None if BYOK else os.environ.get('ANTHROPIC_API_KEY'))
+    if not key:
+        sys.exit('This needs your own Anthropic API key: paste it in the key field.' if BYOK else 'set ANTHROPIC_API_KEY to use this command.')
+    return anthropic.Anthropic(api_key=key, max_retries=6)
 
 
 class Spend:

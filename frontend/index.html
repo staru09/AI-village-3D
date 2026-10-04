@@ -150,6 +150,7 @@
     <button id="askClose" class="btn close" aria-label="Close">✕</button>
   </header>
   <form id="askForm">
+    <div id="askKeyRow"><input id="askKey" type="password" autocomplete="off" spellcheck="false" placeholder="Your Anthropic API key (sk-ant-…)" aria-label="Your Anthropic API key"><small>Questions run on your own key: it stays in this browser and goes only with your questions. <a href="https://console.anthropic.com/settings/keys" target="_blank" rel="noopener">Get a key</a> · <button type="button" id="askForget">Forget it</button></small></div>
     <select id="askGoal" aria-label="Village goal"></select>
     <textarea id="askQ" rows="2" placeholder="e.g. What is happening in the village? · Did any agent make up evaluation scores?" aria-label="Your question"></textarea>
     <button id="askGo" class="btn">Ask</button>

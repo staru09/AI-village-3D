@@ -5,6 +5,13 @@
 import { $, el, rich, SEGS, DAY, state, hm } from './core.js';
 
 const API = new URLSearchParams(location.search).get('askapi') || '';
+// The visitor's own Anthropic key: kept in this browser (localStorage) and sent only as a header with their own
+// questions (`village web --byok` refuses model calls without one, and never stores or logs it).
+const keyIn = $('#askKey');
+try { keyIn.value = localStorage['ui:askKey'] || ''; } catch { /* storage blocked: type it each visit */ }
+const saveKey = () => { try { if (keyIn.value.trim()) localStorage['ui:askKey'] = keyIn.value.trim(); else delete localStorage['ui:askKey']; } catch { /* blocked */ } };
+keyIn.addEventListener('change', saveKey);
+$('#askForget').onclick = () => { keyIn.value = ''; saveKey(); keyIn.focus(); };
 const dlg = $('#ask'), goal = $('#askGoal'), q = $('#askQ'), out = $('#askOut'), go = $('#askGo');
 goal.append(...SEGS.map((s, k) => el('option', { value: k, textContent: s.goal.replaceAll('**', '') })).reverse());
 
@@ -72,13 +79,17 @@ $('#askForm').onsubmit = async e => {
   // the day and replay time being watched: "what is happening?" is answered for that moment (a fast path in `village ask`)
   const cmd = `ask ${JSON.stringify(question)} --goal ${JSON.stringify(g)} --date ${JSON.stringify(`${state.date} ${hm(state.v)}`)}`;
   try {
-    const r = await (await fetch(`${API}/api/run?cmd=${encodeURIComponent(cmd)}`)).json();
+    saveKey();
+    const key = keyIn.value.trim();
+    const r = await (await fetch(`${API}/api/run?cmd=${encodeURIComponent(cmd)}`, key ? { headers: { Authorization: `Bearer ${key}` } } : {})).json();
     if (r.error) throw new Error(r.error);
     const [answer, , note] = r.blocks; // ['text', question, answer], ['table', commands], ['note', model, cost, citations]
     out.replaceChildren(...rich(answer.at(-1)), el('p', { className: 'note', textContent: `${note.at(-1)} · ${Math.round(r.secs)} s` }));
     grow();
   } catch (err) {
-    out.replaceChildren(el('p', { className: 'note', textContent: `❌ No answer: ${err.message}. Is \`village web\` running behind /api/?` }));
+    const needKey = /API key|authentication|x-api-key|401/i.test(err.message);
+    out.replaceChildren(el('p', { className: 'note', textContent: needKey ? `🔑 ${/own Anthropic API key/.test(err.message) ? err.message : 'That key did not work: check it, or create a new one.'}` : `❌ No answer: ${err.message}. Is \`village web\` running behind /api/?` }));
+    if (needKey) keyIn.focus();
   }
   go.disabled = false;
   grow();

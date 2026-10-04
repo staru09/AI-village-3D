@@ -168,4 +168,15 @@ for qn in json.loads((Path(__file__).parent / 'evals' / 'evals.json').read_text(
     assert {'id', 'category', 'question', 'answer'} <= qn.keys() <= {'id', 'category', 'goal', 'question', 'answer', 'check', 'judge'}, qn['id']
     assert qn['category'] in CATEGORIES and qn['answer'], qn['id']
 assert llm.NOW.search('What is happening in the village?') and not llm.NOW.search('Which agent ran the most commands?')
+# --byok: no visitor key -> refused even with a server key set; a visitor key -> used
+import os
+os.environ.setdefault('ANTHROPIC_API_KEY', 'server-key')
+llm.BYOK = True
+try:
+    llm.client(); raise AssertionError('used the server key in --byok mode')
+except SystemExit as e:
+    assert 'your own Anthropic API key' in str(e.code)
+llm.KEY.value = 'visitor-key'
+assert llm.client().api_key == 'visitor-key'
+llm.BYOK, llm.KEY.value = False, None
 print('ok')
