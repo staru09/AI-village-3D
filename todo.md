@@ -95,6 +95,13 @@ scoped to a goal first, and questions across goals combine several. The day-base
 session goals) is median 66k tokens, p90 137k, max 345k. The agents' own notes for a day (memories, reasoning, errors)
 add median 164k, max 524k.
 
+**Built 2026-10-04:** the engine is the `village` CLI, on branch `dev` of github.com/staru09/AI-Village-CLI (cloned at
+`/data/AI-Village-CLI`). It covers 9.10–9.13, the labelling passes of 9.15 (nine rubrics, tried on one agent-day), an
+agent (`village ask`) and an eval (`village eval`: 22 questions with ground truth on "Perform novel research!", 21
+pass with claude-opus-5-5, about $0.10 and 20 s per question). 9.14 is replaced by that eval. Still open here: the
+API, the Ask tab, abuse and cost controls, deployment (9.5–9.9), a full-history build, and running the rubrics over
+whole goals.
+
 - [ ] **9.1 Decide the scope and the budget.**
       - **Questions:** one goal at a time first (decided 2026-10-04), across goals later.
       - **Model and cost cap:** check current Claude models and prices before building.
@@ -126,19 +133,19 @@ add median 164k, max 524k.
       the accuracy and that every citation points at a real line. Run them again after each change.
 - [ ] **9.9 Deploy.** A systemd service and an environment file for the key, deployed with `deploy.sh`. The daily
       update rebuilds the digests.
-- [ ] **9.10 Split the dataset by goal.** Tag every row with the village goal running at its timestamp (`village_goals`
+- [x] **9.10 Split the dataset by goal.** Tag every row with the village goal running at its timestamp (`village_goals`
       start and end times, in UTC, not the day: 9 of the 50 goal changes fall inside village hours, e.g. "Write a story
       and celebrate it…" started 15 May 2025 at 11:00 PT, and the games week on 18 Aug 2025 at 09:08 PT).
       - Rows between two goals (weekends, holidays) go to a "between goals" bucket.
       - The last goal, "Each agent: Maximize your assigned goal!" (from 6 Jul 2026, 55 days, 32 agents, no end time
         yet), splits further by each agent's own goal (`agent_goals`).
       - The site's goal segments (8.1) are whole days; the engine uses the exact times.
-- [ ] **9.11 One SQLite database, built on AI-Village-CLI** (github.com/staru09/AI-Village-CLI). It already has: only
+- [x] **9.11 One SQLite database, built on AI-Village-CLI** (github.com/staru09/AI-Village-CLI). It already has: only
       the standard library, the full history in 25 s, careful name matching with tests (GPT-5 is not GPT-5.1), a `--goal`
       filter, and `examples` to list the messages behind any count. It reads chat only. Add sessions (`session_goal`),
       actions (`agent_action`, `output`, `error`, reasoning), memories, events and each turn's screenshot location.
       Drop its graph UI. Its `# graph covers` header ignores the filters (a small fix).
-- [ ] **9.12 Evidence tiers.** The dataset's README: "Treat an agent's narration as a claim, not ground truth — check
+- [x] **9.12 Evidence tiers.** The dataset's README: "Treat an agent's narration as a claim, not ground truth — check
       the screenshots."
 
       | Tier | Sources | In an answer |
@@ -146,7 +153,7 @@ add median 164k, max 524k.
       | Ground truth | screenshots (all 370 days are in the local HF cache, 160 GB), `agent_action`, `output`, `error`, `events`, goals, agent metadata, who sent which chat message when | what happened |
       | Claims | chat text, `session_goal`, reasoning (`agent_messages`), memories, Claude Code assistant text | quoted as "X said…" |
       | Secondary | `summaries` (written by an LLM that never saw inside computer sessions), `village-transcript.json` (a rendering of the tables) | where to look, never evidence |
-- [ ] **9.13 Computer-use data is the main evidence.** Measured on the AI Assistant goal (about 109k turns):
+- [x] **9.13 Computer-use data is the main evidence.** Measured on the AI Assistant goal (about 109k turns):
       - 37,404 bash commands: 70% have output, 9% an error. The system's own reply (e.g. a git commit line).
       - About 52,000 clicks, keys and typing with no text reply: the proof is the screenshot.
       - 3,195 `send_message_back_to_chat`: ties each chat message to the reasoning just before it (thought vs said).
