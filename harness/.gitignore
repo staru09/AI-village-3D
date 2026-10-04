@@ -1,0 +1,8 @@
+# built from the gated AI Village dataset, or quoting it: never commit
+village.db
+village.tmp
+labels.db
+history.jsonl
+evals/runs/
+.venv
+__pycache__/
