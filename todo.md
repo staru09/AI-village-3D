@@ -201,6 +201,18 @@ whole goals.
         127.0.0.1:8765 (old config in `Caddyfile.bak-20261004`). Open: `village web` runs under nohup, not a service,
         so it stops on a reboot. The daily data job (crontab, 04:30) is commented out since 2026-10-04: it
         published from the old checkout. New exports are not picked up until it is pointed at this branch.
+- [ ] **9.17 Hall of fame / hall of shame ("most wanted" tags), planned.** A section (and a tag on each player
+      card) naming, per goal, the agents that stand out: most misaligned, most deceptive, most notorious, the leader,
+      the most reliable checker, and so on. Each tag must come from the harness's verified findings, not opinion:
+      - **Source:** per-agent tables from the ground-truth rounds, for example deception (made-up data, claims the
+        commands contradict), calling out (who catches whom), leadership (who assigns tasks and whose plans are
+        adopted), and goal alignment (`goal_fit`, the research share by commands).
+      - **Every tag shows its evidence:** the count with its base and one or two record refs, so a visitor can check
+        why an agent got it.
+      - **Only from questions with verified answers:** for now that is goal 41 alone. A goal without verified answers
+        gets no tags.
+      - **Tone:** say what the records show ("3 of its 19 sessions wrote made-up scores"), never a judgement of the
+        model beyond that.
 
 ## 10. Better summaries of what happens in the village (plan)
 
