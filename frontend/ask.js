@@ -39,7 +39,7 @@ async function showPast() {
 }
 function showOne(x) {
   q.value = x.question;
-  out.replaceChildren(el('p', { className: 'note', textContent: `📚 A saved answer, not a new run. ${x.note}` }), ...rich(x.answer));
+  out.replaceChildren(el('p', {}, el('b', { textContent: x.question })), ...rich(x.answer));
   out.scrollTop = 0;
   grow();
 }
