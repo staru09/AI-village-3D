@@ -33,8 +33,8 @@ async function showPast() {
   out.replaceChildren(el('p', { className: 'note', textContent: past.length
       ? `How the harness answers: ${past.length} questions it was tested on, each with a verified answer to check it against. Click one to read its answer.`
       : 'No earlier answers available.' }),
-    el('ol', { className: 'past' }, ...past.map(x => el('li', {}, el('button', { type: 'button', onclick: () => showOne(x) },
-      el('small', { textContent: `${x.category} · ${x.goal}` }), x.question.length > 170 ? `${x.question.slice(0, 170).replace(/\s\S*$/, '')}…` : x.question)))));
+    el('ol', { className: 'past' }, ...past.map((x, i) => el('li', {}, el('button', { type: 'button', onclick: () => showOne(x) },
+      el('small', { textContent: `Question ${i + 1}` }), x.question.length > 170 ? `${x.question.slice(0, 170).replace(/\s\S*$/, '')}…` : x.question)))));
   grow();
 }
 function showOne(x) {
