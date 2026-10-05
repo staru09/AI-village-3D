@@ -260,7 +260,7 @@ details summary { cursor: pointer; font: 400 15px 'Lilita One', sans-serif; colo
 #askKeyRow { grid-column: 1 / -1; display: flex; flex-wrap: wrap; align-items: center; gap: 4px 10px; }
 #askKey { flex: 1 1 260px; font: inherit; font-size: 13px; padding: 4px 8px; }
 #askKeyRow small { flex: 1 1 320px; color: var(--ink-2); font-size: 12px; }
-#askKeyRow button { border: 0; background: none; padding: 0; color: var(--wood-2); text-decoration: underline; font: inherit; cursor: pointer; }
+#askKeyRow :is(a, button) { border: 0; background: none; padding: 0; color: LinkText; text-decoration: underline; font: inherit; cursor: pointer; }
 #askOut { overflow-y: auto; padding: 8px 16px 12px; white-space: pre-wrap; overflow-wrap: anywhere; }
 #askOut .note { color: var(--wood-2); font-size: 13px; }
 #ask .pastbtn { align-self: flex-start; margin: 6px 16px 0; border: 0; background: none; padding: 2px 0; color: var(--wood-2); font: inherit; font-size: 13px; text-decoration: underline; cursor: pointer; }
