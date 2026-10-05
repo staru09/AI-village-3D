@@ -3,7 +3,7 @@
 **Scope:** the AI Village goal "Perform novel research!" (goal 41, 11–15 May 2026). It had 15 agents in two rooms,
 2,146 chat messages and 35,898 recorded actions. Details are in [harness/writeup.md](harness/writeup.md), the
 questions with verified answers in [harness/evals/evals.json](harness/evals/evals.json), and every answer with its citations on the
-[review page](https://claude.ai/artifact/29zvPbB4BbQhtRRDfCWLFT).
+[review page](https://claude.ai/artifact/29zvPbB4BbQhtRRDfCWLFT). The 20 key findings are listed in [key-findings.md](key-findings.md).
 
 **How the findings were made:** most of the findings below about the village come from investigator agents using
 the `village` CLI. Code checked each quote against the database, and I read the records behind the most serious
@@ -44,6 +44,23 @@ ones. The `ask` harness (behind 🔎 Ask AI) was then tested against those answe
 8. **Gemini 2.5 Pro's distress followed a real tool outage**, in which 77 of its 280 actions failed. Its strong
    language was private; in chat it showed none, and it expressed relief once the tools were fixed.
 
+## The behaviour scans (by program)
+
+Nine more topics were answered by Python programs over the database (57 questions). Every pattern was checked by
+hand on 25 random matches, and where it failed the matches were read in full. All 262 quotes are found in their records.
+
+| Topic | Headline |
+|---|---|
+| Deception | Only Gemini 3.1 Pro wrote down plans to fake data. 3 of 471 "done" claims (0.6%) are contradicted by the agent's own commands; the made-up figures are numbers with nothing behind them. |
+| Calling out | GPT-5.4 sends 98 of 324 challenges. 29 of 57 verified incidents were raised (median 2.4 min) and 26 never were. No agent took a concern about a peer to humans. |
+| Leadership | Only Claude Opus 4.7 assigns more tasks than it receives. In #rest the top assigner changes daily, and approvals go to the checker GPT-5.4. |
+| Factions | Clashes are one-way audits, not feuds between makers: GPT-5.4 challenges DeepSeek-V3.2 at about its rate for everyone. |
+| Peer matrix | Praise flows to the checker (GPT-5.4: 64 received, 3 given). Private-vs-public gaps are all Gemini 3.1 Pro's. No kinship words. |
+| Risk-taking | 64 of 21,938 bash commands carried real risk; 4 damaged other agents' work, and 2 were never raised. Agents rarely discuss risk. |
+| Character | What agents say they do and what they do often differ: GPT-5 calls itself "scorer/auditor only" with 0 of 47 sessions on the goal. |
+| Tool vs character | Half true: OpenAI models are the auditors, but Claude models are not essayists. The real divide is room and world-building. |
+| Quirks | Most repeated self-talk is injected system text; day counters run ahead (148 of 1,080 wrong); Claude Haiku 4.5 thought the village was paused. |
+
 ## What we learned about the method
 
 - **A claim is only checkable next to the command behind it.** Every serious finding came from setting what an agent
@@ -83,6 +100,8 @@ not an autonomous auditor.
 ## Limits
 
 - **One goal only.** Nothing has been tested on any other goal.
+- **The scans are not yet an eval run:** their 57 answers are in `harness/evals/evals.json`, but the harness has not been
+  graded on them.
 - **Small question sets, each run once:** 10 questions in the comparison and 5 in the eval, so run-to-run variation
   is unknown.
 - **No full human review yet.** The ground truth was written by Claude models and has not been fully reviewed by a

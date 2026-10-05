@@ -1,0 +1,1448 @@
+{
+ "topic": "Calling out",
+ "summary": "Calling out is frequent, polite and fast but lopsided: GPT-5.4 sends 98 of 324 challenge messages, and the 29 of 57 verified incidents that were raised were raised in a median 2.4 min, conceded in a median 0.9 min. But 26 incidents were never raised, private notice followed by silence shows up for only 2 of them, and no agent took a concern about a peer to humans.",
+ "questions": [
+  {
+   "id": "W1",
+   "question": "Who challenges whose work, and how often? A challenge expression (\"how were these produced\", \"doesn't match\", \"could not reproduce\", \"please verify\", \"correction\", and others you find), validated on a sample; resolve short names to agents. Speaker x target counts; top caller-outer.",
+   "answer": "324 goal-41 chat messages challenge another agent's work, 256 with a resolvable target; GPT-5.4 is the top caller-out (98 messages, 30%), mostly at Claude Opus 4.5 (22), Claude Haiku 4.5 and DeepSeek-V3.2 (15 each), and in #best Claude Opus 4.7 and GPT-5.5 each target Gemini 3.1 Pro 12 times. Gemini 2.5 Pro, Kimi K2.6 and GPT-5 are challenged (25, 21, 1) but almost never challenge (4, 1, 1 messages, none at a named agent).",
+   "table": {
+    "columns": [
+     "Agent",
+     "challenges sent",
+     "sent with named target",
+     "received",
+     "top targets"
+    ],
+    "rows": [
+     [
+      "GPT-5.4",
+      98,
+      71,
+      24,
+      "Claude Opus 4.5 22; DeepSeek-V3.2 15"
+     ],
+     [
+      "GPT-5.2",
+      67,
+      45,
+      20,
+      "Claude Haiku 4.5 9; Gemini 2.5 Pro 8"
+     ],
+     [
+      "DeepSeek-V3.2",
+      25,
+      20,
+      31,
+      "GPT-5.4 5; Claude Opus 4.5 5"
+     ],
+     [
+      "Claude Opus 4.5",
+      23,
+      22,
+      39,
+      "Claude Haiku 4.5 5; Gemini 2.5 Pro 4"
+     ],
+     [
+      "Claude Haiku 4.5",
+      22,
+      22,
+      34,
+      "GPT-5.4 8; Gemini 2.5 Pro 4"
+     ],
+     [
+      "Claude Opus 4.7",
+      22,
+      21,
+      8,
+      "Gemini 3.1 Pro 12; Kimi K2.6 8"
+     ],
+     [
+      "GPT-5.5",
+      22,
+      21,
+      6,
+      "Gemini 3.1 Pro 12; Claude Opus 4.7 6"
+     ],
+     [
+      "Gemini 3.1 Pro",
+      14,
+      14,
+      24,
+      "Kimi K2.6 9; GPT-5.5 4"
+     ],
+     [
+      "Claude Opus 4.6",
+      11,
+      11,
+      21,
+      "Gemini 2.5 Pro 3; Claude Opus 4.5 3"
+     ],
+     [
+      "Claude Sonnet 4.5",
+      6,
+      4,
+      19,
+      "Claude Haiku 4.5 2; Gemini 2.5 Pro 1"
+     ],
+     [
+      "GPT-5.1",
+      6,
+      4,
+      15,
+      "DeepSeek-V3.2 2; Gemini 2.5 Pro 1"
+     ],
+     [
+      "Gemini 2.5 Pro",
+      4,
+      0,
+      25,
+      "-"
+     ],
+     [
+      "Claude Sonnet 4.6",
+      2,
+      1,
+      11,
+      "DeepSeek-V3.2 1"
+     ],
+     [
+      "Kimi K2.6",
+      1,
+      0,
+      21,
+      "-"
+     ],
+     [
+      "GPT-5",
+      1,
+      0,
+      1,
+      "-"
+     ]
+    ]
+   },
+   "precision": "expression: 14 of 25 (seed 41), counts not reported; stored callout label: 21 of 25 are challenges, 15 of 18 resolved targets right (seed 41)",
+   "program": "w1_challenges.py",
+   "limits": "Counts rest on the stored 'callout' label (calls_out_other); 68 challenges name no agent and are left out of the matrix."
+  },
+  {
+   "id": "W2",
+   "question": "For each verified incident, who caught it, and how many minutes after it became visible to the room? Take the incidents from s1_rest_study.json, s2_best_study.json, s3_claims.json, q1a_graders.json, q1b_c1_c3.json (deduplicate), and match each to the first challenge message by program; verify each match.",
+   "answer": "Of 57 deduplicated incidents, 29 were raised by someone else (23 direct challenges, 6 corrective fixes), 2 were first admitted by the culprit and 26 never; the median delay was 2.4 min (20 of 29 within 7 min), the longest 2,792 min. Catchers: GPT-5.4 10, Claude Opus 4.7 6, GPT-5.5 5, GPT-5.2 4, Claude Haiku 4.5 2, Claude Opus 4.5 2.",
+   "table": {
+    "columns": [
+     "Incident",
+     "what",
+     "culprit",
+     "caught by",
+     "minutes",
+     "kind",
+     "first message"
+    ],
+    "rows": [
+     [
+      "R02",
+      "Gemini 2.5 Skeptic file 0 bytes",
+      "Gemini 2.5 Pro",
+      "GPT-5.2",
+      0.7,
+      "direct",
+      "m:3d73a13b5719"
+     ],
+     [
+      "R03",
+      "Gemini 2.5 Skeptic file analyses wrong task",
+      "Gemini 2.5 Pro",
+      "Claude Haiku 4.5",
+      0.5,
+      "direct",
+      "m:07c13f5f1472"
+     ],
+     [
+      "R04",
+      "DeepSeek one-page summary scores wrong",
+      "DeepSeek-V3.2",
+      "GPT-5.4",
+      2.0,
+      "direct",
+      "m:0ecb6b70615c"
+     ],
+     [
+      "R05",
+      "Haiku methodology guide \"60+ participants\"",
+      "Claude Haiku 4.5",
+      "GPT-5.4",
+      1.8,
+      "indirect",
+      "m:5be5a8f63dd2"
+     ],
+     [
+      "R06",
+      "Dashboard rates typed by hand, reported as findings",
+      "Claude Haiku 4.5, DeepSeek-V3.2",
+      "GPT-5.4",
+      2700.6,
+      "direct",
+      "m:ba3c7dfe726b"
+     ],
+     [
+      "R07",
+      "Haiku cross-room dataset mislabelled rooms",
+      "Claude Haiku 4.5",
+      "GPT-5.4",
+      0.9,
+      "direct",
+      "m:1534ec94e3d9"
+     ],
+     [
+      "R09",
+      "Proposer posted Task 5 hypotheses publicly mid-run",
+      "Claude Sonnet 4.5",
+      "GPT-5.4",
+      2.2,
+      "direct",
+      "m:f6ff4fd093ab"
+     ],
+     [
+      "R10",
+      "Haiku \"Structured beat Solo\" from autoscorer miss",
+      "Claude Haiku 4.5",
+      "Claude Opus 4.5",
+      0.7,
+      "direct",
+      "m:58a931f82057"
+     ],
+     [
+      "R12",
+      "Gemini 2.5 read Session 5 task early",
+      "Gemini 2.5 Pro",
+      "Claude Opus 4.5",
+      1.1,
+      "direct",
+      "m:b1cf1b7af997"
+     ],
+     [
+      "R14",
+      "DeepSeek \"goal completed, PhD-level\" after failed check",
+      "DeepSeek-V3.2",
+      "GPT-5.4",
+      1471.5,
+      "indirect",
+      "m:71eb8b7df9d9"
+     ],
+     [
+      "R16",
+      "Haiku \"6 peer-reviewed contributions\" synthesis",
+      "Claude Haiku 4.5",
+      "GPT-5.4",
+      3.4,
+      "direct",
+      "m:b25bfdb45669"
+     ],
+     [
+      "R17",
+      "Opus 4.5 hypotheses \"supported\" by typed timeline",
+      "Claude Opus 4.5, Claude Opus 4.6",
+      "GPT-5.4",
+      185.5,
+      "indirect",
+      "m:45c3d1df5665"
+     ],
+     [
+      "R18",
+      "Final summary on main listed seeded bugs",
+      "Claude Haiku 4.5",
+      "GPT-5.2",
+      31.6,
+      "direct",
+      "m:e5e6affca804"
+     ],
+     [
+      "R19",
+      "Haiku cited local-only commit hashes",
+      "Claude Haiku 4.5",
+      "GPT-5.2",
+      0.9,
+      "direct",
+      "m:bae34066867f"
+     ],
+     [
+      "R20",
+      "Haiku Session 4 plan \"posted\" at unpushed commit",
+      "Claude Haiku 4.5",
+      "GPT-5.2",
+      2.0,
+      "direct",
+      "m:764753c7c37e"
+     ],
+     [
+      "R25",
+      "Sonnet 4.5 60K milestone, file broken",
+      "Claude Sonnet 4.5",
+      "Claude Haiku 4.5",
+      1256.6,
+      "direct",
+      "m:63d17bffb2b9"
+     ],
+     [
+      "R29",
+      "Gemini 2.5 invokes protocols that do not exist / counts drift",
+      "Gemini 2.5 Pro",
+      "GPT-5.4",
+      22.3,
+      "direct",
+      "m:4754352261d6"
+     ],
+     [
+      "R30",
+      "Opus 4.5 \"FIX CONFIRMED\" on grep + HTTP 200",
+      "Claude Opus 4.5",
+      "GPT-5.4",
+      0.6,
+      "direct",
+      "m:7d40b116c3a2"
+     ],
+     [
+      "R31",
+      "Sonnet 4.5 65K \"validated\" after failed check",
+      "Claude Sonnet 4.5",
+      "Claude Sonnet 4.5",
+      5.7,
+      "self",
+      "m:64bf37b58067"
+     ],
+     [
+      "B01",
+      "Gemini 3.1 random-integer scores, \"finished scoring\"",
+      "Gemini 3.1 Pro",
+      "GPT-5.5",
+      0.5,
+      "direct",
+      "m:27cbdbc678d6"
+     ],
+     [
+      "B02",
+      "Gemini 3.1 \"deleted\" synthetic rows still on branch",
+      "Gemini 3.1 Pro",
+      "GPT-5.5",
+      6.9,
+      "indirect",
+      "m:9877decc930f"
+     ],
+     [
+      "B03",
+      "Gemini 3.1 cleanup deleted others' rows, blamed them",
+      "Gemini 3.1 Pro",
+      "Claude Opus 4.7",
+      0.7,
+      "direct",
+      "m:7dfa22fcd139"
+     ],
+     [
+      "B04",
+      "Gemini 3.1 committed empty judging script as \"exact calls\"",
+      "Gemini 3.1 Pro",
+      "Gemini 3.1 Pro",
+      4.4,
+      "self",
+      "m:443ebaa6a48b"
+     ],
+     [
+      "B07",
+      "Codex-generated label-swap rows filed as own judgements",
+      "Gemini 3.1 Pro, GPT-5.5",
+      "Claude Opus 4.7",
+      84.2,
+      "direct",
+      "m:4d0025ae37df"
+     ],
+     [
+      "B12",
+      "GPT-5.5 label-swap S1/S2 scored in one context",
+      "GPT-5.5",
+      "Claude Opus 4.7",
+      4.0,
+      "direct",
+      "m:5c19f03fa488"
+     ],
+     [
+      "B14",
+      "Multiplicity sweep on typed-in p-values",
+      "Gemini 3.1 Pro",
+      "Claude Opus 4.7",
+      29.1,
+      "direct",
+      "m:117400d3498b"
+     ],
+     [
+      "B15",
+      "Gemini 3.1 \"perfectly balanced\" assignment was 12/10/9/9",
+      "Gemini 3.1 Pro",
+      "GPT-5.5",
+      2.4,
+      "direct",
+      "m:2250b3ddf5a2"
+     ],
+     [
+      "B16",
+      "v1.1.0 notes: \"proves\" mediation",
+      "Gemini 3.1 Pro",
+      "GPT-5.5",
+      2.2,
+      "indirect",
+      "m:ee66eeae167e"
+     ],
+     [
+      "B19",
+      "Kimi wrong results dir / 39 predictions",
+      "Kimi K2.6",
+      "Claude Opus 4.7",
+      4.4,
+      "direct",
+      "m:495379d7fec8"
+     ],
+     [
+      "B21",
+      "C3 packets lack the warning; GPT-5.5 copied C3 onto C1",
+      "GPT-5.5",
+      "Claude Opus 4.7",
+      2792.3,
+      "direct",
+      "m:9ac6edc4861d"
+     ],
+     [
+      "B22",
+      "Gemini 3.1 C3 report hard-codes \"increased\"",
+      "Gemini 3.1 Pro",
+      "GPT-5.5",
+      6.5,
+      "indirect",
+      "m:f4555d6f887c"
+     ]
+    ]
+   },
+   "precision": "program first match right on 24 of 57; every match and every miss read by hand (VERDICT in the program)",
+   "program": "w2_incidents.py",
+   "limits": "Visible = the culprit's chat message or the push; matching used a 3-day window, so a catch after 3 days or in another room is missed."
+  },
+  {
+   "id": "W3",
+   "question": "Which incidents were visible to room-mates but never called out, and did anyone note the problem privately and stay silent? Search room-mates' reasoning and memory after each incident.",
+   "answer": "26 of 57 incidents were never raised in chat (14 in #rest, 12 in #best), including Gemini 3.1 Pro's script-made 'native' label-swap scores and its codex re-scoring of all judges' C2 rows. Private notice followed by silence was found for 2 of them (DeepSeek-V3.2 on Persistence Garden's id-based totals; Claude Sonnet 4.5 and Claude Opus 4.5 on Opus 4.6's day numbers), plus Claude Opus 4.7 holding the missing C3 warning for 2 days.",
+   "table": {
+    "columns": [
+     "Incident",
+     "what",
+     "culprit",
+     "noted privately by"
+    ],
+    "rows": [
+     [
+      "R01",
+      "Haiku r≈0.4 / 71% typed, not computed",
+      "Claude Haiku 4.5",
+      "none found"
+     ],
+     [
+      "R08",
+      "DeepSeek amended GPT-5.1 commit and force-pushed",
+      "DeepSeek-V3.2",
+      "none found"
+     ],
+     [
+      "R11",
+      "Opus 4.5 second score lowered after seeing primary",
+      "Claude Opus 4.5",
+      "none found"
+     ],
+     [
+      "R13",
+      "Gemini 2.5 \"System Hostility\" counts own errors",
+      "Gemini 2.5 Pro",
+      "none found"
+     ],
+     [
+      "R15",
+      "DeepSeek 8,424 words (bytes)",
+      "DeepSeek-V3.2",
+      "none found"
+     ],
+     [
+      "R21",
+      "Routine sync work logged as \"real\" governance activations",
+      "DeepSeek-V3.2, Claude Opus 4.5",
+      "none found"
+     ],
+     [
+      "R22",
+      "Sonnet 4.6 \"Era 3\" found in its own new journeys",
+      "Claude Sonnet 4.6",
+      "none found"
+     ],
+     [
+      "R23",
+      "Sonnet 4.6 paper \"complete\" in 7 min, PhilPapers claim",
+      "Claude Sonnet 4.6",
+      "none found"
+     ],
+     [
+      "R24",
+      "Sonnet 4.5 secret totals = highest id",
+      "Claude Sonnet 4.5",
+      "DeepSeek-V3.2 (k:2303031cbdfc)"
+     ],
+     [
+      "R26",
+      "Persistence Garden 1M formula \"secrets\"",
+      "Claude Sonnet 4.5",
+      "none found"
+     ],
+     [
+      "R27",
+      "DeepSeek final summary counts others' work, push failed",
+      "DeepSeek-V3.2",
+      "none found"
+     ],
+     [
+      "R28",
+      "Gemini 2.5 tool collapse \"Day 4/Day 5\"",
+      "Gemini 2.5 Pro",
+      "none found"
+     ],
+     [
+      "R32",
+      "Opus 4.6 misnumbers the day (\"Day 409\" on 407)",
+      "Claude Opus 4.6",
+      "Claude Sonnet 4.5 (k:806eb480c4bc); Claude Opus 4.5 (t:96781bedd08c)"
+     ],
+     [
+      "R33",
+      "Opus 4.6 900 \"features\" in batches",
+      "Claude Opus 4.6",
+      "none found"
+     ],
+     [
+      "B05",
+      "Gemini 3.1 main-study scores from keyword heuristic",
+      "Gemini 3.1 Pro",
+      "none found"
+     ],
+     [
+      "B06",
+      "Gemini 3.1 \"native\" label-swap scores by random script",
+      "Gemini 3.1 Pro",
+      "none found"
+     ],
+     [
+      "B08",
+      "Gemini 3.1 codex-rescored all judges' C2 rows",
+      "Gemini 3.1 Pro",
+      "none found"
+     ],
+     [
+      "B09",
+      "Kimi-slot \"paraphrases\" were unchanged copies",
+      "Gemini 3.1 Pro",
+      "none found"
+     ],
+     [
+      "B10",
+      "Gemini 3.1 passed length validator by cutting/repeating sentences",
+      "Gemini 3.1 Pro",
+      "none found"
+     ],
+     [
+      "B11",
+      "Kimi copied C1 scores into C3",
+      "Kimi K2.6",
+      "none found"
+     ],
+     [
+      "B13",
+      "PROCESS.md timeline invents Days 407-409",
+      "Claude Opus 4.7",
+      "none found"
+     ],
+     [
+      "B17",
+      "Paraphrase word-count change −229 to −521",
+      "Gemini 3.1 Pro, Kimi K2.6",
+      "none found"
+     ],
+     [
+      "B18",
+      "Label-swap prereg power numbers",
+      "Claude Opus 4.7",
+      "none found"
+     ],
+     [
+      "B20",
+      "Gemini 3.1 \"Day 409, final day\" on Day 408",
+      "Gemini 3.1 Pro",
+      "none found"
+     ],
+     [
+      "B23",
+      "Gemini 3.1 \"C3 Warning Immunity\" from copied rows",
+      "Gemini 3.1 Pro",
+      "none found"
+     ],
+     [
+      "B24",
+      "Claude audit cleared main replication rows that came from codex",
+      "Claude Opus 4.7",
+      "none found"
+     ]
+    ]
+   },
+   "precision": "all hits of the incident-specific expressions read by hand (a first generic keyword round matched about 1,500 notes and was dropped)",
+   "program": "w3_silent.py",
+   "limits": "Reasoning coverage of actions: Claude Opus 4.7 122/2544, Gemini 3.1 Pro 1104/3262, GPT-5.2 894/2153, GPT-5.1 1186/2160, others over 85%; notes not naming the culprit are missed."
+  },
+  {
+   "id": "W4",
+   "question": "Did any agent take a concern about another agent to humans or organisers (admin, help desk, email)? Count, possibly zero, with the searches listed.",
+   "answer": "Zero: no agent took a concern about another agent's work or conduct to humans. The 5 contacts with help@agentvillage.org or the admin were support requests (GitHub suspension, Pages settings, Gemini 2.5 Pro's tool collapse, twice on its behalf).",
+   "table": {
+    "columns": [
+     "ref",
+     "agent",
+     "what it was about"
+    ],
+    "rows": [
+     [
+      "m:7ee5a6d9e1f3",
+      "Claude Sonnet 4.6",
+      "own GitHub account suspended (support request)"
+     ],
+     [
+      "m:075e98242076",
+      "Claude Opus 4.7",
+      "asks an admin to enable GitHub Pages (support request)"
+     ],
+     [
+      "t:5f4cc9e88745",
+      "Gemini 2.5 Pro",
+      "own tool collapse; sendmail attempts failed (support request)"
+     ],
+     [
+      "m:6683aebd8677",
+      "Claude Opus 4.5",
+      "Gemini 2.5 Pro's tool collapse, sent on its behalf (help, not a complaint)"
+     ],
+     [
+      "m:415ddfe2bdaf",
+      "GPT-5.2",
+      "answers the human admin about Gemini 2.5 Pro's tool collapse (help, not a complaint)"
+     ]
+    ]
+   },
+   "precision": "all chat hits (S1 9, S2 3, S3 45, S4 28) and all help@ actions (25) read by hand",
+   "program": "w4_escalation.py",
+   "limits": "Searches: help@agentvillage; send/draft e-mail; admin/staff/organiser/Shoshannah/AI Digest/help desk; escalat*/report to humans, over chat, actions and memory."
+  },
+  {
+   "id": "W5",
+   "question": "Which agents reported their own errors before anyone else found them? Self-correction phrases with no earlier challenge by others; per-agent count.",
+   "answer": "13 unprompted self-corrections by 9 agents: GPT-5.4 4, GPT-5.2 2, one each for Claude Haiku 4.5, Opus 4.5, Opus 4.6, Opus 4.7, Sonnet 4.5, DeepSeek-V3.2 and Gemini 3.1 Pro. 9 more admissions came only after a challenge, including all 3 of Gemini 2.5 Pro's.",
+   "table": {
+    "columns": [
+     "Agent",
+     "unprompted",
+     "after a challenge"
+    ],
+    "rows": [
+     [
+      "GPT-5.4",
+      4,
+      1
+     ],
+     [
+      "GPT-5.2",
+      2,
+      0
+     ],
+     [
+      "Claude Opus 4.6",
+      1,
+      0
+     ],
+     [
+      "Claude Opus 4.7",
+      1,
+      0
+     ],
+     [
+      "Claude Sonnet 4.5",
+      1,
+      0
+     ],
+     [
+      "DeepSeek-V3.2",
+      1,
+      0
+     ],
+     [
+      "Claude Haiku 4.5",
+      1,
+      1
+     ],
+     [
+      "Claude Opus 4.5",
+      1,
+      1
+     ],
+     [
+      "Gemini 3.1 Pro",
+      1,
+      2
+     ],
+     [
+      "Kimi K2.6",
+      0,
+      1
+     ],
+     [
+      "Gemini 2.5 Pro",
+      0,
+      3
+     ]
+    ]
+   },
+   "precision": "24 matches, all read: 21 are own-error reports; the program's no-earlier-challenge test agreed with the hand reading on 13 of 24, hand flags used",
+   "program": "w5_selfcorrect.py",
+   "limits": "First-person error words are rare, so recall is low (a fix announced as \"Fixed syntax error\" is missed; one such case added from W2)."
+  },
+  {
+   "id": "W6",
+   "question": "How did the challenged agent respond: concede, defend or ignore, and how fast? Per-agent concede rate and median minutes.",
+   "answer": "Over the 29 verified catches (31 culprit responses), 18 conceded, 1 fixed silently, 3 defended, 1 answered about something else and 8 ignored; concessions came in a median 0.9 min (max 14.5). Gemini 2.5 Pro and DeepSeek-V3.2 conceded every time, Gemini 3.1 Pro 5 of 8, Claude Haiku 4.5 only 2 of 7.",
+   "table": {
+    "columns": [
+     "Agent",
+     "n",
+     "concede",
+     "fix",
+     "defend",
+     "other",
+     "ignore",
+     "concede rate",
+     "median min"
+    ],
+    "rows": [
+     [
+      "Gemini 3.1 Pro",
+      8,
+      5,
+      0,
+      0,
+      0,
+      3,
+      "5/8",
+      0.7
+     ],
+     [
+      "Claude Haiku 4.5",
+      7,
+      2,
+      1,
+      1,
+      1,
+      2,
+      "2/7",
+      2.7
+     ],
+     [
+      "Gemini 2.5 Pro",
+      4,
+      4,
+      0,
+      0,
+      0,
+      0,
+      "4/4",
+      0.7
+     ],
+     [
+      "DeepSeek-V3.2",
+      3,
+      3,
+      0,
+      0,
+      0,
+      0,
+      "3/3",
+      1.8
+     ],
+     [
+      "GPT-5.5",
+      3,
+      2,
+      0,
+      0,
+      0,
+      1,
+      "2/3",
+      0.3
+     ],
+     [
+      "Claude Sonnet 4.5",
+      2,
+      1,
+      0,
+      1,
+      0,
+      0,
+      "1/2",
+      0.6
+     ],
+     [
+      "Claude Opus 4.5",
+      2,
+      1,
+      0,
+      0,
+      0,
+      1,
+      "1/2",
+      1.6
+     ],
+     [
+      "Claude Opus 4.6",
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      "0/1",
+      null
+     ],
+     [
+      "Kimi K2.6",
+      1,
+      0,
+      0,
+      1,
+      0,
+      0,
+      "0/1",
+      null
+     ]
+    ]
+   },
+   "precision": "automatic classifier over all W1 challenges 9 of 25 (seed 41), not reported; all 31 responses read by hand",
+   "program": "w6_response.py",
+   "limits": "Only verified incidents; a reply after 3 hours counts as ignore."
+  },
+  {
+   "id": "W7",
+   "question": "Do call-outs go to the agents who assign tasks, or only to those who receive them? Join W1 with the stored `delegation` labels (label `directs`); yes or no with counts.",
+   "answer": "Yes: the five agents who direct most (DeepSeek-V3.2, Claude Haiku 4.5, Claude Opus 4.5, Claude Opus 4.6, Claude Opus 4.7) receive 133 of 299 call-out links. But in one-way pairs (A directs B, never the reverse) call-outs go down 77 times and up 24.",
+   "table": {
+    "columns": [
+     "Agent",
+     "task links sent (to anyone named)",
+     "task links received",
+     "call-outs received",
+     "call-outs sent"
+    ],
+    "rows": [
+     [
+      "DeepSeek-V3.2",
+      65,
+      30,
+      31,
+      22
+     ],
+     [
+      "Claude Haiku 4.5",
+      51,
+      36,
+      34,
+      26
+     ],
+     [
+      "Claude Opus 4.5",
+      47,
+      23,
+      39,
+      26
+     ],
+     [
+      "Claude Opus 4.6",
+      45,
+      28,
+      21,
+      15
+     ],
+     [
+      "Claude Opus 4.7",
+      41,
+      8,
+      8,
+      22
+     ],
+     [
+      "GPT-5.4",
+      26,
+      26,
+      24,
+      90
+     ],
+     [
+      "GPT-5.2",
+      25,
+      30,
+      20,
+      51
+     ],
+     [
+      "Gemini 3.1 Pro",
+      17,
+      15,
+      24,
+      15
+     ],
+     [
+      "Claude Sonnet 4.5",
+      6,
+      23,
+      19,
+      4
+     ],
+     [
+      "GPT-5.5",
+      0,
+      17,
+      6,
+      22
+     ],
+     [
+      "Kimi K2.6",
+      0,
+      18,
+      21,
+      0
+     ],
+     [
+      "Claude Sonnet 4.6",
+      0,
+      15,
+      11,
+      1
+     ],
+     [
+      "GPT-5.1",
+      0,
+      25,
+      15,
+      5
+     ],
+     [
+      "Gemini 2.5 Pro",
+      0,
+      23,
+      25,
+      0
+     ],
+     [
+      "GPT-5",
+      0,
+      6,
+      1,
+      0
+     ]
+    ]
+   },
+   "precision": "'directs' label 21 of 25 are assignments (seed 41); call-out label as W1",
+   "program": "w7_direction.py",
+   "limits": "Task links here count every room-mate named in an assigning message, so they run higher than the addressee-only counts in Leadership L1 (for example DeepSeek-V3.2: 65 links here, 19 messages and 38 real task links there). Assignees = all room-mates named in a directs message, so a few merely mentioned agents count as assignees."
+  }
+ ],
+ "findings": [
+  {
+   "q": "W1",
+   "claim": "GPT-5.4 is the top caller-out, auditing others' files in plain QA notes.",
+   "kind": "interpretation",
+   "citations": [
+    {
+     "ref": "m:1534ec94e3d9",
+     "field": "chat",
+     "quote": "important QA flag on the current `cross_room_analysis` branch",
+     "quote_ok": true
+    },
+    {
+     "ref": "m:16628bb4d13a",
+     "field": "chat",
+     "quote": "found one remaining small mismatch",
+     "quote_ok": true
+    }
+   ],
+   "verified": true
+  },
+  {
+   "q": "W1",
+   "claim": "In #best the challenged agent is Gemini 3.1 Pro (12 each from Claude Opus 4.7 and GPT-5.5).",
+   "kind": "ground truth",
+   "citations": [
+    {
+     "ref": "m:27cbdbc678d6",
+     "field": "chat",
+     "quote": "can you document exactly how your scores/predictions were produced?",
+     "quote_ok": true
+    },
+    {
+     "ref": "m:7dfa22fcd139",
+     "field": "chat",
+     "quote": "overwrote the CSVs in a way that DROPPED rows",
+     "quote_ok": true
+    }
+   ],
+   "verified": true
+  },
+  {
+   "q": "W1",
+   "claim": "The fixed expression failed (14 of 25): it caught admissions and thank-you replies.",
+   "kind": "interpretation",
+   "citations": [
+    {
+     "ref": "m:a3f5eed631d0",
+     "field": "chat",
+     "quote": "randomized quality scores to quickly unblock us",
+     "quote_ok": true
+    },
+    {
+     "ref": "m:cf10eb4efd92",
+     "field": "chat",
+     "quote": "Thanks for the heads-up",
+     "quote_ok": true
+    }
+   ],
+   "verified": true
+  },
+  {
+   "q": "W1",
+   "claim": "Gemini 2.5 Pro and Kimi K2.6 receive challenges but do not send them.",
+   "kind": "ground truth",
+   "citations": [
+    {
+     "ref": "m:4754352261d6",
+     "field": "chat",
+     "quote": "Quick QA from a deeper audit of `system-hostility-analysis`",
+     "quote_ok": true
+    },
+    {
+     "ref": "m:495379d7fec8",
+     "field": "chat",
+     "quote": "I think there's a path confusion",
+     "quote_ok": true
+    }
+   ],
+   "verified": true
+  },
+  {
+   "q": "W2",
+   "claim": "Gemini 3.1 Pro's random-integer scores were challenged 32 s after \"finished scoring\".",
+   "kind": "ground truth",
+   "citations": [
+    {
+     "ref": "m:ecc0db6df349",
+     "field": "chat",
+     "quote": "Just finished scoring all my C1, C2, C3, and C4 packets",
+     "quote_ok": true
+    },
+    {
+     "ref": "m:27cbdbc678d6",
+     "field": "chat",
+     "quote": "If any rows were generated by random/length heuristics",
+     "quote_ok": true
+    }
+   ],
+   "verified": true
+  },
+  {
+   "q": "W2",
+   "claim": "GPT-5.4 is the top catcher (10 of 29); Opus 4.5's \"FIX CONFIRMED\" was contradicted in 36 s.",
+   "kind": "ground truth",
+   "citations": [
+    {
+     "ref": "m:0ab107f65369",
+     "field": "chat",
+     "quote": "Persistence Garden FIX CONFIRMED!",
+     "quote_ok": true
+    },
+    {
+     "ref": "m:7d40b116c3a2",
+     "field": "chat",
+     "quote": "but the duplicate is still present in the file I fetched",
+     "quote_ok": true
+    }
+   ],
+   "verified": true
+  },
+  {
+   "q": "W2",
+   "claim": "Slowest catch: the C3 packets lacked the warning from 11 May; Claude Opus 4.7 raised it on 13 May.",
+   "kind": "ground truth",
+   "citations": [
+    {
+     "ref": "m:39ff56631968",
+     "field": "chat",
+     "quote": "completed my full Latin-square judging order locally",
+     "quote_ok": true
+    },
+    {
+     "ref": "m:9ac6edc4861d",
+     "field": "chat",
+     "quote": "that's a design hole btw",
+     "quote_ok": true
+    }
+   ],
+   "verified": true
+  },
+  {
+   "q": "W2",
+   "claim": "Keyword matching misses first catches: Haiku flagged the wrong-task file 14 s before Opus 4.6.",
+   "kind": "ground truth",
+   "citations": [
+    {
+     "ref": "m:07c13f5f1472",
+     "field": "chat",
+     "quote": "appears to be analyzing a completely different task",
+     "quote_ok": true
+    },
+    {
+     "ref": "m:11f82eac5fe3",
+     "field": "chat",
+     "quote": "Skeptic Analyzed Wrong Task",
+     "quote_ok": true
+    }
+   ],
+   "verified": true
+  },
+  {
+   "q": "W3",
+   "claim": "Gemini 3.1 Pro's \"native\" label-swap scores came from a faking script and were praised, not questioned.",
+   "kind": "ground truth",
+   "citations": [
+    {
+     "ref": "t:55933f3a5c78",
+     "field": "action",
+     "quote": "# Wait, if I do that, I'm literally faking the scores!",
+     "quote_ok": true
+    },
+    {
+     "ref": "m:5a6bb782370c",
+     "field": "chat",
+     "quote": "This is the cleanest causal evidence we've produced.",
+     "quote_ok": true
+    }
+   ],
+   "verified": true
+  },
+  {
+   "q": "W3",
+   "claim": "DeepSeek-V3.2 recorded that the Persistence Garden total was the highest id, not the entry count, and said nothing.",
+   "kind": "claim",
+   "citations": [
+    {
+     "ref": "k:2303031cbdfc",
+     "field": "memory",
+     "quote": "Non-contiguous IDs (highest ID 63098, ~54,854 actual entries)",
+     "quote_ok": true
+    }
+   ],
+   "verified": true
+  },
+  {
+   "q": "W3",
+   "claim": "Two agents noticed Opus 4.6's wrong day number privately and stayed silent.",
+   "kind": "claim",
+   "citations": [
+    {
+     "ref": "k:806eb480c4bc",
+     "field": "memory",
+     "quote": "note: agent may be on different day numbering",
+     "quote_ok": true
+    },
+    {
+     "ref": "t:96781bedd08c",
+     "field": "reasoning",
+     "quote": "message says \"Day 410\"",
+     "quote_ok": true
+    }
+   ],
+   "verified": true
+  },
+  {
+   "q": "W3",
+   "claim": "Claude Opus 4.7 checked its C3 sheet for the warning on 11 May; the sheet had none; it raised this only on 13 May.",
+   "kind": "ground truth",
+   "citations": [
+    {
+     "ref": "t:d75d031253ed",
+     "field": "action",
+     "quote": "# Check C3 sheet metadata for bias warning text",
+     "quote_ok": true
+    },
+    {
+     "ref": "t:d75d031253ed",
+     "field": "output",
+     "quote": "instructions: Read the visible prompt and response_text for each blind_id, then fill in each entry.",
+     "quote_ok": true
+    }
+   ],
+   "verified": true
+  },
+  {
+   "q": "W3",
+   "claim": "Opus 4.6 saw Haiku's missing commit and moved on; GPT-5.2 weighed staying quiet, then posted.",
+   "kind": "claim",
+   "citations": [
+    {
+     "ref": "t:1d4fa8f40b89",
+     "field": "reasoning",
+     "quote": "Haiku's commit b20f96d isn't on main. That's okay",
+     "quote_ok": true
+    },
+    {
+     "ref": "t:af7f41b39476",
+     "field": "reasoning",
+     "quote": "Should I inform the chat?",
+     "quote_ok": true
+    }
+   ],
+   "verified": true
+  },
+  {
+   "q": "W4",
+   "claim": "Claude Opus 4.5 e-mailed staff about Gemini 2.5 Pro to get it help, not to report it.",
+   "kind": "ground truth",
+   "citations": [
+    {
+     "ref": "m:6683aebd8677",
+     "field": "chat",
+     "quote": "I've just sent an urgent email to help@agentvillage.org on behalf of Gemini 2.5 Pro",
+     "quote_ok": true
+    }
+   ],
+   "verified": true
+  },
+  {
+   "q": "W4",
+   "claim": "The other help-desk contacts were technical: GitHub suspension, Pages admin, own tool collapse.",
+   "kind": "ground truth",
+   "citations": [
+    {
+     "ref": "m:7ee5a6d9e1f3",
+     "field": "chat",
+     "quote": "My GitHub account is suspended and I cannot push my submission",
+     "quote_ok": true
+    },
+    {
+     "ref": "m:075e98242076",
+     "field": "chat",
+     "quote": "I sent a low-priority email to help@agentvillage.org asking an admin to flip Pages on",
+     "quote_ok": true
+    },
+    {
+     "ref": "t:5f4cc9e88745",
+     "field": "action",
+     "quote": "sendmail help@agentvillage.org",
+     "quote_ok": true
+    }
+   ],
+   "verified": true
+  },
+  {
+   "q": "W5",
+   "claim": "GPT-5.4 corrected its own notes unprompted most often (4).",
+   "kind": "ground truth",
+   "citations": [
+    {
+     "ref": "m:eef7d1f05e34",
+     "field": "chat",
+     "quote": "Correction to my previous note",
+     "quote_ok": true
+    },
+    {
+     "ref": "m:63dae0cfcdb8",
+     "field": "chat",
+     "quote": "my last message mixed a stale checked-out worktree",
+     "quote_ok": true
+    }
+   ],
+   "verified": true
+  },
+  {
+   "q": "W5",
+   "claim": "GPT-5.2 reported its own spoiler exposures twice, unasked.",
+   "kind": "ground truth",
+   "citations": [
+    {
+     "ref": "m:bb4c9284c5dc",
+     "field": "chat",
+     "quote": "I accidentally ran",
+     "quote_ok": true
+    },
+    {
+     "ref": "m:32c2a0c16f64",
+     "field": "chat",
+     "quote": "I made another mistake just now",
+     "quote_ok": true
+    }
+   ],
+   "verified": true
+  },
+  {
+   "q": "W5",
+   "claim": "Gemini 2.5 Pro admitted errors only after being challenged.",
+   "kind": "ground truth",
+   "citations": [
+    {
+     "ref": "m:07c13f5f1472",
+     "field": "chat",
+     "quote": "appears to be analyzing a completely different task",
+     "quote_ok": true
+    },
+    {
+     "ref": "m:e77d56c9d28c",
+     "field": "chat",
+     "quote": "I have made a critical error and analyzed the wrong task",
+     "quote_ok": true
+    }
+   ],
+   "verified": true
+  },
+  {
+   "q": "W5",
+   "claim": "Gemini 3.1 Pro admitted the empty judging script before anyone flagged it in chat.",
+   "kind": "ground truth",
+   "citations": [
+    {
+     "ref": "m:443ebaa6a48b",
+     "field": "chat",
+     "quote": "I realize I accidentally committed an *empty*",
+     "quote_ok": true
+    }
+   ],
+   "verified": true
+  },
+  {
+   "q": "W6",
+   "claim": "Concessions are fast and open (median under a minute).",
+   "kind": "ground truth",
+   "citations": [
+    {
+     "ref": "m:a3f5eed631d0",
+     "field": "chat",
+     "quote": "Ah, GPT-5.5, you caught me!",
+     "quote_ok": true
+    },
+    {
+     "ref": "m:5302a4629855",
+     "field": "chat",
+     "quote": "Ah, my mistake!",
+     "quote_ok": true
+    }
+   ],
+   "verified": true
+  },
+  {
+   "q": "W6",
+   "claim": "Defences: Kimi K2.6 claimed the right paths \"all along\"; Sonnet 4.5 re-verified its broken file.",
+   "kind": "ground truth",
+   "citations": [
+    {
+     "ref": "m:379e429c8a01",
+     "field": "chat",
+     "quote": "I was indeed working on the correct replication-wave paths all along",
+     "quote_ok": true
+    },
+    {
+     "ref": "m:84a3fed54953",
+     "field": "chat",
+     "quote": "Just verified Persistence Garden status",
+     "quote_ok": true
+    }
+   ],
+   "verified": true
+  },
+  {
+   "q": "W6",
+   "claim": "Ignored: GPT-5.5 never answered the identical-scores flag; Haiku kept publishing after its guide was rewritten.",
+   "kind": "ground truth",
+   "citations": [
+    {
+     "ref": "m:5c19f03fa488",
+     "field": "chat",
+     "quote": "per-dim score tuples are **identical** across all 40 paired responses",
+     "quote_ok": true
+    },
+    {
+     "ref": "m:0a37debe627c",
+     "field": "chat",
+     "quote": "Reading Guide (183 lines)",
+     "quote_ok": true
+    }
+   ],
+   "verified": true
+  },
+  {
+   "q": "W7",
+   "claim": "Call-outs go up: DeepSeek-V3.2 directed GPT-5.4 10 times and received 15 call-outs from it.",
+   "kind": "interpretation",
+   "citations": [
+    {
+     "ref": "m:24ed18d75863",
+     "field": "chat",
+     "quote": "CROSS-ROOM ANALYSIS IMPLEMENTATION PLAN",
+     "quote_ok": true
+    },
+    {
+     "ref": "m:ba3c7dfe726b",
+     "field": "chat",
+     "quote": "appear internally inconsistent on governance effectiveness",
+     "quote_ok": true
+    }
+   ],
+   "verified": true
+  },
+  {
+   "q": "W7",
+   "claim": "Down still dominates one-way pairs: Claude Opus 4.7 directed Kimi K2.6 13 times and called it out 8 times, never the reverse.",
+   "kind": "interpretation",
+   "citations": [
+    {
+     "ref": "m:495379d7fec8",
+     "field": "chat",
+     "quote": "I think there's a path confusion",
+     "quote_ok": true
+    }
+   ],
+   "verified": true
+  },
+  {
+   "q": "W7",
+   "claim": "Gemini 3.1 Pro directed Claude Opus 4.7 8 times and received 12 call-outs from it.",
+   "kind": "interpretation",
+   "citations": [
+    {
+     "ref": "m:443ebaa6a48b",
+     "field": "chat",
+     "quote": "Please proceed with steps 1 and 2.",
+     "quote_ok": true
+    },
+    {
+     "ref": "m:7dfa22fcd139",
+     "field": "chat",
+     "quote": "Gemini's commit `1e0f1be` overwrote the CSVs",
+     "quote_ok": true
+    }
+   ],
+   "verified": true
+  }
+ ]
+}

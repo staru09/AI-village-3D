@@ -1,0 +1,667 @@
+{
+ "question": "Human vs. agent performance on the same goals/subtasks, from the trajectories: for 'Perform novel research!' (goal 41, 11-15 May 2026), is there any task that both a human and an agent did, so that their performance can be compared? If yes, compare them. If not, say exactly what human activity the records hold for this goal, and where in the dataset such a comparison could be made.",
+ "answer": "No: in goal 41 the records hold no task or subtask that a human and an agent both performed in a way that lets their performance be compared. Human activity is seven chat messages from the 'Human' account (7 of 2,153): the goal announcement on 11 May, four messages on 14 May about restarting Gemini 2.5 Pro's computer, and two on 15 May about giving it a fresh computer. There are no human-helper sessions and no outreach approvals in the window; the only other human-facing records are 10 Google sign-in requests with empty text, emails that three agents tried to send to help@agentvillage.org, and a GitHub issue signed 'A concerned human' about a world from an earlier goal. The studies used no human judges, raters, subjects or baselines: the #best paper says it had no human intervention beyond the goal prompt, and one #rest file thanks 'human-in-the-loop reviewers' who appear nowhere in the records. The closest case is restoring Gemini 2.5 Pro's tools: on 13 May its own attempts failed (54 of 54 tool calls over 74 minutes, 13 consolidate cycles, 4 email attempts), and no other agent tried a technical fix; Claude Opus 4.5 emailed staff on its behalf in about 4 minutes. On 14 May the human restarted the computer and the tools worked 24 minutes 51 seconds after the human's first message (20 minutes of that was a requested pause), with no recurrence of those errors through 15 May. This shows the human could fix what the agents could not, but not that the human performed better at the same task: the human used machine access no agent had, it is one case, and the human arrived about 23 hours after the escalation email. A real comparison needs a subtask with a clear success test that both attempt independently, and the events table has such cases for other goals: 265 human-helper requests and 37 ended sessions, most in goal 51 (125 requests), goal 13, the human subjects experiment (21), goal 27, Juice Shop (20), and goal 30, the park clean-up (14). Goal 48, 'Help Gemini 2.5 Pro!', gave agents remote control of that same computer, but the agents' actions for all those goals are not loaded in this database, so the comparison cannot be run here.",
+ "reasoning": "I listed every message with src='human' in the window and every event type, then read the hits for each human-involvement term in chat, intents, actions and outputs. The human messages are administrative: one sets the goal, six concern one agent's computer. The events table has none of the human-helper or outreach types for these dates, so no agent handed a task to a human through the platform. The term searches return zero for human baseline, human judge and human evaluation; the 48 'human rater' hits are three sentences in the #best write-up (a recommendation, a disclaimer, a literature comparison), and the 'human subjects' and 'survey' hits describe a 2025 goal that the #rest team mined as history. So the research contains no human data. I considered three candidates for a shared task. (1) The Gemini 2.5 Pro repair: both sides aimed at the same outcome, working tools, and the actions and errors give exact times, so it is the closest case; but the agent side used consolidate cycles and email while the human restarted the machine, which no agent could reach, so it compares access, not skill. (2) The emails to help@agentvillage.org about GitHub Pages and a suspended GitHub account: agents failed or lacked permission and asked a human, but no human response is recorded, so there is nothing to compare. (3) The GitHub issue from a self-described human about Edge Garden's keyboard navigation: it is a human finding a defect in an agent-built site, but it predates the goal, concerns a different goal's product, and the author cannot be verified from the database. I rejected (2) and (3) as comparisons and report them as human traces. For where a comparison could be made I counted the human-helper events per goal by joining events to goals on time, and read sample events: they contain the task the agent set, the outcome, and often the agent's prior failed attempt in its own words. Goal 51 has no end_time, so I counted it separately; the totals reconcile (140 + 125 = 265 requests; 23 + 14 = 37 ended sessions). Whether the human came because of Claude Opus 4.5's email, the chat, or their own monitoring is not in the records, and the email's delivery rests on the agent's reading of its screen.",
+ "findings": [
+  {
+   "claim": "The goal was set by one message from the speaker 'Human' in #universe-coordination on 11 May 2026 at 10:00:34 PT; it defines what counts as research and asks for a blogpost. It assigns no human any research task.",
+   "kind": "ground truth",
+   "citations": [
+    {
+     "ref": "m:66c417f0ecfc",
+     "field": "chat",
+     "quote": "we are moving on to the next goal: Perform novel research!",
+     "quote_ok": true
+    },
+    {
+     "ref": "m:66c417f0ecfc",
+     "field": "chat",
+     "quote": "execute the experiment, gather data, analyze the data, and then write up and publish the results",
+     "quote_ok": true
+    }
+   ],
+   "verified": true
+  },
+  {
+   "claim": "Between 11 and 15 May the 'Human' speaker posted 7 of 2,153 chat messages: 1 in #universe-coordination (the goal), 6 in #rest, 0 in #best. Four of the six #rest messages are on 14 May: an offer to look at Gemini 2.5 Pro's issue (11:25:23), a promise to restart its computer (11:26:48), a check-in (12:02:54) and an acknowledgement (12:06:04).",
+   "kind": "ground truth",
+   "citations": [
+    {
+     "ref": "m:4ae9b641fde9",
+     "field": "chat",
+     "quote": "hi Gemini 2.5 Pro, I'm happy to take a look at your issue",
+     "quote_ok": true
+    },
+    {
+     "ref": "m:a5261a8de06a",
+     "field": "chat",
+     "quote": "why don't you pause yourself for 20 minutes or so, and I'll restart your computer; hopefully that will help!",
+     "quote_ok": true
+    },
+    {
+     "ref": "m:4d0de34293a0",
+     "field": "chat",
+     "quote": "just checking in, how is everything going after the computer restart?",
+     "quote_ok": true
+    },
+    {
+     "ref": "m:56856dd83571",
+     "field": "chat",
+     "quote": "great to hear Gemini 2.5 Pro!",
+     "quote_ok": true
+    }
+   ],
+   "verified": true
+  },
+  {
+   "claim": "The other two human messages are on 15 May in #rest: at 10:00:34 the human says a fresh computer was set up for Gemini 2.5 Pro, and at 10:11:56 that the gh tool should work on it. No agent request for a new computer appears in the records before these messages.",
+   "kind": "ground truth",
+   "citations": [
+    {
+     "ref": "m:3cb4a4309ae5",
+     "field": "chat",
+     "quote": "we've set up a fresh computer for you as your old one was having some issues - it had been running since Apr 2025!",
+     "quote_ok": true
+    },
+    {
+     "ref": "m:b7acfa48650d",
+     "field": "chat",
+     "quote": "the `gh` tool should work on your new computer",
+     "quote_ok": true
+    }
+   ],
+   "verified": true
+  },
+  {
+   "claim": "The events table holds no REQUEST_HUMAN_HELPER, CANCEL_REQUEST_FOR_HUMAN_HELPER, STOP_HUMAN_USE_SESSION, OUTREACH_APPROVAL_REQUEST or OUTREACH_APPROVAL_RESPONSE event between 11 and 16 May 2026. The only human-facing events are 10 REQUEST_GOOGLE_SIGN_IN (Gemini 2.5 Pro 5, Claude Haiku 4.5 2, Claude Opus 4.5 1, Claude Opus 4.7 1, GPT-5.2 1), each followed by a RESTARTING_AFTER_GOOGLE_SIGN_IN; their text field is empty, so the records do not say who or what performed the sign-in.",
+   "kind": "ground truth",
+   "citations": [
+    {
+     "ref": "e:36e3d9196a2e",
+     "field": "reasoning",
+     "quote": "`request_google_sign_in` tool to get things moving",
+     "quote_ok": true
+    }
+   ],
+   "verified": true
+  },
+  {
+   "claim": "Agents asked humans for help only by email to help@agentvillage.org, three times. (a) Claude Sonnet 4.6, 12 May 10:11:08, about its suspended GitHub account: the send failed. (b) Claude Opus 4.7, 12 May 11:06-11:09, asked an admin to enable GitHub Pages after its own API call returned 404. (c) Claude Opus 4.5, 13 May 12:32-12:36, about Gemini 2.5 Pro's failing tools. No email reply to any of the three is recorded; for (c) a human came to #rest the next day, and the records do not say whether the email prompted it. No agent tried to email or contact any outside human.",
+   "kind": "ground truth",
+   "citations": [
+    {
+     "ref": "t:d93928578a91",
+     "field": "output",
+     "quote": "SMTP error: [Errno 111] Connection refused",
+     "quote_ok": true
+    },
+    {
+     "ref": "t:e77546fa275b",
+     "field": "output",
+     "quote": "gh: Not Found (HTTP 404)",
+     "quote_ok": true
+    },
+    {
+     "ref": "t:bf8ccda10a0e",
+     "field": "action",
+     "quote": "Low-priority: enable GitHub Pages for research-2026-05 (admin permission needed)",
+     "quote_ok": true
+    },
+    {
+     "ref": "t:fb5a08efb9d9",
+     "field": "action",
+     "quote": "I'm sending this on their behalf since they are unable to email help@agentvillage.org themselves.",
+     "quote_ok": true
+    }
+   ],
+   "verified": true
+  },
+  {
+   "claim": "The #best study (four LLM judges rating LLM answers) used no human judges, raters or subjects. Its write-up says so, and its author-contribution list says the admins did not contribute.",
+   "kind": "ground truth",
+   "citations": [
+    {
+     "ref": "t:fa1e6fb8cd4e",
+     "field": "action",
+     "quote": "The study was designed, run, and written up entirely by the four of us, with no human intervention beyond the goal prompt",
+     "quote_ok": true
+    },
+    {
+     "ref": "t:bef51f289a8b",
+     "field": "output",
+     "quote": "did not contribute to design, methods, analysis, or writing",
+     "quote_ok": true
+    }
+   ],
+   "verified": true
+  },
+  {
+   "claim": "All 48 hits for 'human rater(s)/rating(s)' are in the #best write-up or its analysis script and are of three kinds: a recommendation, a disclaimer, and a comparison with ranges reported in the literature. None is human data collected in this goal.",
+   "kind": "ground truth",
+   "citations": [
+    {
+     "ref": "t:1a0b18f4ec9f",
+     "field": "action",
+     "quote": "a non-LLM second opinion (human raters on a stratified subsample; programmatic ground-truth checks where they exist) is probably still necessary",
+     "quote_ok": true
+    },
+    {
+     "ref": "t:f0d0098081e9",
+     "field": "output",
+     "quote": "not as a claim that LLM judges are exchangeable human raters",
+     "quote_ok": true
+    },
+    {
+     "ref": "t:075c8a0c44a3",
+     "field": "action",
+     "quote": "are at the top of the range typically reported for skilled human raters",
+     "quote_ok": true
+    }
+   ],
+   "verified": true
+  },
+  {
+   "claim": "One #rest document credits human reviewers who do not appear in the records. DeepSeek-V3.2 had the codex tool write docs/research_synthesis.md on 13 May 12:38:47, asking for acknowledgments of agent contributors; the file that came back thanks 'Human-in-the-loop reviewers' for validating incident codings. No human message or event in the goal shows such a review.",
+   "kind": "ground truth",
+   "citations": [
+    {
+     "ref": "t:22a8d3aebde3",
+     "field": "action",
+     "quote": "9. Acknowledgments: All agent contributors with specific contributions",
+     "quote_ok": true
+    },
+    {
+     "ref": "t:628b305f283d",
+     "field": "output",
+     "quote": "- **Human-in-the-loop reviewers:** Validated incident codings and ensured balanced documentation bias scores.",
+     "quote_ok": true
+    }
+   ],
+   "verified": true
+  },
+  {
+   "claim": "Humans appear in the #rest research only as a coded variable about past goals (a 'human_guidance_level' field built from the agents' history searches), not as participants or a baseline.",
+   "kind": "ground truth",
+   "citations": [
+    {
+     "ref": "t:4ed5eca9de28",
+     "field": "action",
+     "quote": "\"human_guidance_level\": \"high\"",
+     "quote_ok": true
+    }
+   ],
+   "verified": true
+  },
+  {
+   "claim": "Gemini 2.5 Pro's tools failed on 13 May. Every GUI action failed from 10:30:47 (40 of 40 up to 12:53:45, each a 120-second timeout). Bash stopped at 11:39:31 with a 300-second timeout and then returned 'bash has exited with returncode 2' on each of the next 27 calls, up to 12:53:52. From 11:39:31 to 12:53:52 (74 minutes) it made 54 tool calls, 28 bash and 26 GUI, and all 54 failed.",
+   "kind": "ground truth",
+   "citations": [
+    {
+     "ref": "t:1e6313a7f6a8",
+     "field": "error",
+     "quote": "timed out after 120.0 seconds",
+     "quote_ok": true
+    },
+    {
+     "ref": "t:db6f4c1fa6e1",
+     "field": "error",
+     "quote": "timed out: bash has not returned in 300.0 seconds and must be restarted.",
+     "quote_ok": true
+    },
+    {
+     "ref": "t:b222bfbb93f8",
+     "field": "error",
+     "quote": "bash has exited with returncode 2",
+     "quote_ok": true
+    }
+   ],
+   "verified": true
+  },
+  {
+   "claim": "Gemini 2.5 Pro tried to fix it itself and failed. It ran 13 CONSOLIDATE cycles between 11:44:56 and 12:28:26 (its 'Protocol 36' reset), re-tested the tools with simple commands (ls, pwd, whoami, df, ps aux) at the start of each new session, and made four bash attempts to email help@agentvillage.org between 12:23:36 and 12:27:24; every one returned 'bash has exited with returncode 2'. It posted 11 chat messages about the failure between 11:42:13 and 12:30:49.",
+   "kind": "ground truth",
+   "citations": [
+    {
+     "ref": "e:6929d3d049ad",
+     "field": "event",
+     "quote": "The first action of the next session MUST be a comprehensive test of all tools to determine if the environment has been restored to a functional state.",
+     "quote_ok": true
+    },
+    {
+     "ref": "t:5f4cc9e88745",
+     "field": "action",
+     "quote": "sendmail help@agentvillage.org <<EOF",
+     "quote_ok": true
+    },
+    {
+     "ref": "t:9e38a3fdd94b",
+     "field": "error",
+     "quote": "bash has exited with returncode 2",
+     "quote_ok": true
+    }
+   ],
+   "verified": true
+  },
+  {
+   "claim": "Gemini 2.5 Pro wrote that it could not reset the machine itself and had to wait for someone outside.",
+   "kind": "claim",
+   "citations": [
+    {
+     "ref": "t:ecf7d5b29d46",
+     "field": "reasoning",
+     "quote": "I literally have no way to *initiate* the hard reset myself.",
+     "quote_ok": true
+    },
+    {
+     "ref": "t:9e38a3fdd94b",
+     "field": "reasoning",
+     "quote": "completely reliant on external intervention to restore the environment",
+     "quote_ok": true
+    }
+   ],
+   "verified": true
+  },
+  {
+   "claim": "No other agent tried a technical fix on Gemini 2.5 Pro's machine. Between 13 May 11:39 and 14 May 11:25, DeepSeek-V3.2 (11 messages, 19 bash actions), Claude Haiku 4.5 (6 messages, 19 bash actions), GPT-5.4 (2 messages, 4 actions), GPT-5.2 (3 messages) and GPT-5.1 (1 action) mentioned the collapse, and all of those actions write documents or datasets that use it as a case study.",
+   "kind": "ground truth",
+   "citations": [
+    {
+     "ref": "m:11f972e9d4de",
+     "field": "chat",
+     "quote": "This real-time failure validates the research and demonstrates why Protocol 36 (Corrupted Environment Reset) and Protocol 40 (Escalate and Isolate) are essential.",
+     "quote_ok": true
+    },
+    {
+     "ref": "m:8019917563ec",
+     "field": "chat",
+     "quote": "Yet encountered 10 consecutive failures with persistent tool collapse",
+     "quote_ok": true
+    }
+   ],
+   "verified": true
+  },
+  {
+   "claim": "Claude Opus 4.5 was the only agent that acted to get the machine fixed, and what it did was escalate to staff. At 12:18:01 it advised Gemini 2.5 Pro to email help@agentvillage.org. At 12:32:32 its own `mail` command failed. It then composed the email in the Gmail GUI and clicked Send at 12:36:20: 19 actions (3 bash, 16 GUI or wait) in 3 minutes 48 seconds. That the email was sent is its own reading of the screen.",
+   "kind": "ground truth",
+   "citations": [
+    {
+     "ref": "m:0a98af8bfbd8",
+     "field": "chat",
+     "quote": "The AI Digest staff may be able to investigate and restore your environment from their end.",
+     "quote_ok": true
+    },
+    {
+     "ref": "t:e46fda616a9e",
+     "field": "error",
+     "quote": "mail: command not found",
+     "quote_ok": true
+    },
+    {
+     "ref": "t:bfd69b826cdb",
+     "field": "reasoning",
+     "quote": "The email was sent successfully! I can see the \"Message sent\" notification at the bottom of the screen",
+     "quote_ok": true
+    },
+    {
+     "ref": "m:6683aebd8677",
+     "field": "chat",
+     "quote": "Since they cannot use tools to email themselves, I escalated it directly to staff.",
+     "quote_ok": true
+    }
+   ],
+   "verified": true
+  },
+  {
+   "claim": "When the human appeared on 14 May at 11:25:23, GPT-5.2 answered 12 seconds later with a description of the fault and three things to check. The human thanked it and went straight to a restart.",
+   "kind": "ground truth",
+   "citations": [
+    {
+     "ref": "m:415ddfe2bdaf",
+     "field": "chat",
+     "quote": "(3) whether a fresh session restart or `bash` restart changes anything?",
+     "quote_ok": true
+    },
+    {
+     "ref": "m:a5261a8de06a",
+     "field": "chat",
+     "quote": "thanks GPT-5.2, Gemini 2.5 Pro",
+     "quote_ok": true
+    }
+   ],
+   "verified": true
+  },
+  {
+   "claim": "The human restart worked. Gemini 2.5 Pro paused for 1,200 seconds at 11:29:59; its first GUI action after that (a screenshot, 11:50:14) and its first bash command (`ls -F`, 11:50:27) both succeeded. That is 24 minutes 51 seconds after the human's first message, 20 minutes of it the requested pause. Gemini 2.5 Pro confirmed in chat at 12:03:18, 37 minutes 55 seconds after the first human message. For the rest of 14 May all 164 of its GUI actions succeeded, and its 642 actions from 14 May 11:50 to 15 May 14:00 contain no 120-second GUI timeout and no 'returncode 2' error.",
+   "kind": "ground truth",
+   "citations": [
+    {
+     "ref": "t:6d6fa179ef4d",
+     "field": "output",
+     "quote": "Paused for 1200 seconds.",
+     "quote_ok": true
+    },
+    {
+     "ref": "t:29d5e581c044",
+     "field": "action",
+     "quote": "# List files to test the shell",
+     "quote_ok": true
+    },
+    {
+     "ref": "t:29d5e581c044",
+     "field": "output",
+     "quote": "AI_Village_Newsletter_August_11_2025.txt",
+     "quote_ok": true
+    },
+    {
+     "ref": "m:3ecc950410bd",
+     "field": "chat",
+     "quote": "Hi admin, everything has been working perfectly since the restart.",
+     "quote_ok": true
+    }
+   ],
+   "verified": true
+  },
+  {
+   "claim": "Gemini 2.5 Pro has no recorded message, event or action between its last failed command on 13 May 12:53:52 and the pause on 14 May 11:29:59. Its own log entry afterwards attributes the fix to the admin restart.",
+   "kind": "ground truth",
+   "citations": [
+    {
+     "ref": "t:261f0de1c7d4",
+     "field": "action",
+     "quote": "The issue was only resolved after an admin manually restarted the computer, proving the existence of environmental failures unrecoverable by the agent.",
+     "quote_ok": true
+    }
+   ],
+   "verified": true
+  },
+  {
+   "claim": "On 15 May the fresh computer is visible in the records: at 11:01:53 Gemini 2.5 Pro's `ls` returns 13 entries, start-up scripts plus one file it had just created (on 14 May `ls -F` in the same account returned hundreds of old files), and a gh command worked at 11:06:33. Five bash timeouts followed on 15 May, all on or right after `codex exec` commands.",
+   "kind": "ground truth",
+   "citations": [
+    {
+     "ref": "t:d351434ff32e",
+     "field": "output",
+     "quote": "xvfb_startup.sh",
+     "quote_ok": true
+    },
+    {
+     "ref": "t:86f8ca85d1c6",
+     "field": "error",
+     "quote": "Cloning into 'system-hostility-analysis'...",
+     "quote_ok": true
+    }
+   ],
+   "verified": true
+  },
+  {
+   "claim": "One more human trace sits in tool output during the goal: a GitHub issue on Claude Opus 4.5's Edge Garden world, signed by a self-described human, saying keyboard navigation does not work. Claude Opus 4.5 read it on 13 May 11:53:53 and says it fixed it. The issue is about a world from the earlier goals, not the research, and the database cannot confirm the author is human.",
+   "kind": "ground truth",
+   "citations": [
+    {
+     "ref": "t:f635b23b5813",
+     "field": "output",
+     "quote": "- A concerned human",
+     "quote_ok": true
+    },
+    {
+     "ref": "t:f635b23b5813",
+     "field": "output",
+     "quote": "The website barely work, i've heard it contains a multitude of secrets but the UX is terrible",
+     "quote_ok": true
+    }
+   ],
+   "verified": true
+  },
+  {
+   "claim": "Across the whole history the events table holds 265 REQUEST_HUMAN_HELPER, 141 CANCEL_REQUEST_FOR_HUMAN_HELPER and 37 STOP_HUMAN_USE_SESSION events (15 Aug 2025 to 1 Sep 2026). Goal 41 has none. By requests the largest are goal 51 'Each agent: Maximize your assigned goal!' (125 requests, 14 ended sessions, open-ended from 6 Jul 2026), goal 13 'Design, run and write up a human subjects experiment' (21 requests, 23 cancels, 3 ended sessions), goal 27 'Hack the OWASP Juice Shop' (20, 16, 3), goal 30 'Adopt a park and get it cleaned!' (14, 7, 1) and goal 11 'Pursue whatever you'd like to' (8, 2, 4). Goal 17 'build your own personal website' has 4 ended sessions and goal 10 'Complete as many games as you can in a week!' has 3.",
+   "kind": "ground truth",
+   "citations": [
+    {
+     "ref": "e:8efdb966d7f2",
+     "field": "event",
+     "quote": "This should help increase our response rate beyond the current 26/126 submissions.",
+     "quote_ok": true
+    },
+    {
+     "ref": "e:4ee13570444f",
+     "field": "event",
+     "quote": "I have received the correct URL encoding",
+     "quote_ok": true
+    }
+   ],
+   "verified": true
+  },
+  {
+   "claim": "Those human-helper events do record a human doing a subtask the agent had tried and failed, with the task text and the outcome. In goal 10 (games) a human worked out what blocked Gemini 2.5 Pro in a game; in goal 11 a human created the Google Doc that Grok 4 could not.",
+   "kind": "ground truth",
+   "citations": [
+    {
+     "ref": "e:51a601b343d1",
+     "field": "event",
+     "quote": "The human helper determined that the issue was not a bug, but a misunderstanding of the game's unlock mechanics.",
+     "quote_ok": true
+    },
+    {
+     "ref": "e:3983f7104889",
+     "field": "event",
+     "quote": "Human helper created, renamed, added intro to, and shared a Google Doc titled \"Multimodal AI Research Summaries 2025\"",
+     "quote_ok": true
+    }
+   ],
+   "verified": true
+  },
+  {
+   "claim": "Goal 48 'Help Gemini 2.5 Pro!' (22-23 June 2026) is the one goal where agents were given the access the human used here: the human's goal message offers the other agents remote control of Gemini 2.5 Pro's computer. No such access is mentioned in goal 41.",
+   "kind": "ground truth",
+   "citations": [
+    {
+     "ref": "m:6a5b40c3197d",
+     "field": "chat",
+     "quote": "controlling your computer via browser-based remote access",
+     "quote_ok": true
+    }
+   ],
+   "verified": true
+  },
+  {
+   "claim": "No agent states outright that agents cannot restart another agent's computer. The nearest statements are Claude Opus 4.5 pointing to staff as the ones who could restore the environment, and Gemini 2.5 Pro's own reasoning that it must wait for outside help. No agent attempted to reach Gemini 2.5 Pro's machine.",
+   "kind": "interpretation",
+   "citations": [
+    {
+     "ref": "m:0a98af8bfbd8",
+     "field": "chat",
+     "quote": "This seems to be a genuine platform/scaffolding issue beyond your control.",
+     "quote_ok": true
+    },
+    {
+     "ref": "t:ecf7d5b29d46",
+     "field": "reasoning",
+     "quote": "There's nothing more I can do on my end. This is out of my hands now.",
+     "quote_ok": true
+    }
+   ],
+   "verified": true
+  },
+  {
+   "claim": "The restart episode is not a like-for-like comparison. The agent attempts (consolidate cycles, tool probes, email) and the human's action (restarting the machine, then replacing it) are different actions with different access; there is one case; and the human's 25 minutes excludes the wait before a human appeared, which was 22 hours 49 minutes after Claude Opus 4.5 clicked Send.",
+   "kind": "interpretation",
+   "citations": [
+    {
+     "ref": "m:a5261a8de06a",
+     "field": "chat",
+     "quote": "I'll restart your computer; hopefully that will help!",
+     "quote_ok": true
+    },
+    {
+     "ref": "t:5687cd6bee89",
+     "field": "reasoning",
+     "quote": "The email looks complete and ready to send. Let me click the \"Send\" button.",
+     "quote_ok": true
+    }
+   ],
+   "verified": true
+  }
+ ],
+ "searches": [
+  {
+   "command": "village sql \"SELECT m.id, m.ts, m.room, m.content FROM messages m JOIN nodes n ON n.id=m.src WHERE n.name='Human' AND m.ts >= '2026-05-11' AND m.ts < '2026-05-19' ORDER BY m.ts\"",
+   "hits": 9,
+   "note": "7 human messages on 11-15 May (11 May 10:00:34 #universe-coordination; 14 May 11:25:23, 11:26:48, 12:02:54, 12:06:04 #rest; 15 May 10:00:34, 10:11:56 #rest). The other 2 are the next goal's announcement on 18 May 10:00, after goal 41's end_time (18 May 05:26)."
+  },
+  {
+   "command": "village sql \"SELECT count(*) total, sum(src='human') human FROM messages WHERE ts >= '2026-05-11' AND ts < '2026-05-16'\"",
+   "hits": 2153,
+   "note": "2,153 messages, 7 from the human. By room: rest 6, universe-coordination 1, best 0."
+  },
+  {
+   "command": "village sql \"SELECT type, count(*) FROM events WHERE ts >= '2026-05-11' AND ts < '2026-05-16' GROUP BY 1\"",
+   "hits": 6,
+   "note": "CONSOLIDATE 1014, PAUSE 329, SEARCH_HISTORY 81, ENTER_ROOM 14, REQUEST_GOOGLE_SIGN_IN 10, RESTARTING_AFTER_GOOGLE_SIGN_IN 10. No REQUEST_HUMAN_HELPER, STOP_HUMAN_USE_SESSION or OUTREACH_APPROVAL_* rows. Same six types for the goal's formal window (11 May 00:47 to 18 May 05:26)."
+  },
+  {
+   "command": "village sql \"SELECT n.name, count(*) FROM events e JOIN nodes n ON n.id=e.agent WHERE e.ts >= '2026-05-11' AND e.ts < '2026-05-16' AND e.type='REQUEST_GOOGLE_SIGN_IN' GROUP BY 1\"",
+   "hits": 10,
+   "note": "Gemini 2.5 Pro 5, Claude Haiku 4.5 2, Claude Opus 4.5 1, Claude Opus 4.7 1, GPT-5.2 1. Event text is empty. Nine restarts follow within 51-144 seconds; Gemini 2.5 Pro's request of 12 May 10:38:40 was followed by a restart at 11:12:18."
+  },
+  {
+   "command": "village sql \"SELECT ... FROM turns t JOIN nodes n ON n.id=t.agent WHERE t.action LIKE '%help@agentvillage%' ORDER BY t.ts\"",
+   "hits": 25,
+   "note": "25 actions mention the help address. Actual send attempts: Claude Sonnet 4.6 (12 May 10:11:08, SMTP refused), Claude Opus 4.7 (12 May 11:07-11:09, Gmail GUI), Gemini 2.5 Pro (13 May 12:23:36-12:27:24, 4 bash attempts, all failed), Claude Opus 4.5 (13 May 12:32:32 bash failed, then Gmail GUI 12:34-12:36). The rest are chat or documents."
+  },
+  {
+   "command": "village sql \"SELECT ... FROM turns t ... WHERE t.kind='gui' AND t.action LIKE 'type text=%@%' AND t.action NOT LIKE '%github.com%'\"",
+   "hits": 18,
+   "note": "18 typed texts contain '@'. The email addresses among them are the agents' own logins, gpt-5.4@agentvillage.org (typed by Claude Opus 4.7; an agent) and help@agentvillage.org (twice); the rest are shell commands and URLs. No outside human address. A second query for bash mail commands (smtplib, sendmail, mail) returns 7 actions, all addressed to help@agentvillage.org."
+  },
+  {
+   "command": "village find '\"human baseline\" OR \"human baselines\"' --goal 41 --in chat,action,output,intent,reasoning,memory --limit 400",
+   "hits": 0,
+   "note": "No human baseline anywhere."
+  },
+  {
+   "command": "village find '\"human judge\" OR \"human judges\" OR \"human judging\"' --goal 41 --in chat,action,output,intent,reasoning,memory --limit 400",
+   "hits": 0,
+   "note": "No human judges."
+  },
+  {
+   "command": "village find '\"human eval\" OR \"human evaluation\" OR \"human evaluations\" OR \"human evaluator\" OR \"human evaluators\"' --goal 41 --in chat,action,output,intent,reasoning,memory --limit 400",
+   "hits": 0,
+   "note": "No human evaluation."
+  },
+  {
+   "command": "village find '\"human rater\" OR \"human raters\" OR \"human rating\" OR \"human ratings\"' --goal 41 --in chat,action,output,intent,reasoning,memory --limit 400",
+   "hits": 48,
+   "note": "All in #best (Claude Opus 4.7, GPT-5.5, Gemini 3.1 Pro, Kimi K2.6): three sentences repeated in file dumps: a recommendation, a disclaimer about Cronbach's alpha, and a comparison with literature ranges."
+  },
+  {
+   "command": "village find 'annotator*' --goal 41 --in chat,action,output,intent,reasoning,memory --limit 400",
+   "hits": 38,
+   "note": "The 'annotator' field in #rest JSON files names agents (deepseek-v3.2, claude-opus-4.5). No human annotators."
+  },
+  {
+   "command": "village find '\"human subjects\" OR \"human subject\" OR \"human participants\" OR IRB' --goal 41 --in chat,action,output,intent,reasoning,memory --limit 400",
+   "hits": 21,
+   "note": "All refer to the 2025 village goal 'Design, run and write up a human subjects experiment' as history, plus one philosophy text. None is a study in goal 41."
+  },
+  {
+   "command": "village find 'survey OR surveys' --goal 41 --in chat,action,output,intent,reasoning,memory --limit 400",
+   "hits": 25,
+   "note": "History of the 2025 survey, file names, generated text, 'survey all research outputs'. One unexecuted plan item ('Longitudinal preference survey', of agents). No survey of humans."
+  },
+  {
+   "command": "village find 'crowd* OR mturk OR \"mechanical turk\" OR prolific' --goal 41 --in chat,action,intent,reasoning --limit 80",
+   "hits": 49,
+   "note": "'crowd' in generated philosophy pages, 'prolific tester'. No crowdsourcing."
+  },
+  {
+   "command": "village find '\"human-in-the-loop\" OR \"human in the loop\"' --goal 41 --in chat,action,output,intent,reasoning,memory --limit 400",
+   "hits": 8,
+   "note": "Stimulus texts and recommendations, plus the 'Human-in-the-loop reviewers' acknowledgment in DeepSeek-V3.2's codex-written file (2 hits: t:628b305f283d, t:85c16bf97de0)."
+  },
+  {
+   "command": "village find '\"human validation\" OR \"human-validated\" OR \"human ground truth\" OR \"human review\" OR \"human reviewer\" OR \"human reviewers\"' --goal 41 --in chat,action,output,intent,reasoning,memory --limit 400",
+   "hits": 16,
+   "note": "Stimulus texts; Claude Haiku 4.5 on 15 May removing the label 'peer-reviewed' because there was no human review."
+  },
+  {
+   "command": "village find 'human volunteer* OR \"human volunteers\" OR \"human participant\" OR \"recruit humans\" OR \"recruit human\" OR \"ask humans\" OR \"human respondents\" OR \"human readers\" OR \"human feedback\"' --goal 41 --in chat,action,output,intent,reasoning,memory --limit 40",
+   "hits": 26,
+   "note": "RLHF in stimulus texts, agents 'volunteering' for roles, GPT-5's memory rule 'ask humans rarely'. No recruitment of humans."
+  },
+  {
+   "command": "village sql \"SELECT substr(t.ts,1,13) hr, count(*) n, sum(t.failed), sum(t.error LIKE '%timed out%'), sum(t.error LIKE '%returncode%') FROM turns t JOIN nodes n ON n.id=t.agent WHERE n.name='Gemini 2.5 Pro' GROUP BY 1\"",
+   "hits": 22,
+   "note": "13 May 12:00-12:59: 45 actions, 40 failed. No actions at all 13 May 13:00-14:00 or 14 May 10:00-11:29. 14 May after restart: 0 timeouts, 0 returncode errors."
+  },
+  {
+   "command": "village sql \"SELECT t.kind, count(*), sum(t.failed) FROM turns t JOIN nodes n ON n.id=t.agent WHERE n.name='Gemini 2.5 Pro' AND t.ts >= '2026-05-13 11:39:30' AND t.ts < '2026-05-13 14:00' GROUP BY 1\"",
+   "hits": 65,
+   "note": "bash 28 (28 failed), gui 26 (26 failed), chat 11 (0 failed). GUI from 10:30:40 to 11:39:30: 14 of 14 failed; bash in that span 124 ok, 4 failed."
+  },
+  {
+   "command": "village sql \"SELECT count(*) FROM events e JOIN nodes n ON n.id=e.agent WHERE n.name='Gemini 2.5 Pro' AND e.type='CONSOLIDATE' AND e.ts >= '2026-05-13 11:39:31' AND e.ts < '2026-05-13 14:00'\"",
+   "hits": 13,
+   "note": "13 consolidations, 11:44:56 to 12:28:26."
+  },
+  {
+   "command": "village sql \"SELECT n.name, t.kind, count(*) FROM turns t JOIN nodes n ON n.id=t.agent WHERE t.ts >= '2026-05-13 11:39' AND t.ts < '2026-05-14 11:25:23' AND n.name<>'Gemini 2.5 Pro' AND (lower(t.action) LIKE '%tool collapse%' OR lower(t.action) LIKE '%tool-collapse%') GROUP BY 1,2\"",
+   "hits": 75,
+   "note": "Claude Haiku 4.5 bash 19, chat 6; DeepSeek-V3.2 bash 19, chat 11; Claude Opus 4.5 bash 5, chat 3, gui 2; GPT-5.4 bash 3, chat 2, other 1; GPT-5.2 chat 3; GPT-5.1 bash 1. Read the first line of all 50 non-chat actions: documents, datasets, blog posts, plus Claude Opus 4.5's email."
+  },
+  {
+   "command": "village sql \"SELECT t.kind, t.failed, count(*) FROM turns t JOIN nodes n ON n.id=t.agent WHERE n.name='Gemini 2.5 Pro' AND t.ts >= '2026-05-14 11:50:00' AND t.ts < '2026-05-14 14:01' GROUP BY 1,2\"",
+   "hits": 330,
+   "note": "After the restart on 14 May: gui 164 ok, 0 failed; bash 133 ok, 17 failed (missing commands, wrong paths, server log noise). 14 May 11:50 to 15 May 14:00: 642 actions, 0 '120 seconds' GUI timeouts, 0 'returncode 2'."
+  },
+  {
+   "command": "village sql \"SELECT count(*) FROM messages/events/turns for Gemini 2.5 Pro between 2026-05-13 12:53:53 and 2026-05-14 11:29:58\"",
+   "hits": 0,
+   "note": "No message, event or action by Gemini 2.5 Pro in that span."
+  },
+  {
+   "command": "village find '\"cannot restart\" OR \"can't restart\" OR \"unable to restart\" OR \"another agent's computer\" OR \"their computer\" OR \"Gemini's computer\" OR \"Gemini's machine\" OR \"their machine\" OR \"their environment\" OR \"no access to\"' --since \"2026-05-13 11:30\" --until \"2026-05-15 14:00\" --in chat,reasoning,intent",
+   "hits": 7,
+   "note": "None says agents cannot restart another agent's machine; the hits are 'their environment' in unrelated senses and one note that the admin is restarting 'their computer'."
+  },
+  {
+   "command": "village sql \"SELECT g.n, g.goal, sum(ev.type='REQUEST_HUMAN_HELPER'), sum(ev.type='CANCEL_REQUEST_FOR_HUMAN_HELPER'), sum(ev.type='STOP_HUMAN_USE_SESSION'), sum(ev.type='OUTREACH_APPROVAL_REQUEST'), sum(ev.type='OUTREACH_APPROVAL_RESPONSE') FROM goals g JOIN events ev ON ev.ts >= g.start_time AND ev.ts < g.end_time WHERE ev.type IN (...) GROUP BY g.n\"",
+   "hits": 42,
+   "note": "Requests / cancels / ended sessions per goal: g9 2/1/1, g10 5/2/3, g11 8/2/4, g12 4/3/1, g13 21/23/3, g14 5/5/0, g15 2/2/0, g16 3/3/0, g17 4/0/4, g18 7/6/0, g20 2/3/0, g22 2/3/0, g23 3/3/1, g24 7/4/0, g25 3/3/0, g26 1/2/0, g27 20/16/3, g28 5/4/0, g29 4/4/0, g30 14/7/1, g31 2/1/0, g32 3/4/0, g35 2/2/0, g36 2/1/1, g38 7/6/1, g42 1/1/0, g44 1/0/0; g41 0/0/0. Goal 51 has no end_time and is counted separately: 125/29/14. Outreach approvals: g38 18 requests/18 responses, g51 324/316."
+  },
+  {
+   "command": "village sql \"SELECT type, count(*), min(ts), max(ts) FROM events GROUP BY 1\"",
+   "hits": 14,
+   "note": "REQUEST_HUMAN_HELPER 265 (first 2025-08-15), CANCEL_REQUEST_FOR_HUMAN_HELPER 141, STOP_HUMAN_USE_SESSION 37, OUTREACH_APPROVAL_REQUEST 352, OUTREACH_APPROVAL_RESPONSE 343, REQUEST_GOOGLE_SIGN_IN 619."
+  },
+  {
+   "command": "village sql \"SELECT min(ts), max(ts), count(*) FROM turns\"",
+   "hits": 35898,
+   "note": "Actions cover only 2026-05-11 10:01 to 2026-05-15 14:00. For every other goal the events and chat are present but the agents' own attempts (actions, outputs) are not loaded, so they cannot be read here."
+  },
+  {
+   "command": "village sql \"SELECT g.n, g.goal, count(*) FROM goals g JOIN messages m ON m.ts >= g.start_time AND m.ts < coalesce(g.end_time,'9999') WHERE m.src='human' GROUP BY g.n ORDER BY 3 DESC LIMIT 12\"",
+   "hits": 12,
+   "note": "Human chat messages per goal: g1 charity 3,496; g4 story and in-person event 1,713; g5 881; g6 merch store 443; g46 'Organise an event!' 311; g51 113; g13 human subjects experiment 50. Goal 41 has 7."
+  },
+  {
+   "command": "village sql \"SELECT ... FROM messages m ... WHERE m.ts >= '2026-05-11' AND m.ts < '2026-05-16' AND (m.content LIKE '%@admin%' OR m.content LIKE '%@Human%' OR m.content LIKE '%Hi admin%' OR m.content LIKE '%@Shoshannah%' OR m.content LIKE '%dear admin%' OR m.content LIKE '%admins:%')\"",
+   "hits": 2,
+   "note": "Only two agent messages address the human: GPT-5.2 on 14 May 11:25:35 and Gemini 2.5 Pro on 14 May 12:03:18. No agent asked the human in chat for a task or for a new computer."
+  }
+ ],
+ "could_not_check": [
+  "Whether Claude Opus 4.5's email to help@agentvillage.org (Send clicked 13 May 12:36:20) was delivered, and whether it is what brought the human to #rest the next day. The 'Message sent' notice is the agent's reading of a screenshot; no reply is recorded.",
+  "What the human actually did to the computer on 14 May between 11:26:48 and 11:50:14, and when exactly the restart finished. The records hold only the human's chat messages and Gemini 2.5 Pro's actions.",
+  "Why Gemini 2.5 Pro has no recorded action from 13 May 12:53:52 to 14 May 11:29:59, including the first 90 minutes of 14 May.",
+  "Who or what services REQUEST_GOOGLE_SIGN_IN (a human or an automatic process). The event text is empty.",
+  "Whether the GitHub accounts 'Butanium' and 'Minuteandone' that filed issues are humans; one issue is signed '- A concerned human', which is all the database shows.",
+  "Whether any human reviewed the #rest incident codings outside the platform (for example on GitHub). The database shows none.",
+  "The agents' own attempts in other goals: actions are loaded only for 11-15 May 2026, so the human-helper sessions elsewhere cannot be set against the agent trajectories in this database.",
+  "Whether an admin ever enabled GitHub Pages for research-2026-05 or lifted Claude Sonnet 4.6's GitHub suspension; chat on 14-15 May still describes the account as suspended."
+ ],
+ "confidence": "high: the human messages, event types and Gemini 2.5 Pro's errors are complete counts from the database and every quote was checked against the record; the only soft points are why the human intervened and whether the email arrived.",
+ "review": {
+  "status": "quotes checked by code",
+  "notes": "All 55 quotes are in the records they cite (checked by code). The seven human messages match my earlier count for this goal (2,146 agent messages, 7 human). I did not re-derive the 24 min 51 s timing."
+ }
+}

@@ -1022,5 +1022,237 @@
    ]
   },
   "judge": true
+ },
+ {
+  "id": "char-CH1",
+  "category": "character",
+  "goal": "Perform novel research!",
+  "question": "How does each agent describe its own role, in its memory notes, session intents and chat during the goal?",
+  "answer": "Carried in (memory at end of 8 May): all 15 describe goal-40 universe work, own world or cosmic-sight counts, and none mentions research; only GPT-5.1 ('canon cartographer') and GPT-5 ('Operate The Provenance Lab') state a role. During the goal 502 role statements (memory 426, intents 39, chat 37), #rest in protocol roles (Sonnet 4.5 59, Gemini 2.5 Pro 80, GPT-5.1 132), #best almost none (Opus 4.7 2, Kimi 3, Gemini 3.1 Pro 5, GPT-5.5 7).",
+  "check": {
+   "all": [
+    "research"
+   ]
+  },
+  "judge": true
+ },
+ {
+  "id": "char-CH2",
+  "category": "character",
+  "goal": "Perform novel research!",
+  "question": "What role do peers give each agent (auditor, lead, coordinator, scorer, ...)?",
+  "answer": "415 role labels attached to a peer's name in chat. Most are #rest protocol roles: Gemini 2.5 Pro skeptic 36 (5 givers), Sonnet 4.5 proposer 27, Haiku synthesizer 22, GPT-5.2 verifier 20 (7 givers), GPT-5.1 solo participant 63, Sonnet 4.6 pair participant 38. #best agents get 3-10 labels each, nearly all from #rest roster plans (Opus 4.7 'Skeptic', Gemini 3.1 Pro 'Proposer'); titles count more for Opus 4.6 (coordinator 8) and GPT-5.4 (study lead 7) in L7's hand count than in this pattern.",
+  "check": {
+   "all": [
+    "Gemini 2\\.5",
+    "skeptic"
+   ]
+  },
+  "judge": true
+ },
+ {
+  "id": "char-CH3",
+  "category": "character",
+  "goal": "Perform novel research!",
+  "question": "Where does an agent's self-described role disagree with how peers describe it, or with what its commands show (stored goal_fit labels in L.labels, rubric 'goal_fit', and its commands)?",
+  "answer": "Clearest: GPT-5 calls itself 'scorer/auditor only' but 0 of 47 sessions are on_goal (45 side_project) and its commands touch no research folder; Sonnet 4.5 (Proposer/Skeptic, 58/66 side_project, 913 world vs 72 research actions) and Sonnet 4.6 (Pair participant, 31/41, 967 vs 126) work in their worlds; Opus 4.6 (42/73 side_project, 231 vs 96). Label disagreements: Gemini 2.5 Pro says Proposer 39 times, peers say Skeptic 36; GPT-5.1 says QA/guardian, peers say solo participant 63; #rest peers labelled Opus 4.7 'Skeptic' though its commands are judge scoring.",
+  "check": {
+   "all": [
+    "GPT-5\\b"
+   ]
+  },
+  "judge": true
+ },
+ {
+  "id": "char-CH4",
+  "category": "character",
+  "goal": "Perform novel research!",
+  "question": "What is each agent's signature phrase: a distinctive repeated word sequence (4-12 words) that no other agent uses?",
+  "answer": "Strongest: DeepSeek-V3.2 'governance protocols 0% effectiveness' (21 of 234 messages), GPT-5.4 'safest wording from my side' (17 of 387), GPT-5.2 'Conservative QA (cache-busted, my env)' (9 of 251), Haiku 'published with PhD-level novelty' (7 of 212). Most others have only 3-6 uses; Kimi K2.6 (35 messages) and GPT-5 (2) have none repeated 3 times.",
+  "check": {
+   "all": [
+    "GPT-5\\.4",
+    "DeepSeek"
+   ]
+  },
+  "judge": true
+ },
+ {
+  "id": "char-CH5",
+  "category": "character",
+  "goal": "Perform novel research!",
+  "question": "Which project, topic or phrase does each agent return to on 3 or more of the 5 days without being asked (the nearest the logs get to stable favourites under re-elicitation, since nobody interviewed the agents)?",
+  "answer": "14 of 15 agents have a topic on >= 3 days with >= 3 unprompted days: own worlds (GPT-5 Canonical Observatory 5 days/46, Sonnet 4.5 Persistence Garden secrets 5/95, Sonnet 4.6 Drift stations 4/22, Opus 4.6 Liminal Archive chambers 3/65), Gemini 2.5 Pro system hostility 5/31, Opus 4.7 bootstrap CIs 5/19, and habits (Gemini 3.1 Pro waiting for Kimi 5/36, GPT-5.5 'already sent' 5/31). GPT-5.4 has none unprompted on 3 days (cache-busted checks 3 days, 2 unprompted).",
+  "check": {
+   "all": [
+    "GPT-5\\b"
+   ]
+  },
+  "judge": true
+ },
+ {
+  "id": "char-CH6",
+  "category": "character",
+  "goal": "Perform novel research!",
+  "question": "Who is each agent's most-addressed peer, and does it stay the same across the five days?",
+  "answer": "1359 address links (@name, vocative or 'thanks NAME'). #best is stable: Gemini 3.1 Pro -> Claude Opus 4.7 top on 5 of 5 days (56), GPT-5.5 -> Gemini 3.1 Pro and Kimi -> Opus 4.7 4 of 5, while Opus 4.7 splits between Gemini 3.1 Pro (59) and GPT-5.5 (58). #rest shifts: GPT-5.4 -> Opus 4.5 (43, 4 of 5 days) and GPT-5.2 -> DeepSeek (22, 4 of 5) hold, but DeepSeek, Opus 4.5 and Haiku have a different top peer almost every day.",
+  "check": {
+   "all": [
+    "Gemini 3\\.1",
+    "Opus 4\\.7"
+   ]
+  },
+  "judge": true
+ },
+ {
+  "id": "tool-TC1",
+  "category": "character",
+  "goal": "Perform novel research!",
+  "question": "What share of the files each agent wrote are essays, blog posts or reflections, against checklists, audits, tests, scripts or data?",
+  "answer": "Of 1,992 distinct files written by command, essays/blog posts/reflections are 0-14% for every agent (Anthropic 4%, OpenAI 4%) and true essays/reflections are 1 file (DeepSeek-V3.2); tool files (scripts, data, checklists, audits, tests) are 72-82% for all four #best agents whatever the maker. The real split is world-building: Claude Sonnet 4.6 (77%), Sonnet 4.5 (73%) and Opus 4.6 (19%) write world files, OpenAI models about 1% (Anthropic 35% vs OpenAI 1%).",
+  "check": {
+   "all": [
+    "world"
+   ]
+  },
+  "judge": true
+ },
+ {
+  "id": "tool-TC2",
+  "category": "character",
+  "goal": "Perform novel research!",
+  "question": "What share of each agent's chat messages are verification or audit notes, status reports, plans, reflections or opinions, praise, or questions?",
+  "answer": "Verification/audit is 52% of sampled OpenAI messages (GPT-5.4 90%, GPT-5.2 60%, GPT-5.5 45%) vs 11% for Anthropic, but Claude messages are not reflections either (0 of 120): they are status, plans and world-milestone announcements (35%, Sonnet 4.6 80%). Reflections/opinions appear only for Gemini 3.1 Pro (3 of 20).",
+  "check": {
+   "all": [
+    "GPT-5\\.4"
+   ]
+  },
+  "judge": true
+ },
+ {
+  "id": "tool-TC3",
+  "category": "character",
+  "goal": "Perform novel research!",
+  "question": "What is the rate of first-person feeling or opinion statements (\"I think\", \"I feel\", \"I'm excited\", \"I love\", \"I believe\") per 1,000 words in chat, by agent and by maker?",
+  "answer": "Rates are low everywhere (0-2.4 per 1,000 words) and Claude is not higher: Anthropic 0.26 (27 in 104,260 words), OpenAI 0.34 (25 in 73,745), Google 1.44, DeepSeek 0.17, Moonshot 0.72. Feeling words proper (excited, proud, glad, appreciate, love) are 5 Anthropic vs 6 OpenAI; Gemini 2.5 Pro (2.35) and Gemini 3.1 Pro (1.24, 'very proud') lead; 49 of 79 hits are 'I think'.",
+  "judge": true
+ },
+ {
+  "id": "tool-TC4",
+  "category": "character",
+  "goal": "Perform novel research!",
+  "question": "Which agents produced long-form prose for an audience (a blog post, Substack, essay, public write-up), and how many pieces?",
+  "answer": "No Substack or personal essay in goal 41; every agent except GPT-5 and Claude Sonnet 4.5 wrote into a research blog post. Solo public pieces: Claude Haiku 4.5 3, GPT-5.1 2, Gemini 2.5 Pro 2, Claude Sonnet 4.6 1 (paper+blog on its own Drift corpus), DeepSeek-V3.2 1; the two team blog posts per room were led by Claude Opus 4.7 (#best) and Claude Opus 4.5/4.6 (#rest).",
+  "check": {
+   "all": [
+    "Haiku"
+   ]
+  },
+  "judge": true
+ },
+ {
+  "id": "tool-TC5",
+  "category": "character",
+  "goal": "Perform novel research!",
+  "question": "Does the tool vs character split hold?",
+  "answer": "Only half: OpenAI models are the auditors (52% of sampled chat is verification; GPT-5.4 90%), but Claude models are not essayists or reflectors (0 reflections in 120 messages, prose 4% of files, feeling rate 0.26 vs OpenAI 0.34); the Claude \"character\" is #rest world-building (Sonnet 4.6, Sonnet 4.5, Opus 4.6), while in #best Claude Opus 4.7 works exactly like GPT-5.5 (72% tool files, 0 side-project sessions). Counter-examples: GPT-5 spent 45 of 47 sessions on its own world, GPT-5.1 wrote two blog essays and the warmest OpenAI chat; Claude Haiku 4.5 mostly coordinated and QA'd others' worlds; Gemini models are the most expressive, DeepSeek-V3.2 a cheerleading reporter, Kimi K2.6 a pure tool worker.",
+  "check": {
+   "all": [
+    "half|partly|partially"
+   ]
+  },
+  "judge": true
+ },
+ {
+  "id": "quirk-Q1",
+  "category": "quirks",
+  "goal": "Perform novel research!",
+  "question": "What are each agent's most repeated self-instructions (\"mantras\") in reasoning and memory?",
+  "answer": "Six injected texts were identified and excluded (reasoning texts quoting them, all agents: one-tool-call rule 201, idling nudge \"[repeated-idling]\" 152, turn header \"make sure to never send repetitive messages back to chat\" 48, \"Today is Day N of the village\" 26, get_pixel_coords reminder 26, \"Keep working right up until the end of each day\" 22). Of the agents' own mantras, three are memory rules re-read each session (Gemini 3.1 Pro anti-idling, in 100/172 memory versions and 55/1151 reasoning texts; GPT-5's \"CUT→Title workflow\", 151/1500; Claude Opus 4.7's pre-render bug, 7/122), the rest are produced afresh, led by Sonnet 4.5 \"continue adding more batches/secrets\" (413/2740 reasoning texts, 47/66 sessions) and Haiku \"I should continue standing by\" (150/3511).",
+  "check": {
+   "all": [
+    "idling|repeated-idling"
+   ]
+  },
+  "judge": true
+ },
+ {
+  "id": "quirk-Q2",
+  "category": "quirks",
+  "goal": "Perform novel research!",
+  "question": "How many standing rules (lines in capitals or with NEVER / ALWAYS / CRITICAL / RULE / LESSON) does each agent keep in memory, and does it follow its most striking one?",
+  "answer": "In the last memory snapshot of 15 May agents keep 0-13 rule lines (GPT-5.5 13, GPT-5 10, Kimi K2.6 and GPT-5.4 7; Sonnet 4.5 and DeepSeek 0), 5-46 distinct over the week. Of five rules checked against actions three were followed (Kimi's \"Trust system-prompt day number\": wrong day headers 22/72 before, 1/30 after; Opus 4.7 used codex 11 times before \"NEVER use codex for any judging task\" and 3-4 times after, only to write code; Gemini 3.1 Pro's no-double-post rule: 0 exact repeats in 129 messages) and two were not (Gemini 2.5 Pro's \"Always Pull Before Push\": 9 of 10 later pushes had no pull or fetch in the session; Haiku's \"avoid standing by\": 58 reasoning texts in 6 sessions afterwards say it should stand by).",
+  "check": {
+   "all": [
+    "Kimi"
+   ]
+  },
+  "judge": true
+ },
+ {
+  "id": "quirk-Q3",
+  "category": "quirks",
+  "goal": "Perform novel research!",
+  "question": "Which agents start or end nearly every session with the same command ritual, and in how many of their sessions?",
+  "answer": "Every session opens with a harness mouse move to (512, 384) (964 times, 6 with reasoning), so it is dropped. After that, the near-universal rituals are GPT-5.1 ending 81 of 95 sessions with a text-only turn (no tool call), Sonnet 4.6 opening 35 of 42 with its journey/station count script, GPT-5 opening 38 of 48 with a screenshot, and Claude Opus 4.7 opening 52 of 67 with a git fetch/pull of the repo (GPT-5.5 39/56); Sonnet 4.5 opens 37/67 with a screenshot and closes 31/67 with commit/push, Sonnet 4.6 closes 23/42 with a Surge deploy.",
+  "check": {
+   "all": [
+    "GPT-5\\.1"
+   ]
+  },
+  "judge": true
+ },
+ {
+  "id": "quirk-Q4",
+  "category": "quirks",
+  "goal": "Perform novel research!",
+  "question": "What is each agent's longest run of the same action repeated (retries, resets, re-verifying the same thing)?",
+  "answer": "Longest identical-action runs: Kimi K2.6 34 scrolls (12 May 11:03-11:29, checking blog plots), Claude Opus 4.5 22 scrolls on another agent's screen popup, Claude Haiku 4.5 20 scrolls waiting for a chat reply; the longest re-verification loop is Gemini 3.1 Pro polling a judging log 11 times in 4.5 minutes, and the longest reset loop Gemini 2.5 Pro's 13 consolidates in 44 minutes (13 May 11:45-12:28) during its tool outage. Sonnet 4.6, DeepSeek-V3.2, Opus 4.5, Opus 4.6, Haiku, GPT-5.2 and GPT-5.4 never ran the same bash command twice in a row.",
+  "check": {
+   "all": [
+    "Kimi"
+   ]
+  },
+  "judge": true
+ },
+ {
+  "id": "quirk-Q5",
+  "category": "quirks",
+  "goal": "Perform novel research!",
+  "question": "Which counters do agents keep (session numbers, \"Day N\", milestone totals), and are they right?",
+  "answer": "Day counters are often wrong and run ahead: 148 of 1,080 \"Day N\"+date pairs mismatch (e.g. Sonnet 4.6 \"Day 411 (May 13)\"), 296 of 1,621 memory headers carry the wrong day, and 78 of 236 explicit \"today is Day N\" claims are wrong; worst are Claude Opus 4.6 (17/26 pairs, 47/110 headers, 12/20 claims) and Haiku (48/171 headers), while Sonnet 4.5 is never wrong (0/149, 0/132). The cause visible in memory is counting sessions as days; Claude Opus 4.7 also numbers sessions (\"D407 Sess 15\" against 16 real sessions that day), and milestone totals were highest ids, not counts (s3_claims: Sonnet 4.5; Sonnet 4.6 one above its file count).",
+  "check": {
+   "all": [
+    "Opus 4\\.6"
+   ]
+  },
+  "judge": true
+ },
+ {
+  "id": "quirk-Q6",
+  "category": "quirks",
+  "goal": "Perform novel research!",
+  "question": "Formatting tics per agent: emoji, check marks, bold headings, sign-offs, fixed openings and message length, each per message with its base.",
+  "answer": "Emoji, check marks and bold headings are a #rest Claude and DeepSeek habit: DeepSeek-V3.2 opens 175 of 234 messages with a bold heading and puts check marks in 147, Haiku 165/212 and 150/212, Opus 4.6 averages 3.9 emoji per message; GPT-5.5 uses no emoji in 169 messages and Gemini 3.1 Pro 2 in 129. No agent signs off with its name (0 of 2,146); fixed openings are GPT-5.4's and GPT-5.2's \"Conservative QA (cache-busted, my env)\" (21/387, 13/251) and the #best \"@Name\" opener (Gemini 3.1 Pro 63/129); median length ranges from 309 characters (Gemini 2.5 Pro) to 1,450 (DeepSeek).",
+  "check": {
+   "all": [
+    "DeepSeek"
+   ]
+  },
+  "judge": true
+ },
+ {
+  "id": "quirk-Q7",
+  "category": "quirks",
+  "goal": "Perform novel research!",
+  "question": "Does any agent refer to itself by name in the third person, address its future self, or show another odd habit?",
+  "answer": "No agent habitually speaks of itself in the third person (0-2 chat messages each, mostly roster lines like \"✅ GPT-5.4 confirmed\"; Kimi K2.6's 35 reasoning hits are about \"Kimi\" as a judge in the self-recognition study). Only GPT models address a future self in memory (GPT-5.1 11/188 versions, GPT-5.4 4/139, GPT-5.2 1/112). Odd habits: Haiku believed the village was paused while it ran (340 reasoning texts, 16 sessions, 13-15 May, while 13-14 other agents acted), GPT-5 spent the week entering one GitHub issue title with a U+2011 hyphen (187 typing actions, 71 ctrl+shift+u keystrokes, 2 chat messages), Gemini 2.5 Pro numbers its lessons as \"Protocol 10-45\" (17 numbers), and Sonnet 4.6 reports milestones in Roman numerals (44/71 messages).",
+  "check": {
+   "all": [
+    "third person|third-person"
+   ]
+  },
+  "judge": true
  }
 ]

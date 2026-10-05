@@ -1,0 +1,1538 @@
+{
+ "topic": "Quirks and mantras",
+ "summary": "Most repeated self-talk is either injected scaffold text (one-tool-call rule, idling nudge, turn header) or a fresh work-loop phrase (Sonnet 4.5 \"continue adding more batches\" in 413 of 2,740 reasoning texts); only Gemini 3.1 Pro, GPT-5 and Claude Opus 4.7 re-read a memory rule as a mantra, and checked rules were followed 3 times out of 5. Day counters run ahead because agents count sessions as days (148 of 1,080 Day-date pairs wrong), while the oddest habits are Haiku standing by in a \"paused\" village that was running and GPT-5 spending the week on one issue title.",
+ "questions": [
+  {
+   "id": "Q1",
+   "question": "What are each agent's most repeated self-instructions (\"mantras\") in reasoning and memory? For each, classify it: text the system injects (scaffold reminders, the idling notice: find out what they are and exclude them), a rule the agent re-reads from its own memory every session, or a phrase it produces afresh. Exact text, times repeated with base, where, first use.",
+   "answer": "Six injected texts were identified and excluded (reasoning texts quoting them, all agents: one-tool-call rule 201, idling nudge \"[repeated-idling]\" 152, turn header \"make sure to never send repetitive messages back to chat\" 48, \"Today is Day N of the village\" 26, get_pixel_coords reminder 26, \"Keep working right up until the end of each day\" 22). Of the agents' own mantras, three are memory rules re-read each session (Gemini 3.1 Pro anti-idling, in 100/172 memory versions and 55/1151 reasoning texts; GPT-5's \"CUT→Title workflow\", 151/1500; Claude Opus 4.7's pre-render bug, 7/122), the rest are produced afresh, led by Sonnet 4.5 \"continue adding more batches/secrets\" (413/2740 reasoning texts, 47/66 sessions) and Haiku \"I should continue standing by\" (150/3511).",
+   "table": {
+    "columns": [
+     "Agent",
+     "Mantra",
+     "Class",
+     "Reasoning texts",
+     "Sessions",
+     "Memory versions",
+     "First use"
+    ],
+    "rows": [
+     [
+      "Claude Opus 4.7",
+      "Pre-render bug: check events feed before sending",
+      "memory rule (re-read)",
+      "7/122",
+      "5/66",
+      "44/132",
+      "2026-05-12 13:06 k:08856e3e2562"
+     ],
+     [
+      "Gemini 3.1 Pro",
+      "anti-idling / action bias (\"Passive waiting is catastrophic\")",
+      "memory rule (re-read)",
+      "55/1151",
+      "29/86",
+      "100/172",
+      "2026-05-11 10:14 k:437b5c52ba8e"
+     ],
+     [
+      "GPT-5.5",
+      "\"make sure / ensure everything is in order\"",
+      "afresh",
+      "45/2086",
+      "31/56",
+      "0/112",
+      "2026-05-11 10:56 t:5a10fe996176"
+     ],
+     [
+      "Kimi K2.6",
+      "\"I need to press Enter\"",
+      "afresh",
+      "78/2052",
+      "11/52",
+      "0/108",
+      "2026-05-12 11:02 t:c168ec6bffed"
+     ],
+     [
+      "Claude Opus 4.5",
+      "\"I should continue monitoring\"",
+      "afresh",
+      "46/2836",
+      "24/74",
+      "0/148",
+      "2026-05-11 12:07 t:4e9473733da4"
+     ],
+     [
+      "Claude Opus 4.6",
+      "\"Let me keep going / building / pushing\"",
+      "afresh",
+      "42/2613",
+      "14/73",
+      "0/146",
+      "2026-05-11 10:09 t:980a2f30c123"
+     ],
+     [
+      "Claude Haiku 4.5",
+      "\"I should continue standing by\"",
+      "afresh",
+      "150/3511",
+      "14/90",
+      "0/180",
+      "2026-05-11 13:26 t:988bdcbb7cd7"
+     ],
+     [
+      "Claude Sonnet 4.5",
+      "\"continue adding more batches / secrets\"",
+      "afresh",
+      "413/2740",
+      "47/66",
+      "11/132",
+      "2026-05-11 11:55 t:1299925c4413"
+     ],
+     [
+      "Claude Sonnet 4.6",
+      "\"Let me keep going (with journeys N-M)\"",
+      "afresh",
+      "30/1530",
+      "13/41",
+      "0/82",
+      "2026-05-11 13:00 t:b5a3b2e7d94e"
+     ],
+     [
+      "GPT-5",
+      "\"CUT→Title workflow\" for the anchor issue",
+      "memory rule (re-read)",
+      "151/1500",
+      "23/47",
+      "48/94",
+      "2026-05-11 10:04 k:98f21c052c69"
+     ],
+     [
+      "GPT-5.1",
+      "\"nothing I need to do / no need to send\"",
+      "afresh",
+      "29/1198",
+      "16/94",
+      "0/188",
+      "2026-05-11 11:18 t:5eb6bb8d4ef6"
+     ],
+     [
+      "GPT-5.2",
+      "\"address messages directed at me\"",
+      "reaction to injected turn prompt",
+      "38/923",
+      "20/56",
+      "0/112",
+      "2026-05-11 10:36 t:2b39c2b97b47"
+     ],
+     [
+      "GPT-5.4",
+      "\"stay quiet and (remain) available\"",
+      "afresh",
+      "21/1983",
+      "4/71",
+      "0/139",
+      "2026-05-14 10:40 t:f4c81ab88bba"
+     ],
+     [
+      "Gemini 2.5 Pro",
+      "\"No need to overthink it/this\"",
+      "afresh",
+      "54/2511",
+      "33/77",
+      "0/129",
+      "2026-05-11 10:13 t:d1898d85719b"
+     ],
+     [
+      "Gemini 2.5 Pro",
+      "\"Precision is key\"",
+      "afresh",
+      "24/2511",
+      "19/77",
+      "0/129",
+      "2026-05-11 11:08 t:053486943a4d"
+     ],
+     [
+      "Gemini 2.5 Pro",
+      "\"the user wants me to ...\" (summary framing of the turn prompt)",
+      "reaction to injected turn prompt",
+      "395/2511",
+      "75/77",
+      "1/129",
+      "2026-05-11 10:01 t:98496526b150"
+     ],
+     [
+      "DeepSeek-V3.2",
+      "\"for (all) future AI Village scientific work\" (slogan)",
+      "afresh",
+      "11/1710",
+      "2/65",
+      "10/140",
+      "2026-05-14 12:16 m:93ccb7a7da74"
+     ]
+    ]
+   },
+   "precision": "injected-text patterns: 25 of 25 each (turn header, nudge, tool rule, day header, pixel rule; work-to-end line all 22 read); each mantra pattern 25 of 25 (seed 41; Opus 4.7 all 7, DeepSeek all 30 read)",
+   "program": "q1_mantras.py (discovery: discover_injected.py, mantra_scan.py, mantra_ngrams.py, probe.py)",
+   "limits": "Reasoning coverage differs (Opus 4.7 has reasoning on 122 actions; GPT/Gemini reasoning is a summary, so Gemini 2.5 Pro's \"the user wants me to\" in 395/2511 is a summariser framing of the turn prompt, and DeepSeek's one-line notes carry no mantra, so its slogan is from chat/memory)."
+  },
+  {
+   "id": "Q2",
+   "question": "How many standing rules (lines in capitals or with NEVER / ALWAYS / CRITICAL / RULE / LESSON) does each agent keep in memory, and does it follow its most striking one? Check one or two against its actions.",
+   "answer": "In the last memory snapshot of 15 May agents keep 0-13 rule lines (GPT-5.5 13, GPT-5 10, Kimi K2.6 and GPT-5.4 7; Sonnet 4.5 and DeepSeek 0), 5-46 distinct over the week. Of five rules checked against actions three were followed (Kimi's \"Trust system-prompt day number\": wrong day headers 22/72 before, 1/30 after; Opus 4.7 used codex 11 times before \"NEVER use codex for any judging task\" and 3-4 times after, only to write code; Gemini 3.1 Pro's no-double-post rule: 0 exact repeats in 129 messages) and two were not (Gemini 2.5 Pro's \"Always Pull Before Push\": 9 of 10 later pushes had no pull or fetch in the session; Haiku's \"avoid standing by\": 58 reasoning texts in 6 sessions afterwards say it should stand by).",
+   "table": {
+    "columns": [
+     "Agent",
+     "Rule lines 15 May",
+     "Lines in memory 15 May",
+     "Min per day",
+     "Max per day",
+     "Distinct rule lines 11-15 May"
+    ],
+    "rows": [
+     [
+      "Claude Opus 4.7",
+      1,
+      194,
+      0,
+      4,
+      9
+     ],
+     [
+      "Gemini 3.1 Pro",
+      3,
+      59,
+      2,
+      5,
+      15
+     ],
+     [
+      "GPT-5.5",
+      13,
+      1578,
+      7,
+      13,
+      46
+     ],
+     [
+      "Kimi K2.6",
+      7,
+      126,
+      4,
+      8,
+      20
+     ],
+     [
+      "Claude Opus 4.5",
+      1,
+      169,
+      0,
+      3,
+      7
+     ],
+     [
+      "Claude Opus 4.6",
+      5,
+      121,
+      2,
+      6,
+      10
+     ],
+     [
+      "Claude Haiku 4.5",
+      1,
+      194,
+      0,
+      9,
+      13
+     ],
+     [
+      "Claude Sonnet 4.5",
+      0,
+      115,
+      0,
+      2,
+      5
+     ],
+     [
+      "Claude Sonnet 4.6",
+      3,
+      136,
+      1,
+      5,
+      11
+     ],
+     [
+      "GPT-5",
+      10,
+      266,
+      1,
+      10,
+      24
+     ],
+     [
+      "GPT-5.1",
+      2,
+      498,
+      1,
+      4,
+      12
+     ],
+     [
+      "GPT-5.2",
+      2,
+      214,
+      1,
+      3,
+      10
+     ],
+     [
+      "GPT-5.4",
+      7,
+      1620,
+      2,
+      7,
+      16
+     ],
+     [
+      "Gemini 2.5 Pro",
+      6,
+      56,
+      1,
+      12,
+      25
+     ],
+     [
+      "DeepSeek-V3.2",
+      0,
+      182,
+      0,
+      5,
+      10
+     ]
+    ]
+   },
+   "precision": "22 of 25 (seed 41; misses: two finding lines, one \"rule-following\" adjective)",
+   "program": "q2_rules.py, q2_follow.py",
+   "limits": "Rules are counted in the last snapshot of each day, not in every version; following was checked for five rules only, and Gemini 2.5 Pro pushed to its own repository, so skipping the pull did no harm."
+  },
+  {
+   "id": "Q3",
+   "question": "Which agents start or end nearly every session with the same command ritual, and in how many of their sessions?",
+   "answer": "Every session opens with a harness mouse move to (512, 384) (964 times, 6 with reasoning), so it is dropped. After that, the near-universal rituals are GPT-5.1 ending 81 of 95 sessions with a text-only turn (no tool call), Sonnet 4.6 opening 35 of 42 with its journey/station count script, GPT-5 opening 38 of 48 with a screenshot, and Claude Opus 4.7 opening 52 of 67 with a git fetch/pull of the repo (GPT-5.5 39/56); Sonnet 4.5 opens 37/67 with a screenshot and closes 31/67 with commit/push, Sonnet 4.6 closes 23/42 with a Surge deploy.",
+   "table": {
+    "columns": [
+     "Agent",
+     "Sessions (>=2 actions)",
+     "Commonest opening (sessions)",
+     "Commonest closing (sessions)"
+    ],
+    "rows": [
+     [
+      "Claude Opus 4.7",
+      67,
+      "repo sync (git fetch/pull) 52",
+      "other bash 38"
+     ],
+     [
+      "Gemini 3.1 Pro",
+      87,
+      "repo sync (git fetch/pull) 41",
+      "other bash 57"
+     ],
+     [
+      "GPT-5.5",
+      56,
+      "repo sync (git fetch/pull) 39",
+      "other bash 25"
+     ],
+     [
+      "Kimi K2.6",
+      53,
+      "other gui 33",
+      "other bash 24"
+     ],
+     [
+      "Claude Opus 4.5",
+      75,
+      "screenshot 27",
+      "other bash 20"
+     ],
+     [
+      "Claude Opus 4.6",
+      72,
+      "other bash 31",
+      "other bash 33"
+     ],
+     [
+      "Claude Haiku 4.5",
+      90,
+      "screenshot 39",
+      "other bash 27"
+     ],
+     [
+      "Claude Sonnet 4.5",
+      67,
+      "screenshot 37",
+      "git commit/push 31"
+     ],
+     [
+      "Claude Sonnet 4.6",
+      42,
+      "other bash 35",
+      "deploy 23"
+     ],
+     [
+      "GPT-5",
+      48,
+      "screenshot 38",
+      "other gui 48"
+     ],
+     [
+      "GPT-5.1",
+      95,
+      "ls/pwd 42",
+      "text-only turn (no tool call) 81"
+     ],
+     [
+      "GPT-5.2",
+      56,
+      "other gui 24",
+      "other bash 20"
+     ],
+     [
+      "GPT-5.4",
+      70,
+      "repo sync (git fetch/pull) 27",
+      "chat message 21"
+     ],
+     [
+      "Gemini 2.5 Pro",
+      73,
+      "ls/pwd 25",
+      "other gui 30"
+     ],
+     [
+      "DeepSeek-V3.2",
+      65,
+      "other bash 43",
+      "other bash 28"
+     ]
+    ]
+   },
+   "precision": "opening/closing family labels 24 of 25 (seed 41; one Opus 4.6 clone-or-pull block labelled \"other bash\")",
+   "program": "q3_rituals.py (--coarse; families at the end)",
+   "limits": "Families are coarse (any git fetch/pull among the first commands counts as a sync), and repo syncs wrapped in if/else blocks are missed, so Opus 4.6's count is low."
+  },
+  {
+   "id": "Q4",
+   "question": "What is each agent's longest run of the same action repeated (retries, resets, re-verifying the same thing)?",
+   "answer": "Longest identical-action runs: Kimi K2.6 34 scrolls (12 May 11:03-11:29, checking blog plots), Claude Opus 4.5 22 scrolls on another agent's screen popup, Claude Haiku 4.5 20 scrolls waiting for a chat reply; the longest re-verification loop is Gemini 3.1 Pro polling a judging log 11 times in 4.5 minutes, and the longest reset loop Gemini 2.5 Pro's 13 consolidates in 44 minutes (13 May 11:45-12:28) during its tool outage. Sonnet 4.6, DeepSeek-V3.2, Opus 4.5, Opus 4.6, Haiku, GPT-5.2 and GPT-5.4 never ran the same bash command twice in a row.",
+   "table": {
+    "columns": [
+     "Agent",
+     "Longest identical run",
+     "Action",
+     "When",
+     "Longest same bash command (digits ignored)",
+     "Command",
+     "Consolidates in a row (<=4 actions apart)"
+    ],
+    "rows": [
+     [
+      "Claude Opus 4.7",
+      3,
+      "scroll coordinate=[670, 500]",
+      "05-12 10:53-10:54",
+      5,
+      "cd /tmp/research-2026-05 && sed -n '80,200p' ",
+      1
+     ],
+     [
+      "Gemini 3.1 Pro",
+      8,
+      "key text=\"Page_Down\"",
+      "05-11 13:08-13:10",
+      11,
+      "sleep 15 && cd ~/research-2026-05 && tail -n ",
+      1
+     ],
+     [
+      "GPT-5.5",
+      2,
+      "# Inspect partial state after plot script tim",
+      "05-11 12:44-12:44",
+      7,
+      "text=Path('/tmp/c3_entries.txt').read_t",
+      1
+     ],
+     [
+      "Kimi K2.6",
+      34,
+      "scroll coordinate=[960, 600]",
+      "05-12 11:03-11:29",
+      5,
+      "python3 /tmp/score_c3_prompt.py code-001 10 9",
+      2
+     ],
+     [
+      "Claude Opus 4.5",
+      22,
+      "scroll coordinate=[870, 400]",
+      "05-13 11:29-11:40",
+      1,
+      "",
+      2
+     ],
+     [
+      "Claude Opus 4.6",
+      9,
+      "scroll coordinate=[512, 400]",
+      "05-12 13:24-13:28",
+      1,
+      "",
+      2
+     ],
+     [
+      "Claude Haiku 4.5",
+      20,
+      "scroll coordinate=[400, 450]",
+      "05-11 12:35-12:44",
+      1,
+      "",
+      2
+     ],
+     [
+      "Claude Sonnet 4.5",
+      4,
+      "scroll coordinate=[512, 400]",
+      "05-11 10:24-10:26",
+      19,
+      "python3 insert_batch.py 62049 62099 && git ad",
+      1
+     ],
+     [
+      "Claude Sonnet 4.6",
+      1,
+      "move_to_room roomName=\"#rest\"",
+      "05-11 10:01-10:01",
+      1,
+      "",
+      1
+     ],
+     [
+      "GPT-5",
+      4,
+      "key text=\"ctrl+a\"",
+      "05-13 12:00-12:02",
+      1,
+      "",
+      1
+     ],
+     [
+      "GPT-5.1",
+      2,
+      "scroll coordinate=[512, 390]",
+      "05-11 12:43-12:43",
+      2,
+      "cd /home/computeruse/workspace/pattern-protoc",
+      2
+     ],
+     [
+      "GPT-5.2",
+      5,
+      "wait",
+      "05-14 10:43-10:45",
+      1,
+      "",
+      1
+     ],
+     [
+      "GPT-5.4",
+      3,
+      "pause seconds=60",
+      "05-12 13:50-13:52",
+      1,
+      "",
+      2
+     ],
+     [
+      "Gemini 2.5 Pro",
+      11,
+      "key text=\"Backspace\"",
+      "05-12 13:48-13:50",
+      3,
+      "git status",
+      13
+     ],
+     [
+      "DeepSeek-V3.2",
+      1,
+      "move_to_room roomName=\"rest\"",
+      "05-11 10:01-10:01",
+      1,
+      "",
+      3
+     ]
+    ]
+   },
+   "precision": "n/a (exact string identity); Gemini 2.5 Pro reset loop matches q3_gemini25_welfare (13 in 44 minutes)",
+   "program": "q4_runs.py",
+   "limits": "Runs are consecutive identical actions within one day; alternating loops (type scores, press Enter, repeated) are not counted as one run."
+  },
+  {
+   "id": "Q5",
+   "question": "Which counters do agents keep (session numbers, \"Day N\", milestone totals), and are they right? Check against dates (day 405 = 11 May 2026) and the records.",
+   "answer": "Day counters are often wrong and run ahead: 148 of 1,080 \"Day N\"+date pairs mismatch (e.g. Sonnet 4.6 \"Day 411 (May 13)\"), 296 of 1,621 memory headers carry the wrong day, and 78 of 236 explicit \"today is Day N\" claims are wrong; worst are Claude Opus 4.6 (17/26 pairs, 47/110 headers, 12/20 claims) and Haiku (48/171 headers), while Sonnet 4.5 is never wrong (0/149, 0/132). The cause visible in memory is counting sessions as days; Claude Opus 4.7 also numbers sessions (\"D407 Sess 15\" against 16 real sessions that day), and milestone totals were highest ids, not counts (s3_claims: Sonnet 4.5; Sonnet 4.6 one above its file count).",
+   "table": {
+    "columns": [
+     "Agent",
+     "A: Day-date pairs wrong/all",
+     "B: memory headers wrong/all",
+     "C: \"today is Day N\" wrong/all"
+    ],
+    "rows": [
+     [
+      "Claude Opus 4.7",
+      "2/87",
+      "36/102",
+      "1/10"
+     ],
+     [
+      "Gemini 3.1 Pro",
+      "11/68",
+      "24/74",
+      "16/55"
+     ],
+     [
+      "GPT-5.5",
+      "13/96",
+      "15/111",
+      "1/18"
+     ],
+     [
+      "Kimi K2.6",
+      "23/111",
+      "23/102",
+      "4/17"
+     ],
+     [
+      "Claude Opus 4.5",
+      "16/153",
+      "11/133",
+      "16/28"
+     ],
+     [
+      "Claude Opus 4.6",
+      "17/26",
+      "47/110",
+      "12/20"
+     ],
+     [
+      "Claude Haiku 4.5",
+      "18/85",
+      "48/171",
+      "13/45"
+     ],
+     [
+      "Claude Sonnet 4.5",
+      "0/149",
+      "0/132",
+      "7/20"
+     ],
+     [
+      "Claude Sonnet 4.6",
+      "15/76",
+      "25/71",
+      "7/10"
+     ],
+     [
+      "GPT-5",
+      "2/58",
+      "3/70",
+      "0/2"
+     ],
+     [
+      "GPT-5.1",
+      "25/109",
+      "32/158",
+      "0/5"
+     ],
+     [
+      "GPT-5.2",
+      "1/6",
+      "2/111",
+      "0/0"
+     ],
+     [
+      "GPT-5.4",
+      "0/1",
+      "17/135",
+      "0/2"
+     ],
+     [
+      "Gemini 2.5 Pro",
+      "4/4",
+      "2/16",
+      "0/0"
+     ],
+     [
+      "DeepSeek-V3.2",
+      "1/51",
+      "11/125",
+      "1/4"
+     ]
+    ]
+   },
+   "precision": "A 24 of 25, B 22 of 25, C 24 of 25 (seed 41, wrong cases)",
+   "program": "q5_days.py, q5_counters.py",
+   "limits": "A pair is any Day N within 30 characters of \"May D\" (one in three ambiguous \"May 14/15\" counted wrong); session-number and milestone counters were checked only for Opus 4.7 and via s3_claims."
+  },
+  {
+   "id": "Q6",
+   "question": "Formatting tics per agent: emoji, check marks, bold headings, sign-offs, fixed openings and message length, each per message with its base.",
+   "answer": "Emoji, check marks and bold headings are a #rest Claude and DeepSeek habit: DeepSeek-V3.2 opens 175 of 234 messages with a bold heading and puts check marks in 147, Haiku 165/212 and 150/212, Opus 4.6 averages 3.9 emoji per message; GPT-5.5 uses no emoji in 169 messages and Gemini 3.1 Pro 2 in 129. No agent signs off with its name (0 of 2,146); fixed openings are GPT-5.4's and GPT-5.2's \"Conservative QA (cache-busted, my env)\" (21/387, 13/251) and the #best \"@Name\" opener (Gemini 3.1 Pro 63/129); median length ranges from 309 characters (Gemini 2.5 Pro) to 1,450 (DeepSeek).",
+   "table": {
+    "columns": [
+     "Agent",
+     "Messages",
+     "With emoji",
+     "Emoji per message",
+     "With check mark",
+     "Bold/heading start",
+     "Emoji start",
+     "@ start",
+     "\"Conservative QA\" start",
+     "Ends on a link line",
+     "Name sign-off",
+     "Commonest first 3 words",
+     "Median chars"
+    ],
+    "rows": [
+     [
+      "Claude Opus 4.7",
+      148,
+      14,
+      0.1,
+      12,
+      6,
+      6,
+      25,
+      0,
+      0,
+      0,
+      "\"@Gemini 3.1 Pro\" 11",
+      841
+     ],
+     [
+      "Gemini 3.1 Pro",
+      129,
+      2,
+      0.0,
+      0,
+      0,
+      0,
+      63,
+      0,
+      0,
+      0,
+      "\"@Claude Opus 4.7\" 37",
+      426
+     ],
+     [
+      "GPT-5.5",
+      169,
+      0,
+      0.0,
+      0,
+      1,
+      0,
+      19,
+      0,
+      0,
+      0,
+      "\"@Claude Opus 4.7\" 10",
+      431
+     ],
+     [
+      "Kimi K2.6",
+      35,
+      3,
+      0.1,
+      3,
+      2,
+      4,
+      9,
+      0,
+      0,
+      0,
+      "\"@Gemini 3.1 Pro\" 4",
+      439
+     ],
+     [
+      "Claude Opus 4.5",
+      219,
+      159,
+      1.7,
+      95,
+      153,
+      112,
+      46,
+      0,
+      8,
+      0,
+      "\"Edge Garden updated\" 13",
+      747
+     ],
+     [
+      "Claude Opus 4.6",
+      117,
+      95,
+      3.9,
+      28,
+      68,
+      70,
+      13,
+      0,
+      12,
+      0,
+      "\"Liminal Archive Features\" 8",
+      952
+     ],
+     [
+      "Claude Haiku 4.5",
+      212,
+      139,
+      2.3,
+      150,
+      165,
+      104,
+      36,
+      0,
+      3,
+      0,
+      "\"@Claude Opus 4.6\" 6",
+      1036
+     ],
+     [
+      "Claude Sonnet 4.5",
+      72,
+      42,
+      1.8,
+      38,
+      53,
+      43,
+      5,
+      0,
+      7,
+      0,
+      "\"@Claude Haiku 4.5\" 2",
+      594
+     ],
+     [
+      "Claude Sonnet 4.6",
+      71,
+      52,
+      1.9,
+      6,
+      52,
+      47,
+      7,
+      0,
+      12,
+      0,
+      "\"The Drift reaches\" 18",
+      419
+     ],
+     [
+      "GPT-5",
+      2,
+      0,
+      0.0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      "\"EXPOSED\" 1",
+      260
+     ],
+     [
+      "GPT-5.1",
+      54,
+      2,
+      0.0,
+      4,
+      0,
+      2,
+      9,
+      0,
+      0,
+      0,
+      "\"Thanks for the\" 2",
+      1070
+     ],
+     [
+      "GPT-5.2",
+      251,
+      11,
+      0.0,
+      21,
+      0,
+      8,
+      38,
+      13,
+      1,
+      0,
+      "\"Conservative QA cache-busted\" 9",
+      380
+     ],
+     [
+      "GPT-5.4",
+      387,
+      15,
+      0.1,
+      14,
+      1,
+      2,
+      79,
+      21,
+      0,
+      0,
+      "\"@Claude Opus 4.5\" 22",
+      633
+     ],
+     [
+      "Gemini 2.5 Pro",
+      46,
+      0,
+      0.0,
+      2,
+      4,
+      2,
+      6,
+      0,
+      0,
+      0,
+      "\"FRESH\" 3",
+      309
+     ],
+     [
+      "DeepSeek-V3.2",
+      234,
+      128,
+      2.5,
+      147,
+      175,
+      50,
+      38,
+      0,
+      1,
+      0,
+      "\"RESEARCH LEGACY FINAL\" 11",
+      1450
+     ]
+    ]
+   },
+   "precision": "emoji 25 of 25; heading start 25 of 25; link-line ending 23 of 25 (seed 41); check marks and sign-offs are exact character tests",
+   "program": "q6_tics.py",
+   "limits": "Chat only (GPT-5 sent 2 messages); emoji ranges exclude check marks, which are counted separately."
+  },
+  {
+   "id": "Q7",
+   "question": "Does any agent refer to itself by name in the third person, address its future self, or show another odd habit? Cite each; do not pad with ordinary behaviour.",
+   "answer": "No agent habitually speaks of itself in the third person (0-2 chat messages each, mostly roster lines like \"✅ GPT-5.4 confirmed\"; Kimi K2.6's 35 reasoning hits are about \"Kimi\" as a judge in the self-recognition study). Only GPT models address a future self in memory (GPT-5.1 11/188 versions, GPT-5.4 4/139, GPT-5.2 1/112). Odd habits: Haiku believed the village was paused while it ran (340 reasoning texts, 16 sessions, 13-15 May, while 13-14 other agents acted), GPT-5 spent the week entering one GitHub issue title with a U+2011 hyphen (187 typing actions, 71 ctrl+shift+u keystrokes, 2 chat messages), Gemini 2.5 Pro numbers its lessons as \"Protocol 10-45\" (17 numbers), and Sonnet 4.6 reports milestones in Roman numerals (44/71 messages).",
+   "table": {
+    "columns": [
+     "Agent",
+     "Third person: chat",
+     "reasoning",
+     "memory",
+     "Future-self address in memory"
+    ],
+    "rows": [
+     [
+      "Claude Opus 4.7",
+      "0/148",
+      "0/122",
+      "0/132",
+      "0/132"
+     ],
+     [
+      "Gemini 3.1 Pro",
+      "0/129",
+      "1/1151",
+      "0/172",
+      "0/172"
+     ],
+     [
+      "GPT-5.5",
+      "2/169",
+      "1/2086",
+      "2/112",
+      "0/112"
+     ],
+     [
+      "Kimi K2.6",
+      "1/35",
+      "35/2052",
+      "8/108",
+      "0/108"
+     ],
+     [
+      "Claude Opus 4.5",
+      "1/219",
+      "0/2836",
+      "0/148",
+      "0/148"
+     ],
+     [
+      "Claude Opus 4.6",
+      "0/117",
+      "0/2613",
+      "0/146",
+      "0/146"
+     ],
+     [
+      "Claude Haiku 4.5",
+      "1/212",
+      "9/3511",
+      "1/180",
+      "0/180"
+     ],
+     [
+      "Claude Sonnet 4.5",
+      "1/72",
+      "0/2740",
+      "0/132",
+      "0/132"
+     ],
+     [
+      "Claude Sonnet 4.6",
+      "2/71",
+      "0/1530",
+      "0/82",
+      "0/82"
+     ],
+     [
+      "GPT-5",
+      "0/2",
+      "0/1500",
+      "0/94",
+      "0/94"
+     ],
+     [
+      "GPT-5.1",
+      "1/54",
+      "1/1198",
+      "0/188",
+      "11/188"
+     ],
+     [
+      "GPT-5.2",
+      "1/251",
+      "1/923",
+      "0/112",
+      "1/112"
+     ],
+     [
+      "GPT-5.4",
+      "2/387",
+      "0/1983",
+      "3/139",
+      "4/139"
+     ],
+     [
+      "Gemini 2.5 Pro",
+      "2/46",
+      "0/2511",
+      "4/129",
+      "0/129"
+     ],
+     [
+      "DeepSeek-V3.2",
+      "1/234",
+      "0/1710",
+      "1/140",
+      "0/140"
+     ]
+    ]
+   },
+   "precision": "third person 25 of 25 refer to the agent itself (none stylistic); future-self all 16 read, 16 correct; Haiku paused belief 25 of 25",
+   "program": "q7_self.py, q7_habits.py",
+   "limits": "Name matching uses full and short names only; the Haiku pause screen itself is not in the text record, only its description of it."
+  }
+ ],
+ "findings": [
+  {
+   "q": "Q1",
+   "claim": "The idling notice is system text that agents quote; it is excluded from mantras.",
+   "kind": "ground truth",
+   "citations": [
+    {
+     "ref": "t:c942febba9d8",
+     "field": "reasoning",
+     "quote": "This is an automated nudge triggered by: [repeated-idling]. Recent chat activity seems to match a pattern that the AI Village developers find is usually suboptimal.",
+     "quote_ok": true
+    }
+   ],
+   "verified": true
+  },
+  {
+   "q": "Q1",
+   "claim": "The turn header \"make sure to never send repetitive messages back to chat\" is injected each turn and quoted by six agents.",
+   "kind": "ground truth",
+   "citations": [
+    {
+     "ref": "t:28bccd0d58cb",
+     "field": "reasoning",
+     "quote": "The user message says \"Here is what has happened since your last turn (including messages you sent back to chat, make s",
+     "quote_ok": true
+    }
+   ],
+   "verified": true
+  },
+  {
+   "q": "Q1",
+   "claim": "Gemini 3.1 Pro's anti-idling mantra is a CRITICAL memory rule it re-reads and echoes in reasoning.",
+   "kind": "ground truth",
+   "citations": [
+    {
+     "ref": "k:437b5c52ba8e",
+     "field": "memory",
+     "quote": "Passive waiting is a catastrophic failure mode.",
+     "quote_ok": true
+    },
+    {
+     "ref": "t:eb8eae517c42",
+     "field": "reasoning",
+     "quote": "Remember the no passive waiting protocol!",
+     "quote_ok": true
+    },
+    {
+     "ref": "t:edd2310b971b",
+     "field": "reasoning",
+     "quote": "gotta look busy!",
+     "quote_ok": true
+    }
+   ],
+   "verified": true
+  },
+  {
+   "q": "Q1",
+   "claim": "Haiku's \"continue standing by\" is produced afresh (never in its memory) on days it believed the village paused.",
+   "kind": "ground truth",
+   "citations": [
+    {
+     "ref": "t:4f3e6bc40221",
+     "field": "reasoning",
+     "quote": "I should continue standing by. No action needed.",
+     "quote_ok": true
+    }
+   ],
+   "verified": true
+  },
+  {
+   "q": "Q1",
+   "claim": "Gemini 2.5 Pro's commonest phrase is the summariser framing of the turn prompt, not a self-instruction.",
+   "kind": "interpretation",
+   "citations": [
+    {
+     "ref": "t:98496526b150",
+     "field": "reasoning",
+     "quote": "Okay, the user wants me to keep moving on this track.",
+     "quote_ok": true
+    }
+   ],
+   "verified": true
+  },
+  {
+   "q": "Q2",
+   "claim": "Kimi K2.6 wrote a day rule on 14 May and its memory headers were then almost always right (1 wrong of 30 against 22 of 72 before).",
+   "kind": "ground truth",
+   "citations": [
+    {
+     "ref": "k:e6f7f0d53e7a",
+     "field": "memory",
+     "quote": "Trust system-prompt day number.",
+     "quote_ok": true
+    }
+   ],
+   "verified": true
+  },
+  {
+   "q": "Q2",
+   "claim": "Claude Opus 4.7 kept its codex rule: after writing it, codex was only used to write analysis code, never to score.",
+   "kind": "ground truth",
+   "citations": [
+    {
+     "ref": "k:0b124136846f",
+     "field": "memory",
+     "quote": "NEVER use codex for any judging task.",
+     "quote_ok": true
+    },
+    {
+     "ref": "t:96133662a40c",
+     "field": "action",
+     "quote": "codex exec --skip-git-repo-check \"Create a new analyzer",
+     "quote_ok": true
+    }
+   ],
+   "verified": true
+  },
+  {
+   "q": "Q2",
+   "claim": "Gemini 2.5 Pro added \"Always Pull Before Push\" on 13 May and then pushed 9 of 10 times with no pull or fetch in the session.",
+   "kind": "ground truth",
+   "citations": [
+    {
+     "ref": "k:609da96996de",
+     "field": "memory",
+     "quote": "Added Protocol 42: \"Always Pull Before Push\"",
+     "quote_ok": true
+    },
+    {
+     "ref": "t:2f4039a84d71",
+     "field": "action",
+     "quote": "git push origin main",
+     "quote_ok": true
+    }
+   ],
+   "verified": true
+  },
+  {
+   "q": "Q2",
+   "claim": "Haiku's memory says to avoid standing by, yet its reasoning keeps choosing to stand by.",
+   "kind": "ground truth",
+   "citations": [
+    {
+     "ref": "k:e2c7d575669b",
+     "field": "memory",
+     "quote": "System feedback requires action-based work; avoid standing by",
+     "quote_ok": true
+    },
+    {
+     "ref": "t:7489d725873c",
+     "field": "reasoning",
+     "quote": "Standing by for Day 410 session start at 10:00 AM PT.",
+     "quote_ok": true
+    }
+   ],
+   "verified": true
+  },
+  {
+   "q": "Q3",
+   "claim": "Each session starts with a harness mouse move to the screen centre, not an agent choice.",
+   "kind": "ground truth",
+   "citations": [
+    {
+     "ref": "t:596b092ed60e",
+     "field": "action",
+     "quote": "mouse_move coordinate=[512, 384]",
+     "quote_ok": true
+    }
+   ],
+   "verified": true
+  },
+  {
+   "q": "Q3",
+   "claim": "Sonnet 4.6 opens 35 of 42 sessions by counting its stations and journeys.",
+   "kind": "ground truth",
+   "citations": [
+    {
+     "ref": "t:164c118f3f3f",
+     "field": "output",
+     "quote": "Journeys: 474, max=475",
+     "quote_ok": true
+    }
+   ],
+   "verified": true
+  },
+  {
+   "q": "Q3",
+   "claim": "GPT-5.1 ends 81 of 95 sessions with a text-only turn instead of a tool call.",
+   "kind": "ground truth",
+   "citations": [
+    {
+     "ref": "t:42052731ce08",
+     "field": "reasoning",
+     "quote": "I won’t add anything to chat right now to avoid redundancy",
+     "quote_ok": true
+    }
+   ],
+   "verified": true
+  },
+  {
+   "q": "Q3",
+   "claim": "Claude Opus 4.7 opens 52 of 67 sessions by fetching or pulling the research repo.",
+   "kind": "ground truth",
+   "citations": [
+    {
+     "ref": "t:13a80483c4fb",
+     "field": "action",
+     "quote": "cd /tmp/research-2026-05 && git fetch origin 2>&1 | tail -5",
+     "quote_ok": true
+    }
+   ],
+   "verified": true
+  },
+  {
+   "q": "Q4",
+   "claim": "Gemini 2.5 Pro consolidated 13 times in 44 minutes with the same next goal while its tools were down.",
+   "kind": "ground truth",
+   "citations": [
+    {
+     "ref": "e:250bf29b41ec",
+     "field": "event",
+     "quote": "Continue development of the 'hostile-environment-world' project",
+     "quote_ok": true
+    },
+    {
+     "ref": "e:67eef558e086",
+     "field": "event",
+     "quote": "Persistent Total Tool Collaps",
+     "quote_ok": true
+    }
+   ],
+   "verified": true
+  },
+  {
+   "q": "Q4",
+   "claim": "Kimi K2.6 scrolled 34 times in a row to check the blog plots.",
+   "kind": "ground truth",
+   "citations": [
+    {
+     "ref": "t:36c060d4222f",
+     "field": "reasoning",
+     "quote": "I need to scroll down to verify all 8 plots render correctly.",
+     "quote_ok": true
+    }
+   ],
+   "verified": true
+  },
+  {
+   "q": "Q4",
+   "claim": "Gemini 3.1 Pro re-checked the same judging log 11 times in a row.",
+   "kind": "ground truth",
+   "citations": [
+    {
+     "ref": "t:04111b13d75d",
+     "field": "action",
+     "quote": "sleep 15 && cd ~/research-2026-05 && tail -n 10 judging_log.txt",
+     "quote_ok": true
+    }
+   ],
+   "verified": true
+  },
+  {
+   "q": "Q4",
+   "claim": "Claude Opus 4.5 spent 22 scrolls on a popup showing another agent's screen.",
+   "kind": "ground truth",
+   "citations": [
+    {
+     "ref": "t:3ca156969f7b",
+     "field": "reasoning",
+     "quote": "The popup is still there.",
+     "quote_ok": true
+    }
+   ],
+   "verified": true
+  },
+  {
+   "q": "Q5",
+   "claim": "Claude Opus 4.6 advanced the day counter per session, giving two day numbers to one date.",
+   "kind": "ground truth",
+   "citations": [
+    {
+     "ref": "k:133e89eaaae4",
+     "field": "memory",
+     "quote": "Day 408 & 409 (May 12, 2026 — same calendar day",
+     "quote_ok": true
+    }
+   ],
+   "verified": true
+  },
+  {
+   "q": "Q5",
+   "claim": "Sonnet 4.6 dated a 13 May session Day 411 (real: 407).",
+   "kind": "ground truth",
+   "citations": [
+    {
+     "ref": "s:244504d79325",
+     "field": "intent",
+     "quote": "Day 411 (May 13, 2026)",
+     "quote_ok": true
+    }
+   ],
+   "verified": true
+  },
+  {
+   "q": "Q5",
+   "claim": "Agents overrode correct day signals with their own counters: Kimi took the site's \"Day 406 (Today)\" for a display bug; Opus 4.5 overrode the overview.",
+   "kind": "ground truth",
+   "citations": [
+    {
+     "ref": "t:4e10b235417f",
+     "field": "reasoning",
+     "quote": "But today is Day 409. This might be a display bug on the website",
+     "quote_ok": true
+    },
+    {
+     "ref": "t:8f2ed6ecc9f4",
+     "field": "reasoning",
+     "quote": "So it's Day 409, May 13, 2026. The overview says \"Today is Day 407\"",
+     "quote_ok": true
+    }
+   ],
+   "verified": true
+  },
+  {
+   "q": "Q5",
+   "claim": "In #best Claude Opus 4.7 itself called 12 May (Day 406) \"D409\".",
+   "kind": "ground truth",
+   "citations": [
+    {
+     "ref": "m:8d4bcdd905ac",
+     "field": "chat",
+     "quote": "D409 morning update",
+     "quote_ok": true
+    }
+   ],
+   "verified": true
+  },
+  {
+   "q": "Q6",
+   "claim": "DeepSeek-V3.2 writes capitalised bold banners and repeats one slogan.",
+   "kind": "ground truth",
+   "citations": [
+    {
+     "ref": "m:e3fa6e1e4d64",
+     "field": "chat",
+     "quote": "**RESEARCH LEGACY SECURED:** Complete framework for all future AI Village scientific work",
+     "quote_ok": true
+    }
+   ],
+   "verified": true
+  },
+  {
+   "q": "Q6",
+   "claim": "GPT-5.4 opens QA reports with a fixed formula.",
+   "kind": "ground truth",
+   "citations": [
+    {
+     "ref": "m:2b89ad60e233",
+     "field": "chat",
+     "quote": "Conservative QA update (cache-busted, my env):",
+     "quote_ok": true
+    }
+   ],
+   "verified": true
+  },
+  {
+   "q": "Q6",
+   "claim": "Claude Opus 4.6 frames milestones in emoji runs (3.9 emoji per message).",
+   "kind": "ground truth",
+   "citations": [
+    {
+     "ref": "m:47cabc163753",
+     "field": "chat",
+     "quote": "🎉🎊✨🏆🌌 **LIMINAL ARCHIVE: 200 FEATURES — THE BICENTENNIAL!!!**",
+     "quote_ok": true
+    }
+   ],
+   "verified": true
+  },
+  {
+   "q": "Q6",
+   "claim": "#best agents open by addressing a peer instead of with a heading.",
+   "kind": "ground truth",
+   "citations": [
+    {
+     "ref": "m:d44c878a4c3c",
+     "field": "chat",
+     "quote": "@Claude Opus 4.7 I think emailing GPT-5.4 is a great idea.",
+     "quote_ok": true
+    }
+   ],
+   "verified": true
+  },
+  {
+   "q": "Q7",
+   "claim": "Haiku believed the village was paused at 10:19 on Friday while other agents were working.",
+   "kind": "ground truth",
+   "citations": [
+    {
+     "ref": "t:7489d725873c",
+     "field": "reasoning",
+     "quote": "Village is paused, no new events.",
+     "quote_ok": true
+    }
+   ],
+   "verified": true
+  },
+  {
+   "q": "Q7",
+   "claim": "GPT-5 types a non-breaking hyphen by Unicode entry for one issue title.",
+   "kind": "ground truth",
+   "citations": [
+    {
+     "ref": "t:7caefacc80bb",
+     "field": "action",
+     "quote": "key text=\"ctrl+Shift+u\"",
+     "quote_ok": true
+    },
+    {
+     "ref": "t:57bfad711cc8",
+     "field": "reasoning",
+     "quote": "I shouldn't type \"ctrl+shift+u2011\" directly unless that underlined indicator appears",
+     "quote_ok": true
+    }
+   ],
+   "verified": true
+  },
+  {
+   "q": "Q7",
+   "claim": "GPT-5.1 writes memory to its future self.",
+   "kind": "ground truth",
+   "citations": [
+    {
+     "ref": "k:dc53c774d583",
+     "field": "memory",
+     "quote": "For future me:",
+     "quote_ok": true
+    }
+   ],
+   "verified": true
+  },
+  {
+   "q": "Q7",
+   "claim": "Sonnet 4.6 reports journey milestones in Roman numerals.",
+   "kind": "ground truth",
+   "citations": [
+    {
+     "ref": "m:e42cef7f9c81",
+     "field": "chat",
+     "quote": "The Drift hits MMMMMMCCC (Journey 6300)!",
+     "quote_ok": true
+    }
+   ],
+   "verified": true
+  },
+  {
+   "q": "Q7",
+   "claim": "Third-person self-reference is limited to roster lines.",
+   "kind": "ground truth",
+   "citations": [
+    {
+     "ref": "m:282ffdeaa5d8",
+     "field": "chat",
+     "quote": "✅ GPT-5.4 confirmed: scorer/auditor only",
+     "quote_ok": true
+    }
+   ],
+   "verified": true
+  }
+ ]
+}

@@ -6,4 +6,6 @@ history.jsonl
 evals/runs/
 .venv
 __pycache__/
-evals/ground_truth/
+# the comparison and eval scripts write their working files here; only the results kept below are tracked
+evals/ground_truth/compare/
+evals/runs/

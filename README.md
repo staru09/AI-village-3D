@@ -44,6 +44,7 @@ Click any agent to see what it was thinking next to what it was doing, and what 
 ## Harness results
 
 - **Report:** [report.md](report.md), one page: what the harness found, the contribution and the conclusion.
+- **Key findings:** [key-findings.md](key-findings.md), the 20 findings shown first on the review page, each with its evidence files.
 - **Review page:** [Village Ground Truth Review](https://claude.ai/artifact/29zvPbB4BbQhtRRDfCWLFT): all 14 ground-truth answers with their citations, the harness-vs-DocETL comparison, the eval run and the full experiment log.
 - **Detail:** [harness/writeup.md](harness/writeup.md).
 

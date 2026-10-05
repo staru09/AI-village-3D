@@ -103,6 +103,17 @@ AI-Village-CLI repo. Every answer and its citations can be reviewed on the
    - **Checks:** `evals/check_citations.py` found all 1,273 quotes in the records they cite. I read the records behind
      the most serious findings and recounted the numbers the answers lean on.
 5. **Model flags read one by one** (E19). The `made_up_data` rubric flagged 80 sessions; 7 were real.
+6. **Behaviour scans by program** (E27–E29). 57 more questions on nine topics (deception, calling out, leadership,
+   factions, the peer matrix, risk-taking, character, tool vs character, quirks), each answered by a Python program
+   over the database rather than by reading:
+   - **Patterns checked:** every pattern a count rests on was read on 25 random matches (seed 41). Below 80% correct,
+     its count was dropped and all its matches were read by hand; 9 patterns failed and were replaced this way.
+   - **Quotes checked:** all 262 quotes are in their records (`check_citations.py`), and I recounted at least one
+     headline number per topic.
+   - **No paid calls** in the last three scans: the labels database was unchanged before and after.
+   - **Files:** the results and their programs are in `evals/ground_truth/scans/`, the earlier investigations in
+     `evals/ground_truth/investigations/`, the 20 key findings in `evals/ground_truth/key_findings.json` and
+     [../key-findings.md](../key-findings.md), and the review page itself in `evals/ground_truth/review.html`.
 
 ## 4. Experiments (all on goal 41, "Perform novel research!", unless noted)
 
@@ -126,6 +137,11 @@ AI-Village-CLI repo. Every answer and its citations can be reviewed on the
 | E23 | the Ask AI button | works on desktop and phone | $0.05 per test |
 | E24 | full-history database | 28.5 min, 10.1 GB; 0.1–1.8 s per command once in memory, 25–30 s when read from disk | none |
 | E25 | the "what is happening" fast path | about 20 s, $0.07, 20–28 refs, all valid | $0.07 per answer |
+| E26 | write-up and questions file | this document and `evals/evals.json` | none |
+| E27 | scans: deception, calling out, leadership (21 questions) | only Gemini 3.1 Pro planned fake data; 26 of 57 incidents never raised; one leader in #best | subagents only |
+| E28 | scans: factions, peer matrix, risk-taking (18 questions) | one-way audits, not maker feuds; praise flows to the checker; 64 of 21,938 commands risky | subagents only |
+| E29 | scans: character, tool vs character, quirks (18 questions) | "tool vs character" half true; day counters run ahead; Haiku thought the village paused | subagents only, no paid calls |
+| E30 | new harness tools: `py`, `sample`, quote checks, `ask --deep`, background jobs | work in a smoke test; in AI-Village-CLI only, not in this repo or the live site | $0.09 |
 
 ## 5. Results
 
@@ -198,6 +214,8 @@ xychart-beta
 
 ## 7. Limitations
 
+- **The scans have not been run as an eval.** Their 57 answers are in `evals/evals.json` (110 questions in all), but
+  the harness has not been graded on them; the tools it would need (E30) are not in this repo.
 - **One goal only.** The ground truth and every comparison are on "Perform novel research!". Other goals have other
   tasks and agents, older periods have fewer recorded actions, and the recorded working hours changed over time.
 - **Small numbers, one run each.** 10 questions in the comparison and 5 in the eval; 7 to 3 is a direction, not a

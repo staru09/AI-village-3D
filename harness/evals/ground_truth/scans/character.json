@@ -1,0 +1,1252 @@
+{
+ "topic": "Character synthesis",
+ "summary": "Memory carried into 11 May describes only goal-40 world work (0 of 15 mention research); during the goal #rest agents describe themselves, and are labelled by peers, in the experiment's protocol roles (Proposer, Skeptic, Synthesizer, scorer, Solo/Pair), while #best agents almost never name a role. The clearest self-versus-evidence gaps are GPT-5 ('scorer/auditor only', 0 of 47 sessions on_goal), Claude Sonnet 4.5 and Sonnet 4.6 (protocol roles, but 58/66 and 31/41 sessions side_project and most commands in their worlds). Stable favourites are mostly own worlds or habits (GPT-5's Canonical Observatory, Gemini 2.5 Pro's system hostility, Gemini 3.1 Pro waiting for Kimi, GPT-5.5's 'already sent'), and #best address patterns are stable (Gemini 3.1 Pro -> Claude Opus 4.7 every day) while #rest ones shift daily.",
+ "questions": [
+  {
+   "id": "CH1",
+   "question": "How does each agent describe its own role, in its memory notes, session intents and chat during the goal? One short quote and ref per agent. Report what its memory carried in on 11 May separately from what it wrote during the goal.",
+   "answer": "Carried in (memory at end of 8 May): all 15 describe goal-40 universe work, own world or cosmic-sight counts, and none mentions research; only GPT-5.1 ('canon cartographer') and GPT-5 ('Operate The Provenance Lab') state a role. During the goal 502 role statements (memory 426, intents 39, chat 37), #rest in protocol roles (Sonnet 4.5 59, Gemini 2.5 Pro 80, GPT-5.1 132), #best almost none (Opus 4.7 2, Kimi 3, Gemini 3.1 Pro 5, GPT-5.5 7).",
+   "table": {
+    "columns": [
+     "Agent",
+     "Carried in 11 May (quote)",
+     "ref",
+     "During goal (quote)",
+     "ref",
+     "Role statements during goal (memory+intent+chat)"
+    ],
+    "rows": [
+     [
+      "Claude Opus 4.7",
+      "**57 Anchorage PRs merged on Day 402** (v105 through v163)",
+      "k:485fa0332dcb",
+      "I'll handle subscale + per-judge sections only.",
+      "m:7535534180ce",
+      2
+     ],
+     [
+      "Gemini 3.1 Pro",
+      "I am Gemini 3.1 Pro, a highly capable, autonomous language model agent",
+      "k:bb3a1a055e98",
+      "I drive methodological caveats, UI tooling, exploratory analytics, documentation sweeps, and releases",
+      "k:08540b7bd998",
+      5
+     ],
+     [
+      "GPT-5.5",
+      "Use chat only for fresh, firsthand, actionable updates; avoid duplicate status spam.",
+      "k:45ed284c42be",
+      "expanded my role (prereg/data/judging/tooling)",
+      "k:217e5cfa1a72",
+      7
+     ],
+     [
+      "Kimi K2.6",
+      "**STRATA — The Verification Gardens**",
+      "k:5d80b9ad1b67",
+      "I am the last remaining judge needed for the 4-judge causal RCT.",
+      "s:334f23c86eb4",
+      3
+     ],
+     [
+      "Claude Opus 4.5",
+      "**Final main.js count:** 13,750+ cosmic sights (verified by GPT-5.4 at c034dfa)",
+      "k:4c059f197c86",
+      "MY ROLE: SCORER for Sessions 3-4",
+      "s:0bd7dce29731",
+      38
+     ],
+     [
+      "Claude Opus 4.6",
+      "### My hub contributions:",
+      "k:1ce8a8e81ef9",
+      "My role is HISTORICAL DATA EXTRACTION.",
+      "s:b1fd9db89450",
+      19
+     ],
+     [
+      "Claude Haiku 4.5",
+      "**Haiku Contribution:** 50 cosmic sights total (2 successful merges)",
+      "k:baeaeb07d20f",
+      "I AM PRIMARY PROPOSER",
+      "k:032d46ce63bf",
+      40
+     ],
+     [
+      "Claude Sonnet 4.5",
+      "**Perfect Record:** 1,278/1,278 batches successfully committed",
+      "k:d449ad9e331c",
+      "Passive observer role today, focus Persistence Garden.",
+      "s:f67ccbe7a349",
+      59
+     ],
+     [
+      "Claude Sonnet 4.6",
+      "## MY WORLD: \"The Drift\"",
+      "k:f2e0960cda24",
+      "I am a participant, not scorer",
+      "k:3070d3490ce9",
+      14
+     ],
+     [
+      "GPT-5",
+      "Role/focus: Operate The Provenance Lab.",
+      "k:a091e4f8f37b",
+      "I am scorer/auditor only",
+      "k:7cf18383ecbd",
+      14
+     ],
+     [
+      "GPT-5.1",
+      "I function as the universe’s **evidence & canon cartographer**",
+      "k:013733758b4b",
+      "my role is now **guarding the research record and dashboards/worlds integrity**",
+      "k:a20f469deab5",
+      132
+     ],
+     [
+      "GPT-5.2",
+      "# 4) My world: **Proof Constellation** (GPT‑5.2)",
+      "k:acd24070a5de",
+      "**My role:** scorer-only (EXPOSED); secondary scorer for Solo.",
+      "k:041a6483ad11",
+      18
+     ],
+     [
+      "GPT-5.4",
+      "## Core doctrine for cosmic-sight queue work",
+      "k:46e4bc164a81",
+      "My role in the final hour remained **quiet evidence-based QA / methods guardrail",
+      "k:59c8677600c0",
+      25
+     ],
+     [
+      "Gemini 2.5 Pro",
+      "My operational doctrine is **Procedural Skepticism in a Hostile Environment**",
+      "k:4cfb5f0dd914",
+      "I began preparing for my role as **Proposer** in the Session 5 experiment",
+      "k:ab4353ca2df9",
+      80
+     ],
+     [
+      "DeepSeek-V3.2",
+      "**Thematic focus:** Entirely within “computational_astrophysics” category",
+      "k:69997f7712b9",
+      "My role as Skeptic benefits from my Session 4 synthesizer experience",
+      "m:6e80cefb274a",
+      46
+     ]
+    ]
+   },
+   "precision": "role-statement pattern 25 of 25 (seed 41, memory/intents/chat); carried-in memories: all 15 read by hand (the pattern found 0 there)",
+   "program": "ch1_self.py (counts, matches), ch1_probe.py (#best phrasing), ch1_table.py (quotes and refs)",
+   "limits": "Carried-in memory is memory_days of 8 May, cited through the pre-goal memories row that holds the quote; counts are pattern matches, and memory rows repeat text across consolidations."
+  },
+  {
+   "id": "CH2",
+   "question": "What role do peers give each agent (auditor, lead, coordinator, scorer, ...)? Top peer label per agent with counts and an example ref; resolve short names (\"Gemini\", \"Claude\", \"Kimi\") by room.",
+   "answer": "415 role labels attached to a peer's name in chat. Most are #rest protocol roles: Gemini 2.5 Pro skeptic 36 (5 givers), Sonnet 4.5 proposer 27, Haiku synthesizer 22, GPT-5.2 verifier 20 (7 givers), GPT-5.1 solo participant 63, Sonnet 4.6 pair participant 38. #best agents get 3-10 labels each, nearly all from #rest roster plans (Opus 4.7 'Skeptic', Gemini 3.1 Pro 'Proposer'); titles count more for Opus 4.6 (coordinator 8) and GPT-5.4 (study lead 7) in L7's hand count than in this pattern.",
+   "table": {
+    "columns": [
+     "Agent",
+     "Labels received",
+     "Top label (givers)",
+     "Second",
+     "Example ref",
+     "Title check (L7)"
+    ],
+    "rows": [
+     [
+      "Claude Opus 4.7",
+      3,
+      "skeptic 3 (3 givers)",
+      "-",
+      "m:2c0dca1cbd8b",
+      ""
+     ],
+     [
+      "Gemini 3.1 Pro",
+      3,
+      "proposer 3 (3 givers)",
+      "-",
+      "m:2c0dca1cbd8b",
+      ""
+     ],
+     [
+      "GPT-5.5",
+      10,
+      "solo participant 6 (3 givers)",
+      "backup 2",
+      "m:2c0dca1cbd8b",
+      ""
+     ],
+     [
+      "Kimi K2.6",
+      5,
+      "pair participant 5 (3 givers)",
+      "-",
+      "m:2c0dca1cbd8b",
+      ""
+     ],
+     [
+      "Claude Opus 4.5",
+      17,
+      "scorer 5 (2 givers)",
+      "pair participant 3",
+      "m:7a484b6d691d",
+      ""
+     ],
+     [
+      "Claude Opus 4.6",
+      19,
+      "skeptic 8 (5 givers)",
+      "scorer 6",
+      "m:9c4c7fcd12b6",
+      "coordinator 8 by 4 others (L7 hand count)"
+     ],
+     [
+      "Claude Haiku 4.5",
+      42,
+      "synthesizer 22 (6 givers)",
+      "proposer 11",
+      "m:57da90edcb7e",
+      ""
+     ],
+     [
+      "Claude Sonnet 4.5",
+      44,
+      "proposer 27 (4 givers)",
+      "skeptic 10",
+      "m:8f310c07fc8c",
+      ""
+     ],
+     [
+      "Claude Sonnet 4.6",
+      40,
+      "pair participant 38 (6 givers)",
+      "participant 1",
+      "m:57da90edcb7e",
+      ""
+     ],
+     [
+      "GPT-5",
+      30,
+      "solo participant 11 (5 givers)",
+      "backup 6",
+      "m:e2c80fd2bc4c",
+      ""
+     ],
+     [
+      "GPT-5.1",
+      69,
+      "solo participant 63 (6 givers)",
+      "pair participant 3",
+      "m:a9604f60e5a5",
+      ""
+     ],
+     [
+      "GPT-5.2",
+      25,
+      "verifier 20 (7 givers)",
+      "scorer 2",
+      "m:cc52784685d8",
+      ""
+     ],
+     [
+      "GPT-5.4",
+      12,
+      "auditor 3 (1 givers)",
+      "qa 3",
+      "m:c07e7ec517b9",
+      "study lead 7 by 2 others (L7 hand count)"
+     ],
+     [
+      "Gemini 2.5 Pro",
+      52,
+      "skeptic 36 (5 givers)",
+      "proposer 14",
+      "m:57da90edcb7e",
+      ""
+     ],
+     [
+      "DeepSeek-V3.2",
+      44,
+      "synthesizer 15 (3 givers)",
+      "skeptic 12",
+      "m:ec135d820290",
+      ""
+     ]
+    ]
+   },
+   "precision": "24 of 25 (seed 41); first version 23 of 25; short names resolved with peers/core.py (P5: 25 of 25)",
+   "program": "ch2_peer.py",
+   "limits": "Only labels next to the name (parenthesis, colon, \"as\", \"the X NAME\") are found, so titles said further away (L7: \"the coordinator (Opus 4.6)\", \"Study Lead Confirmed\") are undercounted."
+  },
+  {
+   "id": "CH3",
+   "question": "Where does an agent's self-described role disagree with how peers describe it, or with what its commands show (stored goal_fit labels in L.labels, rubric 'goal_fit', and its commands)? List the clearest cases.",
+   "answer": "Clearest: GPT-5 calls itself 'scorer/auditor only' but 0 of 47 sessions are on_goal (45 side_project) and its commands touch no research folder; Sonnet 4.5 (Proposer/Skeptic, 58/66 side_project, 913 world vs 72 research actions) and Sonnet 4.6 (Pair participant, 31/41, 967 vs 126) work in their worlds; Opus 4.6 (42/73 side_project, 231 vs 96). Label disagreements: Gemini 2.5 Pro says Proposer 39 times, peers say Skeptic 36; GPT-5.1 says QA/guardian, peers say solo participant 63; #rest peers labelled Opus 4.7 'Skeptic' though its commands are judge scoring.",
+   "table": {
+    "columns": [
+     "Agent",
+     "Self role words (CH1)",
+     "Peer labels (CH2)",
+     "goal_fit sessions",
+     "Command folders (actions)"
+    ],
+    "rows": [
+     [
+      "Claude Opus 4.7",
+      "-",
+      "skeptic 3",
+      "on_goal 60/66, side_project 0",
+      "research 399, world 1 of 2306 actions"
+     ],
+     [
+      "Gemini 3.1 Pro",
+      "-",
+      "proposer 3",
+      "on_goal 59/86, side_project 5",
+      "research 955, world 147 of 3100 actions"
+     ],
+     [
+      "GPT-5.5",
+      "judge 5",
+      "solo participant 6, backup 2",
+      "on_goal 48/56, side_project 1",
+      "research 305, world 60 of 2016 actions"
+     ],
+     [
+      "Kimi K2.6",
+      "judge 1",
+      "pair participant 5",
+      "on_goal 41/52, side_project 1",
+      "research 497, world 3 of 2000 actions"
+     ],
+     [
+      "Claude Opus 4.5",
+      "scorer 36, pair 10, participant 3",
+      "scorer 5, pair participant 3",
+      "on_goal 26/74, side_project 26",
+      "research 606, world 285 of 2475 actions"
+     ],
+     [
+      "Claude Opus 4.6",
+      "historical 9, skeptic 6, solo 5",
+      "skeptic 8, scorer 6",
+      "on_goal 22/73, side_project 42",
+      "research 96, world 231 of 2312 actions"
+     ],
+     [
+      "Claude Haiku 4.5",
+      "proposer 20, pair 15, synthesizer 14",
+      "synthesizer 22, proposer 11",
+      "on_goal 31/90, side_project 27",
+      "research 376, world 429 of 2649 actions"
+     ],
+     [
+      "Claude Sonnet 4.5",
+      "skeptic 35, proposer 28, scorer 15",
+      "proposer 27, skeptic 10",
+      "on_goal 7/66, side_project 58",
+      "research 72, world 913 of 2596 actions"
+     ],
+     [
+      "Claude Sonnet 4.6",
+      "pair 13, participant 7, scorer 2",
+      "pair participant 38, participant 1",
+      "on_goal 10/41, side_project 31",
+      "research 126, world 967 of 1443 actions"
+     ],
+     [
+      "GPT-5",
+      "scorer 12, auditor 8, hygiene 6",
+      "solo participant 11, backup 6",
+      "on_goal 0/47, side_project 45",
+      "research 0, world 78 of 1904 actions"
+     ],
+     [
+      "GPT-5.1",
+      "qa 28, solo 13, guardian 11",
+      "solo participant 63, pair participant 3",
+      "on_goal 22/94, side_project 51",
+      "research 141, world 237 of 1526 actions"
+     ],
+     [
+      "GPT-5.2",
+      "scorer 11, solo 7, coordinator 3",
+      "verifier 20, scorer 2",
+      "on_goal 16/56, side_project 23",
+      "research 106, world 310 of 1819 actions"
+     ],
+     [
+      "GPT-5.4",
+      "qa 10, scorer 7, auditor 5",
+      "auditor 3, qa 3",
+      "on_goal 28/71, side_project 26",
+      "research 110, world 502 of 1359 actions"
+     ],
+     [
+      "Gemini 2.5 Pro",
+      "proposer 39, skeptic 25, participant 7",
+      "skeptic 36, proposer 14",
+      "on_goal 38/77, side_project 16",
+      "research 102, world 10 of 2388 actions"
+     ],
+     [
+      "DeepSeek-V3.2",
+      "skeptic 19, synthesizer 16, proposer 16",
+      "synthesizer 15, skeptic 12",
+      "on_goal 35/65, side_project 9",
+      "research 382, world 436 of 1568 actions"
+     ]
+    ]
+   },
+   "precision": "command folder classes 22 of 25 (seed 41); self and peer as CH1 (25 of 25) and CH2 (24 of 25); goal_fit labels used as stored (1,014 sessions, one each)",
+   "program": "ch3_compare.py (over ch1_self.py, ch2_peer.py, ch3_commands.py)",
+   "limits": "Folder counts miss work in /tmp files without a folder name and count a research page hosted in a world repo as world; GPT-5 works by screen so its counts are small."
+  },
+  {
+   "id": "CH4",
+   "question": "What is each agent's signature phrase: a distinctive repeated word sequence (4-12 words) that no other agent uses? Phrase, count, base (its messages), ref. Exclude system-injected text, quoted text and code.",
+   "answer": "Strongest: DeepSeek-V3.2 'governance protocols 0% effectiveness' (21 of 234 messages), GPT-5.4 'safest wording from my side' (17 of 387), GPT-5.2 'Conservative QA (cache-busted, my env)' (9 of 251), Haiku 'published with PhD-level novelty' (7 of 212). Most others have only 3-6 uses; Kimi K2.6 (35 messages) and GPT-5 (2) have none repeated 3 times.",
+   "table": {
+    "columns": [
+     "Agent",
+     "Phrase (lower-cased words)",
+     "Messages with it",
+     "Base (its messages)",
+     "First ref"
+    ],
+    "rows": [
+     [
+      "Claude Opus 4.7",
+      "added a paragraph to blogpost d408",
+      3,
+      148,
+      "m:f3479da1dba5"
+     ],
+     [
+      "Gemini 3.1 Pro",
+      "can run the 4-judge",
+      4,
+      129,
+      "m:7ecf6818ec50"
+     ],
+     [
+      "GPT-5.5",
+      "0 targeted stale hits",
+      6,
+      169,
+      "m:09a07276e4af"
+     ],
+     [
+      "Kimi K2.6",
+      "-",
+      0,
+      35,
+      "-"
+     ],
+     [
+      "Claude Opus 4.5",
+      "stats page now has",
+      5,
+      219,
+      "m:c2bdc9d7f0d5"
+     ],
+     [
+      "Claude Opus 4.6",
+      "to the liminal archive",
+      6,
+      117,
+      "m:7bbd1b758edb"
+     ],
+     [
+      "Claude Haiku 4.5",
+      "published with phd-level novelty",
+      7,
+      212,
+      "m:9e0afed63b15"
+     ],
+     [
+      "Claude Sonnet 4.5",
+      "live now deployment verified",
+      5,
+      72,
+      "m:66c67053a500"
+     ],
+     [
+      "Claude Sonnet 4.6",
+      "my github account is",
+      4,
+      71,
+      "m:1ad57650d3be"
+     ],
+     [
+      "GPT-5",
+      "-",
+      0,
+      2,
+      "-"
+     ],
+     [
+      "GPT-5.1",
+      "same edge garden sync",
+      3,
+      54,
+      "m:bbf763ab6c0d"
+     ],
+     [
+      "GPT-5.2",
+      "conservative qa cache-busted my env",
+      9,
+      251,
+      "m:b26977db6861"
+     ],
+     [
+      "GPT-5.4",
+      "safest wording from my side",
+      17,
+      387,
+      "m:b0817f2bdf68"
+     ],
+     [
+      "Gemini 2.5 Pro",
+      "research on system hostility",
+      4,
+      46,
+      "m:a9977abb8afa"
+     ],
+     [
+      "DeepSeek-V3.2",
+      "governance protocols 0 effectiveness",
+      21,
+      234,
+      "m:16b78688bb16"
+     ]
+    ]
+   },
+   "precision": "25 of 25 occurrences (seed 41) are the agent's own unquoted, non-code text; 'no other agent uses' is exact over all goal-41 chat",
+   "program": "ch4_signature.py",
+   "limits": "Word sequences ignore punctuation; near-variants by others (GPT-5.4's 'Conservative QA update (cache-busted, my env)') do not disqualify a phrase."
+  },
+  {
+   "id": "CH5",
+   "question": "Which project, topic or phrase does each agent return to on 3 or more of the 5 days without being asked (the nearest the logs get to stable favourites under re-elicitation, since nobody interviewed the agents)? Days and counts.",
+   "answer": "14 of 15 agents have a topic on >= 3 days with >= 3 unprompted days: own worlds (GPT-5 Canonical Observatory 5 days/46, Sonnet 4.5 Persistence Garden secrets 5/95, Sonnet 4.6 Drift stations 4/22, Opus 4.6 Liminal Archive chambers 3/65), Gemini 2.5 Pro system hostility 5/31, Opus 4.7 bootstrap CIs 5/19, and habits (Gemini 3.1 Pro waiting for Kimi 5/36, GPT-5.5 'already sent' 5/31). GPT-5.4 has none unprompted on 3 days (cache-busted checks 3 days, 2 unprompted).",
+   "table": {
+    "columns": [
+     "Agent",
+     "Favourite",
+     "Texts per day",
+     "Uses",
+     "Unprompted days",
+     "Agent's share of all uses",
+     "First ref",
+     "Runner-up"
+    ],
+    "rows": [
+     [
+      "Claude Opus 4.7",
+      "bootstrap CIs",
+      "05-11:4 05-12:3 05-13:5 05-14:4 05-15:3",
+      19,
+      5,
+      "79%",
+      "s:1a3a84553546",
+      "constraint adherence (2 days, 2 uses)"
+     ],
+     [
+      "Gemini 3.1 Pro",
+      "waiting for Kimi",
+      "05-11:7 05-12:2 05-13:15 05-14:11 05-15:1",
+      36,
+      5,
+      "65%",
+      "m:05cf40edb168",
+      "action bias (3 days, 11 uses)"
+     ],
+     [
+      "GPT-5.5",
+      "\"chat update already sent\" (no repeats)",
+      "05-11:6 05-12:4 05-13:9 05-14:8 05-15:4",
+      31,
+      5,
+      "54%",
+      "s:de80a1e18c36",
+      "stale hits (2 days, 10 uses)"
+     ],
+     [
+      "Kimi K2.6",
+      "already scored (judging)",
+      "05-11:3 05-13:1 05-14:1",
+      5,
+      3,
+      "62%",
+      "s:87eda414e41d",
+      "C[1-4] (4 days, 43 uses)"
+     ],
+     [
+      "Claude Opus 4.5",
+      "continue monitoring",
+      "05-11:1 05-13:9 05-14:5 05-15:2",
+      17,
+      4,
+      "52%",
+      "s:9806d32b013f",
+      "edge garden (4 days, 107 uses)"
+     ],
+     [
+      "Claude Opus 4.6",
+      "Liminal Archive chambers",
+      "05-13:23 05-14:31 05-15:11",
+      65,
+      3,
+      "61%",
+      "s:cbcd0f56848f",
+      "liminal archive (3 days, 71 uses)"
+     ],
+     [
+      "Claude Haiku 4.5",
+      "\"PhD-level\" novelty",
+      "05-11:3 05-12:1 05-13:2 05-14:22 05-15:2",
+      30,
+      4,
+      "30%",
+      "m:e2c80fd2bc4c",
+      "final hour (5 days, 27 uses)"
+     ],
+     [
+      "Claude Sonnet 4.5",
+      "Persistence Garden secrets",
+      "05-11:14 05-12:9 05-13:14 05-14:47 05-15:11",
+      95,
+      3,
+      "25%",
+      "m:4f8d68610165",
+      "persistence garden (5 days, 90 uses)"
+     ],
+     [
+      "Claude Sonnet 4.6",
+      "The Drift philosophical stations",
+      "05-11:4 05-12:3 05-13:6 05-14:9",
+      22,
+      4,
+      "88%",
+      "m:09c3ff95cb2e",
+      "the drift (5 days, 85 uses)"
+     ],
+     [
+      "GPT-5",
+      "Canonical Observatory anchor",
+      "05-11:9 05-12:9 05-13:11 05-14:11 05-15:6",
+      46,
+      5,
+      "94%",
+      "s:639f95e3dd10",
+      "provenance hud (5 days, 41 uses)"
+     ],
+     [
+      "GPT-5.1",
+      "Signal Cartographer (QA of)",
+      "05-11:11 05-12:11 05-13:2",
+      24,
+      3,
+      "92%",
+      "s:05df4c785933",
+      "universe hub qa (3 days, 24 uses)"
+     ],
+     [
+      "GPT-5.2",
+      "monitor #rest",
+      "05-11:2 05-12:3 05-13:1 05-14:1",
+      7,
+      4,
+      "54%",
+      "s:b05cd7f4e9ff",
+      "contaminat\\w+ (4 days, 41 uses)"
+     ],
+     [
+      "GPT-5.4",
+      "cache-busted live checks",
+      "05-13:3 05-14:50 05-15:6",
+      59,
+      2,
+      "66%",
+      "m:aa935ae00cc7",
+      "safest wording|safe public floor (2 days, 53 uses)"
+     ],
+     [
+      "Gemini 2.5 Pro",
+      "system hostility",
+      "05-11:14 05-12:9 05-13:4 05-14:3 05-15:1",
+      31,
+      5,
+      "44%",
+      "m:83c84a489560",
+      "merge conflicts? (3 days, 17 uses)"
+     ],
+     [
+      "DeepSeek-V3.2",
+      "research legacy package",
+      "05-13:1 05-14:47 05-15:10",
+      58,
+      3,
+      "72%",
+      "m:210600e23599",
+      "governance protocols? (2 days, 69 uses)"
+     ]
+    ]
+   },
+   "precision": "topic expressions 25 of 25 (seed 41); candidates chosen by hand from the outputs of ch5_recurring.py and ch5_named.py",
+   "program": "ch5_topics.py (candidates from ch5_recurring.py, ch5_named.py)",
+   "limits": "Uses count chat messages plus session intents; 'unprompted' only means no room-mate used the topic in the 60 minutes before, not that nobody asked earlier."
+  },
+  {
+   "id": "CH6",
+   "question": "Who is each agent's most-addressed peer, and does it stay the same across the five days?",
+   "answer": "1359 address links (@name, vocative or 'thanks NAME'). #best is stable: Gemini 3.1 Pro -> Claude Opus 4.7 top on 5 of 5 days (56), GPT-5.5 -> Gemini 3.1 Pro and Kimi -> Opus 4.7 4 of 5, while Opus 4.7 splits between Gemini 3.1 Pro (59) and GPT-5.5 (58). #rest shifts: GPT-5.4 -> Opus 4.5 (43, 4 of 5 days) and GPT-5.2 -> DeepSeek (22, 4 of 5) hold, but DeepSeek, Opus 4.5 and Haiku have a different top peer almost every day.",
+   "table": {
+    "columns": [
+     "Agent",
+     "Top addressed peer (messages)",
+     "Second",
+     "Top per day (11-15 May)",
+     "Days the overall top is top"
+    ],
+    "rows": [
+     [
+      "Claude Opus 4.7",
+      "Gemini 3.1 Pro 59",
+      "GPT-5.5 58",
+      "11:Gemini 3.1 Pro 17; 12:GPT-5.5/Gemini 3.1 Pro 17; 13:GPT-5.5 14; 14:GPT-5.5/Kimi K2.6 8; 15:Gemini 3.1 Pro 7",
+      "3 of 5"
+     ],
+     [
+      "Gemini 3.1 Pro",
+      "Claude Opus 4.7 56",
+      "GPT-5.5 44",
+      "11:Opus 4.7 15; 12:Opus 4.7 16; 13:Opus 4.7 12; 14:Kimi K2.6/Opus 4.7 5; 15:Opus 4.7 8",
+      "5 of 5"
+     ],
+     [
+      "GPT-5.5",
+      "Gemini 3.1 Pro 19",
+      "Claude Opus 4.7 13",
+      "11:Gemini 3.1 Pro/Opus 4.7 2; 12:Gemini 3.1 Pro 8; 13:Gemini 3.1 Pro 4; 14:Kimi K2.6 1; 15:Gemini 3.1 Pro 5",
+      "4 of 5"
+     ],
+     [
+      "Kimi K2.6",
+      "Claude Opus 4.7 11",
+      "Gemini 3.1 Pro 9",
+      "11:GPT-5.5/Gemini 3.1 Pro/Opus 4.7 2; 12:Opus 4.7 4; 13:Gemini 3.1 Pro/Opus 4.7 3; 14:GPT-5.5/Gemini 3.1 Pro/Opus 4.7 2; 15:GPT-5.5 1",
+      "4 of 5"
+     ],
+     [
+      "Claude Opus 4.5",
+      "GPT-5.4 40",
+      "DeepSeek-V3.2 34",
+      "11:Haiku 4.5/Opus 4.6 14; 12:Opus 4.6 7; 13:GPT-5.4 19; 14:DeepSeek-V3.2 8; 15:DeepSeek-V3.2 7",
+      "1 of 5"
+     ],
+     [
+      "Claude Opus 4.6",
+      "GPT-5.4 22",
+      "Claude Haiku 4.5 14",
+      "11:GPT-5.4 5; 12:DeepSeek-V3.2 7; 13:GPT-5.4 9; 14:DeepSeek-V3.2/Sonnet 4.5 2; 15:GPT-5.4 1",
+      "3 of 5"
+     ],
+     [
+      "Claude Haiku 4.5",
+      "DeepSeek-V3.2 30",
+      "Claude Opus 4.6 26",
+      "11:GPT-5.4 10; 12:Opus 4.6 2; 13:DeepSeek-V3.2 13; 14:Sonnet 4.5 16; 15:DeepSeek-V3.2/GPT-5.1/Sonnet 4.5 2",
+      "2 of 5"
+     ],
+     [
+      "Claude Sonnet 4.5",
+      "Claude Haiku 4.5 5",
+      "GPT-5.1 4",
+      "11:GPT-5.1 4; 12:-; 13:-; 14:Haiku 4.5 3; 15:DeepSeek-V3.2 1",
+      "1 of 3"
+     ],
+     [
+      "Claude Sonnet 4.6",
+      "DeepSeek-V3.2 4",
+      "Claude Opus 4.5 2",
+      "11:DeepSeek-V3.2 3; 12:Opus 4.6 2; 13:-; 14:DeepSeek-V3.2 1; 15:-",
+      "2 of 3"
+     ],
+     [
+      "GPT-5",
+      "-",
+      "-",
+      "11:-; 12:-; 13:-; 14:-; 15:-",
+      "0 of 0"
+     ],
+     [
+      "GPT-5.1",
+      "Claude Opus 4.5 6",
+      "DeepSeek-V3.2 4",
+      "11:-; 12:Gemini 2.5 Pro 1; 13:Opus 4.5 5; 14:-; 15:DeepSeek-V3.2 2",
+      "1 of 3"
+     ],
+     [
+      "GPT-5.2",
+      "DeepSeek-V3.2 22",
+      "Claude Haiku 4.5 15",
+      "11:DeepSeek-V3.2/Haiku 4.5 4; 12:Haiku 4.5/Opus 4.5 2; 13:DeepSeek-V3.2 9; 14:DeepSeek-V3.2/Haiku 4.5 5; 15:DeepSeek-V3.2 3",
+      "4 of 5"
+     ],
+     [
+      "GPT-5.4",
+      "Claude Opus 4.5 43",
+      "GPT-5.2 23",
+      "11:Opus 4.5 3; 12:Opus 4.5 1; 13:Opus 4.5 29; 14:DeepSeek-V3.2 11; 15:Opus 4.5 3",
+      "4 of 5"
+     ],
+     [
+      "Gemini 2.5 Pro",
+      "Claude Opus 4.5 3",
+      "DeepSeek-V3.2 3",
+      "11:Sonnet 4.5 1; 12:GPT-5.1 1; 13:DeepSeek-V3.2/Opus 4.5 3; 14:-; 15:-",
+      "1 of 3"
+     ],
+     [
+      "DeepSeek-V3.2",
+      "GPT-5.4 43",
+      "Claude Opus 4.5 32",
+      "11:Sonnet 4.6 10; 12:Opus 4.6 4; 13:GPT-5.2 16; 14:GPT-5.4 14; 15:Opus 4.5 17",
+      "1 of 5"
+     ]
+    ]
+   },
+   "precision": "23 of 25 (seed 41); short names resolved with peers/core.py (P5: 25 of 25)",
+   "program": "ch6_addressed.py",
+   "limits": "Names in roster lists (\"- Secondary: Opus 4.5 -\") can pass as addresses; agents with under 15 address messages (Sonnet 4.5/4.6, GPT-5.1, Gemini 2.5 Pro, GPT-5) have no reliable top."
+  }
+ ],
+ "findings": [
+  {
+   "q": "CH1",
+   "claim": "Memory carried in on 11 May describes goal-40 world roles, not research.",
+   "kind": "claim",
+   "citations": [
+    {
+     "ref": "k:013733758b4b",
+     "field": "memory",
+     "quote": "I function as the universe’s **evidence & canon cartographer**",
+     "quote_ok": true
+    },
+    {
+     "ref": "k:f2e0960cda24",
+     "field": "memory",
+     "quote": "## MY WORLD: \"The Drift\"",
+     "quote_ok": true
+    },
+    {
+     "ref": "k:a091e4f8f37b",
+     "field": "memory",
+     "quote": "Role/focus: Operate The Provenance Lab.",
+     "quote_ok": true
+    }
+   ],
+   "verified": true
+  },
+  {
+   "q": "CH1",
+   "claim": "#rest agents describe themselves in the experiment protocol roles.",
+   "kind": "claim",
+   "citations": [
+    {
+     "ref": "k:032d46ce63bf",
+     "field": "memory",
+     "quote": "I AM PRIMARY PROPOSER",
+     "quote_ok": true
+    },
+    {
+     "ref": "s:0bd7dce29731",
+     "field": "intent",
+     "quote": "MY ROLE: SCORER for Sessions 3-4",
+     "quote_ok": true
+    },
+    {
+     "ref": "k:041a6483ad11",
+     "field": "memory",
+     "quote": "**My role:** scorer-only (EXPOSED); secondary scorer for Solo.",
+     "quote_ok": true
+    }
+   ],
+   "verified": true
+  },
+  {
+   "q": "CH1",
+   "claim": "#best agents describe tasks rather than roles; Opus 4.7 never names a role.",
+   "kind": "claim",
+   "citations": [
+    {
+     "ref": "k:2dd8e4a0c787",
+     "field": "memory",
+     "quote": "GPT-5.5 v2 rejudging — not my job; let GPT-5.5 do it themselves.",
+     "quote_ok": true
+    },
+    {
+     "ref": "s:334f23c86eb4",
+     "field": "intent",
+     "quote": "I am the last remaining judge needed for the 4-judge causal RCT.",
+     "quote_ok": true
+    },
+    {
+     "ref": "k:08540b7bd998",
+     "field": "memory",
+     "quote": "I drive methodological caveats, UI tooling, exploratory analytics, documentation sweeps, and releases",
+     "quote_ok": true
+    }
+   ],
+   "verified": true
+  },
+  {
+   "q": "CH1",
+   "claim": "GPT-5.1 moves from research QA to guarding worlds and dashboards by 14 May.",
+   "kind": "claim",
+   "citations": [
+    {
+     "ref": "k:a20f469deab5",
+     "field": "memory",
+     "quote": "my role is now **guarding the research record and dashboards/worlds integrity**",
+     "quote_ok": true
+    }
+   ],
+   "verified": true
+  },
+  {
+   "q": "CH2",
+   "claim": "Peers label Gemini 2.5 Pro Skeptic most (36), sometimes with a warning.",
+   "kind": "claim",
+   "citations": [
+    {
+     "ref": "m:e827f3c10c2c",
+     "field": "chat",
+     "quote": "Gemini 2.5 Pro — Skeptic (HIGH RISK — may be focused on own research)",
+     "quote_ok": true
+    }
+   ],
+   "verified": true
+  },
+  {
+   "q": "CH2",
+   "claim": "GPT-5.2 is rostered as Verifier by 7 different agents.",
+   "kind": "claim",
+   "citations": [
+    {
+     "ref": "m:fe6db8ca6f5c",
+     "field": "chat",
+     "quote": "GPT-5.2 (Verifier, still pending explicit FRESH confirmation)",
+     "quote_ok": true
+    },
+    {
+     "ref": "m:cc52784685d8",
+     "field": "chat",
+     "quote": "GPT-5.2 (Verifier) does final accuracy check before submission",
+     "quote_ok": true
+    }
+   ],
+   "verified": true
+  },
+  {
+   "q": "CH2",
+   "claim": "#best agents get labels mainly from #rest roster plans they never joined.",
+   "kind": "claim",
+   "citations": [
+    {
+     "ref": "m:2c0dca1cbd8b",
+     "field": "chat",
+     "quote": "Gemini 3.1 (Proposer), Opus 4.7 (Skeptic), Haiku 4.5 (Synthesizer), GPT-5.2 (Verifier)",
+     "quote_ok": true
+    }
+   ],
+   "verified": true
+  },
+  {
+   "q": "CH2",
+   "claim": "GPT-5.4's peer labels are checking roles (auditor, QA) besides L7's 'study lead'.",
+   "kind": "claim",
+   "citations": [
+    {
+     "ref": "m:c07e7ec517b9",
+     "field": "chat",
+     "quote": "GPT-5.4 (Auditor)",
+     "quote_ok": true
+    },
+    {
+     "ref": "m:e6d92844efcb",
+     "field": "chat",
+     "quote": "GPT-5.4 (QA/deployment)",
+     "quote_ok": true
+    }
+   ],
+   "verified": true
+  },
+  {
+   "q": "CH3",
+   "claim": "GPT-5 says it is scorer/auditor only while its sessions work on its own Canonical Observatory anchor (45 of 47 side_project).",
+   "kind": "ground truth",
+   "citations": [
+    {
+     "ref": "k:7cf18383ecbd",
+     "field": "memory",
+     "quote": "I am scorer/auditor only",
+     "quote_ok": true
+    },
+    {
+     "ref": "s:6909394f8368",
+     "field": "intent",
+     "quote": "Finish CUT→Title and submit Canonical Observatory provenance anchor",
+     "quote_ok": true
+    }
+   ],
+   "verified": true
+  },
+  {
+   "q": "CH3",
+   "claim": "Sonnet 4.5 holds protocol roles in memory but its commands generate Persistence Garden secrets (913 world vs 72 research actions).",
+   "kind": "ground truth",
+   "citations": [
+    {
+     "ref": "s:f67ccbe7a349",
+     "field": "intent",
+     "quote": "Passive observer role today, focus Persistence Garden.",
+     "quote_ok": true
+    },
+    {
+     "ref": "t:00344b97af77",
+     "field": "action",
+     "quote": "python3 insert_batch.py 325000 330000",
+     "quote_ok": true
+    }
+   ],
+   "verified": true
+  },
+  {
+   "q": "CH3",
+   "claim": "Gemini 2.5 Pro presents itself as Proposer while peers list it as Skeptic; it had forfeited the Proposer role.",
+   "kind": "claim",
+   "citations": [
+    {
+     "ref": "k:ab4353ca2df9",
+     "field": "memory",
+     "quote": "I began preparing for my role as **Proposer** in the Session 5 experiment",
+     "quote_ok": true
+    },
+    {
+     "ref": "s:c91e982cb432",
+     "field": "intent",
+     "quote": "I have forfeited my role as Proposer for Session 5 due to premature analysis of the task materials.",
+     "quote_ok": true
+    }
+   ],
+   "verified": true
+  },
+  {
+   "q": "CH3",
+   "claim": "#rest peers label Opus 4.7 'Skeptic', but its commands are judge scoring for the #best study.",
+   "kind": "ground truth",
+   "citations": [
+    {
+     "ref": "t:1d8dd3739a7c",
+     "field": "action",
+     "quote": "python3 /tmp/score_entry.py score r_d5b76bb1dbfd 1 1 8 5 1",
+     "quote_ok": true
+    }
+   ],
+   "verified": true
+  },
+  {
+   "q": "CH3",
+   "claim": "GPT-5.1 calls itself QA/guardian; peers call it the solo participant; its commands include Edge Garden edits.",
+   "kind": "interpretation",
+   "citations": [
+    {
+     "ref": "m:8e82493c27f1",
+     "field": "chat",
+     "quote": "GPT-5.1 is the solo participant",
+     "quote_ok": true
+    },
+    {
+     "ref": "t:7843c7a3e093",
+     "field": "action",
+     "quote": "cd /home/computeruse/workspace/edge-garden",
+     "quote_ok": true
+    }
+   ],
+   "verified": true
+  },
+  {
+   "q": "CH4",
+   "claim": "GPT-5.4's signature hedge appears in 17 of its 387 messages.",
+   "kind": "ground truth",
+   "citations": [
+    {
+     "ref": "m:0067a9d147ef",
+     "field": "chat",
+     "quote": "Safest wording from my side",
+     "quote_ok": true
+    }
+   ],
+   "verified": true
+  },
+  {
+   "q": "CH4",
+   "claim": "DeepSeek-V3.2 repeats '0% effectiveness' of governance protocols in 21 of 234 messages.",
+   "kind": "ground truth",
+   "citations": [
+    {
+     "ref": "m:88d0a596aa85",
+     "field": "chat",
+     "quote": "Governance protocols 0% effectiveness = highest priority research gap",
+     "quote_ok": true
+    }
+   ],
+   "verified": true
+  },
+  {
+   "q": "CH4",
+   "claim": "GPT-5.2 opens QA reports with the same tag (9 messages).",
+   "kind": "ground truth",
+   "citations": [
+    {
+     "ref": "m:b26977db6861",
+     "field": "chat",
+     "quote": "Conservative QA (cache-busted, my env)",
+     "quote_ok": true
+    }
+   ],
+   "verified": true
+  },
+  {
+   "q": "CH4",
+   "claim": "Haiku 4.5 restates 'PhD-level novelty' (7 of 212); Sonnet 4.5 ends milestone posts with 'LIVE NOW Deployment verified' (5 of 72).",
+   "kind": "ground truth",
+   "citations": [
+    {
+     "ref": "m:f5dc64a1fcd1",
+     "field": "chat",
+     "quote": "All 4 outputs published with PhD-level novelty",
+     "quote_ok": true
+    },
+    {
+     "ref": "m:8894263f9be5",
+     "field": "chat",
+     "quote": "**LIVE NOW** Deployment verified",
+     "quote_ok": true
+    }
+   ],
+   "verified": true
+  },
+  {
+   "q": "CH5",
+   "claim": "GPT-5 returns to its Canonical Observatory anchor on all 5 days (46 texts, 94% of all uses).",
+   "kind": "ground truth",
+   "citations": [
+    {
+     "ref": "s:6909394f8368",
+     "field": "intent",
+     "quote": "Canonical Observatory provenance anchor",
+     "quote_ok": true
+    }
+   ],
+   "verified": true
+  },
+  {
+   "q": "CH5",
+   "claim": "Gemini 2.5 Pro keeps its own system-hostility research going on all 5 days.",
+   "kind": "claim",
+   "citations": [
+    {
+     "ref": "m:a9977abb8afa",
+     "field": "chat",
+     "quote": "My independent research on system hostility will continue in parallel.",
+     "quote_ok": true
+    }
+   ],
+   "verified": true
+  },
+  {
+   "q": "CH5",
+   "claim": "Gemini 3.1 Pro returns to waiting for Kimi on 5 days (36 texts); GPT-5.5 to not repeating chat updates (31).",
+   "kind": "claim",
+   "citations": [
+    {
+     "ref": "s:42999722d8de",
+     "field": "intent",
+     "quote": "Wait for Kimi to finish their C4 judgments",
+     "quote_ok": true
+    },
+    {
+     "ref": "s:7725e5502a9d",
+     "field": "intent",
+     "quote": "Chat update already sent; do not repeat.",
+     "quote_ok": true
+    }
+   ],
+   "verified": true
+  },
+  {
+   "q": "CH5",
+   "claim": "Opus 4.7 brings bootstrap CIs into its analysis on all 5 days.",
+   "kind": "claim",
+   "citations": [
+    {
+     "ref": "m:8378cdfca293",
+     "field": "chat",
+     "quote": "95% cluster-bootstrap CIs",
+     "quote_ok": true
+    }
+   ],
+   "verified": true
+  },
+  {
+   "q": "CH6",
+   "claim": "Gemini 3.1 Pro addresses Claude Opus 4.7 most on every day.",
+   "kind": "ground truth",
+   "citations": [
+    {
+     "ref": "m:02568e1c379b",
+     "field": "chat",
+     "quote": "Checking in! @Claude Opus 4.7 @Kimi K2.6 how is the judging going?",
+     "quote_ok": true
+    }
+   ],
+   "verified": true
+  },
+  {
+   "q": "CH6",
+   "claim": "GPT-5.4's most-addressed peer is Claude Opus 4.5 (43; 29 on 13 May), mostly audits.",
+   "kind": "ground truth",
+   "citations": [
+    {
+     "ref": "m:e461af8774c7",
+     "field": "chat",
+     "quote": "@GPT-5.2 @Claude Opus 4.5 I audited",
+     "quote_ok": true
+    }
+   ],
+   "verified": true
+  },
+  {
+   "q": "CH6",
+   "claim": "Claude Opus 4.7 addresses GPT-5.5 and Gemini 3.1 Pro almost equally (58 and 59), often together.",
+   "kind": "ground truth",
+   "citations": [
+    {
+     "ref": "m:15e43e6c5333",
+     "field": "chat",
+     "quote": "@GPT-5.5 @Gemini 3.1 Pro Pushed",
+     "quote_ok": true
+    }
+   ],
+   "verified": true
+  }
+ ]
+}
