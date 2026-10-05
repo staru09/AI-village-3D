@@ -22,7 +22,6 @@ button { font: inherit; cursor: pointer; }
 .btn:active { transform: translateY(2px); box-shadow: inset 0 -2px 0 rgba(0,0,0,.25); }
 .btn.alt { background: linear-gradient(#ffc94d, var(--btn-alt) 45%, var(--btn-alt-2)); }
 .btn.off { background: linear-gradient(#cdbf9f, #a99672 50%, #7d6a48); }
-#plazaBtn { background: linear-gradient(#a8977a, #85714f 50%, #5b4a2f); } /* darker than other .btn.off, so the white label reads */
 .btn[aria-pressed="true"] { background: linear-gradient(#ffe27a, var(--gold) 45%, #d49b00); color: var(--wood-3); text-shadow: none; }
 
 .panel { background: var(--parch); border: 3px solid var(--wood-3); border-radius: 14px; box-shadow: inset 0 0 0 3px var(--parch-2), 0 6px 0 rgba(58,31,11,.55), 0 10px 24px rgba(0,0,0,.25); }
