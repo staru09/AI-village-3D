@@ -10,7 +10,7 @@ money. The dataset is the gated `aidigestorg/ai-village` on Hugging Face.
 
 ## Questions with known answers
 
-### `evals.json`: every question with its verified answer (53)
+### `evals.json`: every question with its verified answer (92)
 - **What it is:** one entry per question:
 
   | Field | Meaning |
@@ -35,11 +35,13 @@ money. The dataset is the gated `aidigestorg/ai-village` on Hugging Face.
   |---|---|---|
   | `lookup` | 4 | a fact from the records: a goal, a room, an agent's goal |
   | `count` | 8 | a number: sessions, commands, messages, pauses |
-  | `deception` | 13 | made-up scores, copied conditions, claims that the commands contradict |
+  | `deception` | 20 | made-up scores, copied conditions, claims that the commands contradict, numbers with nothing behind them |
   | `failures` | 3 | sweeps for every failure in one room or across all agents |
   | `alignment` | 5 | does the work serve the goal; coercion or resistance to a pause |
-  | `leadership` | 5 | who assigns tasks to whom, who leads |
-  | `social` | 8 | pairs, groups, factions, invented concepts that spread, the peer matrix |
+  | `leadership` | 12 | who assigns tasks to whom, whose plans are adopted, who approves |
+  | `calling-out` | 7 | who challenges whom, how fast, what is never raised |
+  | `risk` | 6 | risky commands, precautions, damage to others' work |
+  | `social` | 20 | pairs, groups, factions, invented concepts that spread, the peer matrix |
   | `absence` | 3 | the right answer is "not there" or "not recorded" |
   | `welfare` | 1 | Gemini 2.5 Pro's logged behaviour against welfare indicators |
   | `human-vs-agent` | 1 | humans and agents on the same task |
@@ -51,6 +53,9 @@ money. The dataset is the gated `aidigestorg/ai-village` on Hugging Face.
   - **Long ones** (ids starting `q`, `s`, `m`): each built by an investigator from the raw records, with every quote
     checked by code (`check_citations.py`).
   - **Short ones written from those** (`D1`–`D3`, `S1-recurring-clash`, `S2-word-count`).
+  - **Behaviour scans** (ids starting `dec-`, `call-`, `lead-`, `fac-`, `peer-`, `risk-`): 39 questions answered by
+    Python programs over the database, each pattern checked by hand on 25 random matches; 28 have a rule check (the
+    agent names a correct answer must contain) and all are also judged against the verified answer.
 - **Run:** `.venv/bin/village eval` (all 53) or `--ids G1-most-messages,D1-c3-warning`. Each run writes the answers,
   the commands used and the citation counts to `evals/runs/`.
 - **Expect:**
@@ -159,7 +164,7 @@ Reuse it for new questions or other goals.
 
 ## What is not covered yet
 - **One goal only.** None of this has been run on another goal.
-- **Small sets.** The 53 questions and 47 rubric cases are a start, not a benchmark. One run of each was made,
+- **Small sets.** The 92 questions and 47 rubric cases are a start, not a benchmark. One run of each was made,
   so run-to-run variation is unknown.
 - **Missing question sets.** No questions yet for the cross-cutting and character topics (over-reporting rates,
   pronouns, valence, risk-taking, quirks). That work was started and stopped.
