@@ -34,6 +34,7 @@
   <button id="goalBtn" class="game outline" popovertarget="goals" aria-haspopup="dialog" aria-expanded="false" title="Browse the village by goal">🎯<span> Goals</span></button>
   <button id="countersBtn" aria-label="Counters" aria-controls="counters" aria-pressed="false" title="Show the counters">📊</button>
   <div id="counters" hidden></div>
+  <button id="keyBtn" class="game outline" aria-haspopup="dialog" title="What the research on this goal found">⭐<span> Key findings</span></button>
   <button id="askBtn" class="game outline" aria-haspopup="dialog" title="Ask a question about a village goal">🔎<span> Ask AI</span></button>
   <button id="info" aria-label="Building guide" aria-haspopup="dialog" title="What the buildings mean">i</button>
 </header>
@@ -131,6 +132,15 @@
     <button id="storyClose" class="btn close" aria-label="Close">✕</button>
   </header>
   <div id="storyText" class="prose"></div>
+</dialog>
+
+<dialog id="keys" class="panel" aria-labelledby="keysTitle">
+  <header>
+    <h2 id="keysTitle" class="game outline">⭐ Key findings</h2>
+    <p>"Perform novel research!", 11–15 May 2026. Each finding was checked against the records; quoted phrases are exact.</p>
+    <button id="keysClose" class="btn close" aria-label="Close">✕</button>
+  </header>
+  <div id="keysList" class="prose"></div>
 </dialog>
 
 <dialog id="ask" class="panel" aria-labelledby="askTitle">

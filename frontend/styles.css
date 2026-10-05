@@ -38,9 +38,9 @@ button { font: inherit; cursor: pointer; }
 /* a compact header: ◀ Day N · date · clock 📅 ▶, and the filtered goal under it */
 #goalNow:empty { display: none; }
 /* Goals: its own wooden button beside the header (the calendar stays in the header) */
-#goalBtn, #askBtn { flex: none; padding: 7px 14px; background: linear-gradient(#8a5a2e, var(--wood) 40%, var(--wood-2)); border: 3px solid var(--wood-3); border-radius: 14px;
+#goalBtn, #askBtn, #keyBtn { flex: none; padding: 7px 14px; background: linear-gradient(#8a5a2e, var(--wood) 40%, var(--wood-2)); border: 3px solid var(--wood-3); border-radius: 14px;
   box-shadow: inset 0 2px 0 rgba(255,255,255,.2), 0 5px 0 rgba(58,31,11,.6); color: #fff; font-size: 18px; line-height: 1.1; white-space: nowrap; }
-#goalBtn:hover, #askBtn:hover, #goalBtn[aria-expanded="true"] { filter: brightness(1.12); }
+#goalBtn:hover, #askBtn:hover, #keyBtn:hover, #goalBtn[aria-expanded="true"] { filter: brightness(1.12); }
 #goalBtn[aria-pressed="true"] { background: linear-gradient(#ffe27a, var(--gold) 45%, #d49b00); color: var(--wood-3); text-shadow: none; } /* a goal filter is on */
 #goalNow { display: block; contain: inline-size; margin-top: 2px; color: var(--parch); font-size: 12px; font-weight: 800; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .btn.nav { padding: 0 7px 2px; min-width: 30px; height: 28px; font-size: 13px; }
@@ -226,15 +226,15 @@ details summary { cursor: pointer; font: 400 15px 'Lilita One', sans-serif; colo
 #calInfo .t { display: block; font: 400 13.5px 'Lilita One', sans-serif; font-weight: 400; color: var(--wood-2); }
 
 /* building guide */
-#guide, #gallery, #chat, #story, #ask { width: min(600px, calc(100vw - 24px)); max-height: min(86vh, 780px); padding: 0; color: var(--ink); overflow: hidden; }
-:is(#guide, #gallery, #chat, #story, #ask)[open] { display: flex; flex-direction: column; }
-:is(#guide, #gallery, #chat, #story, #ask)::backdrop { background: rgba(35,18,5,.5); }
+#guide, #gallery, #chat, #story, #ask, #keys { width: min(600px, calc(100vw - 24px)); max-height: min(86vh, 780px); padding: 0; color: var(--ink); overflow: hidden; }
+:is(#guide, #gallery, #chat, #story, #ask, #keys)[open] { display: flex; flex-direction: column; }
+:is(#guide, #gallery, #chat, #story, #ask, #keys)::backdrop { background: rgba(35,18,5,.5); }
 #guide footer { padding: 8px 16px; font-size: 12px; color: var(--ink-2); border-top: 2px solid var(--line); background: var(--parch-2); }
 #guide footer a { color: var(--wood-2); font-weight: 800; }
-:is(#guide, #gallery, #chat, #story, #ask) header { display: block; position: relative; padding: 12px 56px 12px 16px; background: linear-gradient(#8a5a2e, var(--wood) 40%, var(--wood-2)); border-bottom: 3px solid var(--wood-3); }
-:is(#guide, #gallery, #chat, #story, #ask) header h2 { margin: 0; font-size: 24px; color: #fff; }
-:is(#guide, #gallery, #chat, #story, #ask) header p { margin: 1px 0 0; color: #f6ecd2; font-size: 13px; }
-:is(#guide, #gallery, #chat, #story, #ask) .close { position: absolute; top: 10px; right: 10px; padding: 1px 10px 4px; }
+:is(#guide, #gallery, #chat, #story, #ask, #keys) header { display: block; position: relative; padding: 12px 56px 12px 16px; background: linear-gradient(#8a5a2e, var(--wood) 40%, var(--wood-2)); border-bottom: 3px solid var(--wood-3); }
+:is(#guide, #gallery, #chat, #story, #ask, #keys) header h2 { margin: 0; font-size: 24px; color: #fff; }
+:is(#guide, #gallery, #chat, #story, #ask, #keys) header p { margin: 1px 0 0; color: #f6ecd2; font-size: 13px; }
+:is(#guide, #gallery, #chat, #story, #ask, #keys) .close { position: absolute; top: 10px; right: 10px; padding: 1px 10px 4px; }
 #guideList { list-style: none; margin: 0; padding: 12px 14px 16px; overflow-y: auto; display: grid; gap: 8px; }
 #guideList li { display: grid; grid-template-columns: 40px 1fr; gap: 10px; align-items: start; padding: 8px 10px; background: #fff8e6; border: 2px solid var(--line); border-radius: 12px; }
 #guideList .ico { width: 40px; height: 40px; font-size: 21px; }
@@ -246,6 +246,14 @@ details summary { cursor: pointer; font: 400 15px 'Lilita One', sans-serif; colo
 #storyText { overflow-y: auto; padding: 12px 16px 8px; }
 #ask { position: fixed; inset: auto; margin: 0; z-index: 4; width: min(860px, calc(100vw - 24px)); max-height: min(62vh, 640px); }
 #ask header { cursor: move; touch-action: none; user-select: none; }
+#keys { width: min(720px, calc(100vw - 24px)); }
+#keysList { overflow-y: auto; padding: 8px 16px 14px; }
+#keysList details { border-bottom: 2px dashed var(--line); padding: 8px 0; }
+#keysList summary { cursor: pointer; font-weight: 700; color: var(--wood-2); list-style-position: outside; }
+#keysList summary .n { display: inline-block; min-width: 1.6em; color: var(--ink-2); font-weight: 400; }
+#keysList p { margin: 6px 0 4px 1.6em; }
+#keysList blockquote { margin: 6px 0 0 1.6em; padding: 4px 10px; border-left: 3px solid var(--gold); background: var(--parch-2); border-radius: 0 6px 6px 0; }
+#keysList q { font-style: italic; overflow-wrap: anywhere; } #keysList cite { display: block; font-style: normal; font-size: 12px; color: var(--ink-2); }
 #askForm { display: grid; grid-template-columns: minmax(150px, 240px) minmax(0, 1fr) auto; align-items: start; gap: 8px; padding: 10px 16px 0; }
 #askForm :is(select, textarea) { font: inherit; width: 100%; box-sizing: border-box; }
 #askForm .btn { align-self: stretch; }
@@ -339,10 +347,11 @@ details summary { cursor: pointer; font: 400 15px 'Lilita One', sans-serif; colo
 @media (max-width: 760px) {
   #counters .counter span { display: none; }
   #dateBtn { font-size: 13px; }
-  :is(#goalBtn, #askBtn) { padding: 5px 8px; font-size: 15px; } :is(#goalBtn, #askBtn) span { display: none; } /* phones: just 🎯 */
+  :is(#goalBtn, #askBtn, #keyBtn) { padding: 5px 8px; font-size: 15px; } :is(#goalBtn, #askBtn, #keyBtn) span { display: none; } /* phones: just 🎯 */
   #dayNo { display: none; } /* date and clock only, so the header, 🎯 and ⓘ share the top row */
   #countersBtn { position: fixed; top: 64px; right: 12px; } /* phones: the 📊 heads the column down the right edge */
   #askBtn { position: fixed; top: 64px; right: 60px; }
+  #keyBtn { position: fixed; top: 64px; right: 108px; } /* phones: ⭐ beside 🔎 */
   #askForm { grid-template-columns: minmax(0, 1fr); } #askForm .btn { justify-self: end; } /* phones: 🔎 beside 📊, so the top row keeps ⓘ */
   #counters { position: fixed; top: 112px; right: 12px; flex-direction: column; margin: 0; }
   #clockRow { gap: 3px; }

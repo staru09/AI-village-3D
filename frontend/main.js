@@ -18,6 +18,7 @@ import { talk, hallObj, say, feed, chatSync } from './chat.js';
 import { select, drawer } from './card.js';
 import { tally, roster, initCalendar, infoButton } from './panels.js';
 import './ask.js';
+import './keyfindings.js';
 
 // ---------- controls ----------
 const time = $('#time');
