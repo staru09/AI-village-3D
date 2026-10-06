@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
-# Daily job: when aidigestorg/ai-village publishes a new revision, fetch the tables extract.py reads, rebuild frontend/data/
-# and publish the site. Same revision as the last build: exits without downloading or rebuilding anything.
+# Weekly job: when aidigestorg/ai-village publishes a new revision, fetch the tables extract.py reads, rebuild frontend/data/,
+# publish the site and rebuild Ask AI's village.db. Same revision as the last build: exits without downloading or rebuilding anything.
 # The tables live as one copy in $VILLAGE_DATA, updated in place (only changed files are fetched; the screenshot
 # archives are never downloaded).
-#   crontab: 30 4 * * * flock -n /tmp/village-update.lock /path/to/AI-village-3D/deploy/update.sh >> $HOME/village-update.log 2>&1
+#   crontab: 30 4 * * 1 flock -n /tmp/village-update.lock /path/to/AI-village-3D/deploy/update.sh >> $HOME/village-update.log 2>&1
 set -euo pipefail
 HERE=$(cd "$(dirname "$0")/.." && pwd)
 REPO=aidigestorg/ai-village
@@ -20,5 +20,9 @@ uvx -q --from huggingface_hub hf download "$REPO" --repo-type dataset --revision
 	chat_rooms.jsonl.gz claude_code_messages.jsonl.gz computer_use_sessions.jsonl.gz computer_use_turns.jsonl.gz \
 	events.jsonl.gz summaries.jsonl.gz village_goals.jsonl.gz village-transcript.json >/dev/null  # it prints the folder path
 "$HERE/deploy/deploy.sh" publish --build
-echo "$latest" > "$VILLAGE_DATA/.built"  # only after a successful publish, so a failed run retries tomorrow
+# 🔎 Ask AI's database: the full history (about 30 min). It is built beside the old one and swapped in when complete,
+# so `village web` keeps answering from the old one meanwhile.
+echo "$(date -Is) rebuilding village.db"
+(cd "$HERE/harness" && VILLAGE_DB=${VILLAGE_DB:-/data/AI-Village-CLI/village.db} .venv/bin/village build --all)
+echo "$latest" > "$VILLAGE_DATA/.built"  # only after a successful publish and build, so a failed run retries next week
 echo "$(date -Is) published data from ${latest:0:8}"
